@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Home(){
+export default function Home() {
   return (
     <main className="bg-bg">
       <section className="mx-auto max-w-4xl px-6 pt-16 pb-10 text-center">
@@ -11,6 +11,7 @@ export default function Home(){
           Acquirely by Starting Gate Financial provides the tools and insights you need to make informed decisions and
           accelerate your acquisition process. Start your journey today.
         </p>
+
         <div className="mt-8 flex items-center justify-center gap-3">
           <Link
             href="/core"
@@ -18,11 +19,21 @@ export default function Home(){
           >
             Start Free with Core
           </Link>
+
+          {/* Fixed: add visible text for Pro CTA */}
           <Link
             href="/pro"
-            className="rounded-xl bg-white px-5 py-3 text-brand-slate-900 ring-1 ring-brand-slate-900 font-medium hover:bg-slate-50"
+            className="rounded-xl border border-brand-green-600 px-5 py-3 text-brand-green-700 font-medium shadow-soft hover:bg-brand-green-50"
           >
-            Upgrade to Pro
+            Explore Pro
+          </Link>
+
+          {/* New: quick link to the sample deal page */}
+          <Link
+            href="/deals/demo"
+            className="rounded-xl border px-5 py-3 font-medium hover:bg-gray-50"
+          >
+            Try Sample Deal →
           </Link>
         </div>
       </section>
@@ -32,14 +43,14 @@ export default function Home(){
         <div className="grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
             <h3 className="text-lg font-semibold text-brand-slate-900">SBA-friendly analysis</h3>
-            <p className="mt-2 text-sm text-brand-slate-600">DSCR, amortization, sources & uses, and lender-ready summaries.</p>
+            <p className="mt-2 text-sm text-brand-slate-600">DSCR, amortization, sources &amp; uses, and lender-ready summaries.</p>
           </div>
           <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
             <h3 className="text-lg font-semibold text-brand-slate-900">Pro deal model</h3>
             <p className="mt-2 text-sm text-brand-slate-600">Assumptions, financing, and returns (ROI, NPV, Payback) in minutes.</p>
           </div>
           <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
-            <h3 className="text-lg font-semibold text-brand-slate-900">Built for buyers & brokers</h3>
+            <h3 className="text-lg font-semibold text-brand-slate-900">Built for buyers &amp; brokers</h3>
             <p className="mt-2 text-sm text-brand-slate-600">Fast, clear, and consistent—so decisions move forward, not sideways.</p>
           </div>
         </div>
@@ -47,3 +58,4 @@ export default function Home(){
     </main>
   );
 }
+
