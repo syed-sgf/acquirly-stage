@@ -5,7 +5,7 @@ import StageWatermark from "@/components/StageWatermark";
 import Footer from "@/components/Footer";
 export const metadata = {
   title: "Acquirely | Starting Gate Financial",
-  description: "Acquirely provides the tools and insights you need to make informed decisions and accelerate your acquisition process. Start your journey today.",
+  description: "Acquirely by Starting Gate Financial provides the tools and insights you need to make informed decisions and accelerate your acquisition process. Start your journey today.",
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

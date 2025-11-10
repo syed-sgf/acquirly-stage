@@ -30,7 +30,7 @@ export default function Core(){
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <h1 className="text-3xl font-bold">Core Calculator</h1>
-      <p className="mt-2 text-brand.slate-600 text-sm">
+      <p className="mt-2 text-brand-slate-600 text-sm">
         DSCR colors: ≤1.15 <span className="text-red-600 font-medium">red</span> · 1.16–1.24 <span className="text-amber-600 font-medium">amber</span> · ≥1.25 <span className="text-green-600 font-medium">green</span>.
       </p>
       <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -66,7 +66,7 @@ export default function Core(){
           <h2 className="text-xl font-semibold">DSCR</h2>
           <span className={`rounded-md px-2 py-1 text-xs font-medium ${dscrBadgeClass(band)}`}>{fmtDSCR(calc.dscr)}</span>
         </div>
-        <p className="mt-2 text-sm text-brand.slate-600">DSCR = Lendable CF ÷ Total annual debt service</p>
+        <p className="mt-2 text-sm text-brand-slate-600">DSCR = Lendable CF ÷ Total annual debt service</p>
       </section>
     </main>
   );
