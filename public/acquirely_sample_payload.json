@@ -1,0 +1,12 @@
+{
+  "fields": {
+    "annual_revenue": 200000,
+    "ebitda_sde": 620000,
+    "loan_closing_costs": 50000,
+    "interest_rate_summary": 0.10,
+    "debt_service_annual": -148273.1267813366,
+    "dscr": 3.4733198872880577,
+    "cash_reserves": 0.03,
+    "equity_down_payment": 0
+  }
+}
