@@ -4,3 +4,7 @@ out
 .DS_Store
 .env*
 .vercel
+
+# local exports
+*.zip
+updated/
