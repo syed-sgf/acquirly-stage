@@ -1,58 +1,30 @@
-import React from "react";
 export const runtime = "nodejs";
-import { NextRequest, NextResponse } from "next/server";
+
+import React from "react";
+import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
-import IndicativeTermsPDF, { Terms } from "@/app/pdfs/IndicativeTermsPDF";
+import IndicativeTermsPDF from "@/components/pdf/IndicativeTermsPDF";
 
-export async function POST(request: NextRequest) {
-  try {
-    // Parse the request body
-    const body = await request.json();
-    const terms: Terms = body.terms;
+export async function POST(request: Request) {
+  const terms = await request.json().catch(() => ({}));
+  const pdfBuffer = await renderToBuffer(<IndicativeTermsPDF terms={terms} />);
 
-    // Validate the terms data
-    if (!terms || !terms.borrower || !terms.business) {
-      return NextResponse.json(
-        { error: "Invalid terms data provided" },
-        { status: 400 }
-      );
-    }
-
-    // Render the PDF component to a buffer
-    const pdfBuffer = await renderToBuffer(<IndicativeTermsPDF terms={terms} />);
-
-    // Return the PDF as a downloadable file
-    return new NextResponse(pdfBuffer, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="indicative-terms-${terms.business.replace(/\s+/g, "-")}.pdf"`,
-      },
-    });
-  } catch (error) {
-    console.error("Error generating PDF:", error);
-    return NextResponse.json(
-      { error: "Failed to generate PDF" },
-      { status: 500 }
-    );
-  }
+  return new NextResponse(pdfBuffer, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="indicative-terms.pdf"',
+    },
+  });
 }
 
-// Optional: Add GET method for testing
+// Optional GET for smoke testing
 export async function GET() {
-  return NextResponse.json({
-    message: "PDF Export API",
-    method: "POST",
-    body: {
-      terms: {
-        borrower: "string",
-        business: "string",
-        program: "SBA7a | SBA504 | Conventional",
-        loanAmount: "number",
-        rateNote: "string",
-        termYears: "number",
-        // ... other fields
-      },
+  const demo = { note: "hello from GET" };
+  const pdfBuffer = await renderToBuffer(<IndicativeTermsPDF terms={demo} />);
+  return new NextResponse(pdfBuffer, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'inline; filename="indicative-terms.pdf"',
     },
   });
 }
