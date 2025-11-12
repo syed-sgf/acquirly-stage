@@ -7,6 +7,7 @@ export default function Navbar(){
         <Link href="/" className="flex items-center gap-2" aria-label="Acquirely home">
           <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-brand-green-600 to-brand-gold-500" />
           <span className="text-lg font-semibold text-brand-slate-900">Acquirely</span>
+          <span className="ml-2 rounded bg-brand-gold-500/15 px-2 py-0.5 text-xs font-medium text-brand-gold-500">by Starting Gate Financial</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">
