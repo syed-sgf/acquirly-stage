@@ -1,3 +1,5 @@
+import React from "react";
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import IndicativeTermsPDF, { Terms } from "@/app/pdfs/IndicativeTermsPDF";
