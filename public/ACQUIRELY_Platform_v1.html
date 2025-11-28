@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACQUIRELY - Business Acquisition Intelligence Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #003366;
+            --secondary-blue: #0066cc;
+            --accent-gold: #D4AF37;
+            --success-green: #28a745;
+            --warning-orange: #ff9800;
+            --danger-red: #dc3545;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #333333;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .tagline {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+            background: var(--light-bg);
+        }
+
+        .nav-tab.active {
+            background: var(--primary-blue);
+            color: white;
+            border-bottom-color: var(--accent-gold);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-gold);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .form-group input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--primary-blue) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-warning {
+            background: var(--warning-orange);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e68900;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .metric-card.positive {
+            border-left-color: var(--success-green);
+        }
+
+        .metric-card.negative {
+            border-left-color: var(--danger-red);
+        }
+
+        .metric-card.warning {
+            border-left-color: var(--warning-orange);
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .metric-value.success {
+            color: var(--success-green);
+        }
+
+        .metric-value.warning {
+            color: var(--warning-orange);
+        }
+
+        .metric-value.danger {
+            color: var(--danger-red);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--light-bg);
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-left: 4px solid var(--success-green);
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 4px solid var(--warning-orange);
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 4px solid var(--danger-red);
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            color: #0c5460;
+        }
+
+        .scenario-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .scenario-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card.selected {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .scenario-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green) 0%, var(--secondary-blue) 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-section h2 {
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .cta-section p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--accent-gold);
+            color: var(--primary-blue);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .footer {
+            background: var(--primary-blue);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .saved-deals-list {
+            list-style: none;
+        }
+
+        .saved-deal-item {
+            background: var(--light-bg);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .saved-deal-item:hover {
+            background: #e2e6ea;
+        }
+
+        .deal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn.load {
+            background: var(--secondary-blue);
+            color: white;
+        }
+
+        .icon-btn.delete {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .icon-btn:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tab {
+                font-size: 0.85rem;
+                padding: 12px 15px;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: var(--secondary-blue);
+            margin-left: 5px;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .assumptions-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .assumptions-box h4 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .assumptions-box ul {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ACQUIRELY</h1>
+        <p class="tagline">Business Acquisition Intelligence Platform | Powered by Starting Gate Financial</p>
+    </div>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('deal-input')">Deal Input</button>
+            <button class="nav-tab" onclick="showTab('roi-analysis')">ROI & Returns</button>
+            <button class="nav-tab" onclick="showTab('equity-tracking')">Equity Build-Up</button>
+            <button class="nav-tab" onclick="showTab('scenario-modeling')">Scenario Analysis</button>
+            <button class="nav-tab" onclick="showTab('valuation')">Valuation Tools</button>
+            <button class="nav-tab" onclick="showTab('visual-analytics')">Visual Analytics</button>
+            <button class="nav-tab" onclick="showTab('saved-deals')">Saved Deals</button>
+        </div>
+
+        <!-- TAB 1: DEAL INPUT -->
+        <div id="deal-input" class="tab-content active">
+            <div class="card">
+                <div class="card-header">Business Acquisition Details</div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Deal Name</label>
+                        <input type="text" id="dealName" placeholder="Enter deal name for saving">
+                    </div>
+                    <div class="form-group">
+                        <label>Business Type/Industry</label>
+                        <select id="businessType">
+                            <option value="">Select Industry</option>
+                            <option value="restaurant">Restaurant/Food Service</option>
+                            <option value="retail">Retail</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="services">Professional Services</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="technology">Technology</option>
+                            <option value="real-estate">Real Estate</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Purchase Price & Deal Structure</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Asking/Purchase Price ($)
+                            <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Total price being paid for the business</span>
+                            </span>
+                        </label>
+                        <input type="text" id="purchasePrice" placeholder="500,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Down Payment / Buyer Equity ($)</label>
+                        <input type="text" id="downPayment" placeholder="125,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Down Payment %</label>
+                        <input type="text" id="downPaymentPct" readonly>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Seller Financing Amount ($)</label>
+                        <input type="text" id="sellerFinancing" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Seller Financing Interest Rate (%)</label>
+                        <input type="text" id="sellerRate" placeholder="6.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Seller Financing Term (Years)</label>
+                        <input type="text" id="sellerTerm" placeholder="5">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Bank Loan Amount ($)</label>
+                        <input type="text" id="bankLoan" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Interest Rate (%)</label>
+                        <input type="text" id="bankRate" placeholder="7.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Loan Term (Years)</label>
+                        <input type="text" id="bankTerm" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Business Financial Performance</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Annual Revenue ($)</label>
+                        <input type="text" id="annualRevenue" placeholder="1,200,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual SDE / Cash Flow ($)
+                            <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Seller's Discretionary Earnings - profit available to owner</span>
+                            </span>
+                        </label>
+                        <input type="text" id="annualSDE" placeholder="180,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual EBITDA ($)
+                            <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Earnings Before Interest, Taxes, Depreciation & Amortization</span>
+                            </span>
+                        </label>
+                        <input type="text" id="annualEBITDA" placeholder="150,000">
+                    </div>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Additional Deal Parameters</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Working Capital Required ($)</label>
+                        <input type="text" id="workingCapital" placeholder="25,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Closing Costs ($)</label>
+                        <input type="text" id="closingCosts" placeholder="15,000">
+                    </div>
+                    <div class="form-group">
+                        <label>FF&E Value ($)
+                            <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Furniture, Fixtures & Equipment</span>
+                            </span>
+                        </label>
+                        <input type="text" id="ffeValue" placeholder="75,000">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Inventory Value ($)</label>
+                        <input type="text" id="inventoryValue" placeholder="30,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Annual CAPEX / Maintenance ($)
+                            <span class="tooltip">ℹ️
+                                <span class="tooltiptext">Capital Expenditures - equipment replacements, improvements</span>
+                            </span>
+                        </label>
+                        <input type="text" id="annualCapex" placeholder="12,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Buyer's Required Salary ($)</label>
+                        <input type="text" id="buyerSalary" placeholder="75,000">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Projected Annual Revenue Growth (%)</label>
+                        <input type="text" id="revenueGrowth" placeholder="5.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Projected Annual Expense Growth (%)</label>
+                        <input type="text" id="expenseGrowth" placeholder="3.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Exit Timeline (Years)</label>
+                        <input type="text" id="exitTimeline" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="calculateAllMetrics()">Calculate Complete Analysis</button>
+                    <button class="btn btn-success" onclick="saveDeal()">Save This Deal</button>
+                    <button class="btn btn-warning" onclick="generatePDF()">Generate PDF Report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ROI & RETURNS ANALYSIS -->
+        <div id="roi-analysis" class="tab-content">
+            <div class="card">
+                <div class="card-header">Return on Investment Analysis</div>
+                
+                <div id="roiResults">
+                    <div class="alert alert-info">
+                        <strong>Complete the Deal Input tab and click "Calculate Complete Analysis" to see ROI metrics.</strong>
+                    </div>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Cash Flow Analysis</div>
+                <div id="cashFlowResults"></div>
+
+                <div class="card-header" style="margin-top: 30px;">Investment Returns Summary</div>
+                <div id="investmentReturns"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: EQUITY BUILD-UP TRACKING -->
+        <div id="equity-tracking" class="tab-content">
+            <div class="card">
+                <div class="card-header">Equity Build-Up Over Time</div>
+                
+                <div class="chart-container">
+                    <canvas id="equityChart"></canvas>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Detailed Equity Schedule</div>
+                <div id="equitySchedule"></div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SCENARIO MODELING -->
+        <div id="scenario-modeling" class="tab-content">
+            <div class="card">
+                <div class="card-header">What-If Scenario Analysis</div>
+                
+                <div class="scenario-comparison" id="scenarioComparison"></div>
+
+                <div class="card-header" style="margin-top: 30px;">Sensitivity Analysis</div>
+                <div class="chart-container">
+                    <canvas id="sensitivityChart"></canvas>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Break-Even Analysis</div>
+                <div id="breakEvenAnalysis"></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: VALUATION TOOLS -->
+        <div id="valuation" class="tab-content">
+            <div class="card">
+                <div class="card-header">Multiple Valuation Methods</div>
+                
+                <div id="valuationResults"></div>
+
+                <div class="card-header" style="margin-top: 30px;">Industry Benchmarking</div>
+                <div id="industryBenchmarks">
+                    <div class="alert alert-info">
+                        Industry benchmark data will be displayed here. This feature uses real-time market data to compare your deal against industry standards.
+                    </div>
+                    <button class="btn btn-primary" onclick="searchIndustryBenchmarks()">Search Industry Benchmarks</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: VISUAL ANALYTICS -->
+        <div id="visual-analytics" class="tab-content">
+            <div class="card">
+                <div class="card-header">Investment Visualization Dashboard</div>
+                
+                <div class="chart-container">
+                    <canvas id="cashFlowChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="roiChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="debtPaydownChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: SAVED DEALS -->
+        <div id="saved-deals" class="tab-content">
+            <div class="card">
+                <div class="card-header">Saved Deal Comparisons</div>
+                
+                <div id="savedDealsList"></div>
+
+                <div class="card-header" style="margin-top: 30px;">Deal Comparison</div>
+                <div id="dealComparison"></div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>Ready to Make Your Investment Decision?</h2>
+            <p>Get expert guidance from Starting Gate Financial's commercial lending specialists</p>
+            <a href="https://startinggatefinancial.com/apply" class="cta-button">Apply for Financing Now</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Starting Gate Financial. Professional Business Financing Solutions.</p>
+        <p>Richardson, TX | Serving businesses nationwide</p>
+    </div>
+
+    <script>
+        // Global variables
+        let dealData = {};
+        let savedDeals = JSON.parse(localStorage.getItem('savedDeals')) || [];
+        let charts = {};
+
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Number Formatting
+        function formatCurrency(value) {
+            if (!value || value === '') return '';
+            const num = parseFloat(value.toString().replace(/[^0-9.-]/g, ''));
+            return isNaN(num) ? '' : num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function parseCurrency(value) {
+            return parseFloat(value.toString().replace(/[^0-9.-]/g, '')) || 0;
+        }
+
+        function formatPercent(value) {
+            return parseFloat(value).toFixed(2) + '%';
+        }
+
+        // Setup input formatting
+        function setupInputFormatting() {
+            const currencyInputs = [
+                'purchasePrice', 'downPayment', 'sellerFinancing', 'bankLoan',
+                'annualRevenue', 'annualSDE', 'annualEBITDA', 'workingCapital',
+                'closingCosts', 'ffeValue', 'inventoryValue', 'annualCapex', 'buyerSalary'
+            ];
+
+            currencyInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('blur', function() {
+                        this.value = formatCurrency(this.value);
+                    });
+                    input.addEventListener('focus', function() {
+                        this.value = this.value.replace(/,/g, '');
+                    });
+                }
+            });
+
+            // Auto-calculate bank loan and down payment %
+            document.getElementById('purchasePrice').addEventListener('input', calculateDerivedFields);
+            document.getElementById('downPayment').addEventListener('input', calculateDerivedFields);
+            document.getElementById('sellerFinancing').addEventListener('input', calculateDerivedFields);
+        }
+
+        function calculateDerivedFields() {
+            const purchasePrice = parseCurrency(document.getElementById('purchasePrice').value);
+            const downPayment = parseCurrency(document.getElementById('downPayment').value);
+            const sellerFinancing = parseCurrency(document.getElementById('sellerFinancing').value);
+
+            if (purchasePrice > 0) {
+                const downPaymentPct = (downPayment / purchasePrice * 100).toFixed(2);
+                document.getElementById('downPaymentPct').value = downPaymentPct + '%';
+
+                const bankLoan = purchasePrice - downPayment - sellerFinancing;
+                document.getElementById('bankLoan').value = formatCurrency(bankLoan);
+            }
+        }
+
+        // Main Calculation Function
+        function calculateAllMetrics() {
+            // Gather all input data
+            dealData = {
+                dealName: document.getElementById('dealName').value || 'Unnamed Deal',
+                businessType: document.getElementById('businessType').value,
+                purchasePrice: parseCurrency(document.getElementById('purchasePrice').value),
+                downPayment: parseCurrency(document.getElementById('downPayment').value),
+                sellerFinancing: parseCurrency(document.getElementById('sellerFinancing').value),
+                sellerRate: parseCurrency(document.getElementById('sellerRate').value) / 100,
+                sellerTerm: parseCurrency(document.getElementById('sellerTerm').value),
+                bankLoan: parseCurrency(document.getElementById('bankLoan').value),
+                bankRate: parseCurrency(document.getElementById('bankRate').value) / 100,
+                bankTerm: parseCurrency(document.getElementById('bankTerm').value),
+                annualRevenue: parseCurrency(document.getElementById('annualRevenue').value),
+                annualSDE: parseCurrency(document.getElementById('annualSDE').value),
+                annualEBITDA: parseCurrency(document.getElementById('annualEBITDA').value),
+                workingCapital: parseCurrency(document.getElementById('workingCapital').value),
+                closingCosts: parseCurrency(document.getElementById('closingCosts').value),
+                ffeValue: parseCurrency(document.getElementById('ffeValue').value),
+                inventoryValue: parseCurrency(document.getElementById('inventoryValue').value),
+                annualCapex: parseCurrency(document.getElementById('annualCapex').value),
+                buyerSalary: parseCurrency(document.getElementById('buyerSalary').value),
+                revenueGrowth: parseCurrency(document.getElementById('revenueGrowth').value) / 100,
+                expenseGrowth: parseCurrency(document.getElementById('expenseGrowth').value) / 100,
+                exitTimeline: parseCurrency(document.getElementById('exitTimeline').value)
+            };
+
+            // Validate inputs
+            if (dealData.purchasePrice === 0 || dealData.annualSDE === 0) {
+                alert('Please enter at least Purchase Price and Annual SDE to calculate metrics.');
+                return;
+            }
+
+            // Calculate all metrics
+            calculateROIMetrics();
+            calculateEquityBuildUp();
+            calculateScenarios();
+            calculateValuations();
+            updateVisualAnalytics();
+
+            // Show success message
+            showNotification('Analysis Complete!', 'success');
+        }
+
+        // ROI Calculations
+        function calculateROIMetrics() {
+            const totalCashInvested = dealData.downPayment + dealData.workingCapital + dealData.closingCosts;
+            
+            // Calculate monthly payments
+            const bankMonthlyPayment = calculateMonthlyPayment(
+                dealData.bankLoan, 
+                dealData.bankRate / 12, 
+                dealData.bankTerm * 12
+            );
+            
+            const sellerMonthlyPayment = calculateMonthlyPayment(
+                dealData.sellerFinancing, 
+                dealData.sellerRate / 12, 
+                dealData.sellerTerm * 12
+            );
+
+            const totalAnnualDebtService = (bankMonthlyPayment + sellerMonthlyPayment) * 12;
+
+            // Calculate cash flow
+            const preTaxCashFlow = dealData.annualSDE - totalAnnualDebtService - dealData.annualCapex;
+            const afterSalaryCashFlow = preTaxCashFlow - dealData.buyerSalary;
+
+            // Cash-on-Cash Return
+            const cashOnCashReturn = (preTaxCashFlow / totalCashInvested) * 100;
+
+            // Simple ROI
+            const simpleROI = ((dealData.annualSDE - dealData.annualCapex) / totalCashInvested) * 100;
+
+            // DSCR
+            const dscr = dealData.annualSDE / totalAnnualDebtService;
+
+            // Display results
+            const resultsHTML = `
+                <div class="results-grid">
+                    <div class="metric-card ${cashOnCashReturn > 20 ? 'positive' : cashOnCashReturn > 10 ? 'warning' : 'negative'}">
+                        <div class="metric-label">Cash-on-Cash Return</div>
+                        <div class="metric-value ${cashOnCashReturn > 20 ? 'success' : cashOnCashReturn > 10 ? 'warning' : 'danger'}">
+                            ${formatPercent(cashOnCashReturn)}
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Cash Invested</div>
+                        <div class="metric-value">$${formatCurrency(totalCashInvested)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Annual Pre-Tax Cash Flow</div>
+                        <div class="metric-value ${preTaxCashFlow > 0 ? 'success' : 'danger'}">
+                            $${formatCurrency(preTaxCashFlow)}
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Cash Flow After Salary</div>
+                        <div class="metric-value ${afterSalaryCashFlow > 0 ? 'success' : 'danger'}">
+                            $${formatCurrency(afterSalaryCashFlow)}
+                        </div>
+                    </div>
+                    <div class="metric-card ${dscr >= 1.25 ? 'positive' : dscr >= 1.0 ? 'warning' : 'negative'}">
+                        <div class="metric-label">Debt Service Coverage Ratio</div>
+                        <div class="metric-value ${dscr >= 1.25 ? 'success' : dscr >= 1.0 ? 'warning' : 'danger'}">
+                            ${dscr.toFixed(2)}x
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Annual Debt Service</div>
+                        <div class="metric-value">$${formatCurrency(totalAnnualDebtService)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Simple ROI (Year 1)</div>
+                        <div class="metric-value">${formatPercent(simpleROI)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Payback Period</div>
+                        <div class="metric-value">
+                            ${preTaxCashFlow > 0 ? (totalCashInvested / preTaxCashFlow).toFixed(1) + ' years' : 'N/A'}
+                        </div>
+                    </div>
+                </div>
+
+                ${dscr < 1.0 ? `
+                    <div class="alert alert-danger">
+                        <strong>Warning:</strong> DSCR below 1.0 indicates insufficient cash flow to cover debt payments. This deal may not qualify for traditional financing.
+                    </div>
+                ` : dscr < 1.25 ? `
+                    <div class="alert alert-warning">
+                        <strong>Caution:</strong> DSCR below 1.25 may be marginal for some lenders. Consider negotiating better terms or increasing down payment.
+                    </div>
+                ` : `
+                    <div class="alert alert-success">
+                        <strong>Excellent:</strong> Strong DSCR indicates healthy cash flow coverage. This deal should qualify for favorable financing terms.
+                    </div>
+                `}
+            `;
+
+            document.getElementById('roiResults').innerHTML = resultsHTML;
+
+            // Store for later use
+            dealData.calculations = {
+                totalCashInvested,
+                bankMonthlyPayment,
+                sellerMonthlyPayment,
+                totalAnnualDebtService,
+                preTaxCashFlow,
+                afterSalaryCashFlow,
+                cashOnCashReturn,
+                simpleROI,
+                dscr
+            };
+
+            // Calculate multi-year returns
+            calculateMultiYearReturns();
+        }
+
+        function calculateMonthlyPayment(principal, monthlyRate, numPayments) {
+            if (principal === 0 || numPayments === 0) return 0;
+            if (monthlyRate === 0) return principal / numPayments;
+            return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        function calculateMultiYearReturns() {
+            const years = [1, 3, 5, 7, 10];
+            let html = '<div class="results-grid">';
+
+            years.forEach(year => {
+                const cumulativeCashFlow = dealData.calculations.preTaxCashFlow * year;
+                const cumulativeROI = (cumulativeCashFlow / dealData.calculations.totalCashInvested) * 100;
+                const annualizedROI = cumulativeROI / year;
+
+                html += `
+                    <div class="metric-card">
+                        <div class="metric-label">Year ${year} Cumulative ROI</div>
+                        <div class="metric-value">${formatPercent(cumulativeROI)}</div>
+                        <small style="color: #6c757d;">Annualized: ${formatPercent(annualizedROI)}</small>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            document.getElementById('investmentReturns').innerHTML = html;
+        }
+
+        // Equity Build-Up Calculations
+        function calculateEquityBuildUp() {
+            const years = parseInt(dealData.exitTimeline) || 10;
+            const equitySchedule = [];
+            
+            let bankBalance = dealData.bankLoan;
+            let sellerBalance = dealData.sellerFinancing;
+            let businessValue = dealData.purchasePrice;
+
+            for (let year = 0; year <= years; year++) {
+                // Calculate principal paid down this year
+                const bankPrincipal = calculatePrincipalPaidInYear(
+                    dealData.bankLoan,
+                    dealData.bankRate / 12,
+                    dealData.bankTerm * 12,
+                    year
+                );
+
+                const sellerPrincipal = calculatePrincipalPaidInYear(
+                    dealData.sellerFinancing,
+                    dealData.sellerRate / 12,
+                    dealData.sellerTerm * 12,
+                    year
+                );
+
+                bankBalance -= bankPrincipal;
+                sellerBalance -= sellerPrincipal;
+
+                // Adjust business value with growth
+                if (year > 0) {
+                    businessValue *= (1 + dealData.revenueGrowth);
+                }
+
+                const totalDebt = Math.max(0, bankBalance) + Math.max(0, sellerBalance);
+                const equity = businessValue - totalDebt;
+                const equityPercent = (equity / businessValue) * 100;
+
+                equitySchedule.push({
+                    year,
+                    businessValue,
+                    bankBalance: Math.max(0, bankBalance),
+                    sellerBalance: Math.max(0, sellerBalance),
+                    totalDebt,
+                    equity,
+                    equityPercent
+                });
+            }
+
+            dealData.equitySchedule = equitySchedule;
+            displayEquitySchedule(equitySchedule);
+            renderEquityChart(equitySchedule);
+        }
+
+        function calculatePrincipalPaidInYear(principal, monthlyRate, totalPayments, year) {
+            if (principal === 0 || totalPayments === 0 || year === 0) return 0;
+
+            const monthlyPayment = calculateMonthlyPayment(principal, monthlyRate, totalPayments);
+            let balance = principal;
+            let principalPaid = 0;
+
+            const startMonth = (year - 1) * 12 + 1;
+            const endMonth = Math.min(year * 12, totalPayments);
+
+            for (let month = 1; month <= endMonth; month++) {
+                const interest = balance * monthlyRate;
+                const principal = monthlyPayment - interest;
+                
+                if (month >= startMonth) {
+                    principalPaid += principal;
+                }
+                
+                balance -= principal;
+                
+                if (balance <= 0) break;
+            }
+
+            return principalPaid;
+        }
+
+        function displayEquitySchedule(schedule) {
+            let html = `
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Business Value</th>
+                            <th>Bank Loan Balance</th>
+                            <th>Seller Note Balance</th>
+                            <th>Total Debt</th>
+                            <th>Owner Equity</th>
+                            <th>Equity %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            schedule.forEach(row => {
+                html += `
+                    <tr>
+                        <td><strong>Year ${row.year}</strong></td>
+                        <td>$${formatCurrency(row.businessValue)}</td>
+                        <td>$${formatCurrency(row.bankBalance)}</td>
+                        <td>$${formatCurrency(row.sellerBalance)}</td>
+                        <td>$${formatCurrency(row.totalDebt)}</td>
+                        <td style="color: var(--success-green); font-weight: 600;">$${formatCurrency(row.equity)}</td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${row.equityPercent}%">
+                                    ${row.equityPercent.toFixed(1)}%
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+
+                <div class="assumptions-box">
+                    <h4>Equity Growth Assumptions</h4>
+                    <ul>
+                        <li>Business value grows at ${formatPercent(dealData.revenueGrowth * 100)} annually</li>
+                        <li>Debt is paid down according to loan amortization schedules</li>
+                        <li>Exit timeline: ${dealData.exitTimeline} years</li>
+                        <li>Final equity position: $${formatCurrency(schedule[schedule.length - 1].equity)}</li>
+                        <li>Total wealth creation: $${formatCurrency(schedule[schedule.length - 1].equity - dealData.downPayment)}</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('equitySchedule').innerHTML = html;
+        }
+
+        function renderEquityChart(schedule) {
+            const ctx = document.getElementById('equityChart');
+            
+            if (charts.equity) {
+                charts.equity.destroy();
+            }
+
+            charts.equity = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: schedule.map(s => `Year ${s.year}`),
+                    datasets: [
+                        {
+                            label: 'Business Value',
+                            data: schedule.map(s => s.businessValue),
+                            borderColor: 'rgb(0, 102, 204)',
+                            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Owner Equity',
+                            data: schedule.map(s => s.equity),
+                            borderColor: 'rgb(40, 167, 69)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Total Debt',
+                            data: schedule.map(s => s.totalDebt),
+                            borderColor: 'rgb(220, 53, 69)',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Equity Build-Up Over Time',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Scenario Modeling
+        function calculateScenarios() {
+            const scenarios = [
+                {
+                    name: 'Base Case',
+                    revenueGrowth: dealData.revenueGrowth,
+                    expenseGrowth: dealData.expenseGrowth,
+                    downPayment: dealData.downPayment
+                },
+                {
+                    name: 'Best Case',
+                    revenueGrowth: dealData.revenueGrowth * 1.5,
+                    expenseGrowth: dealData.expenseGrowth * 0.8,
+                    downPayment: dealData.downPayment
+                },
+                {
+                    name: 'Worst Case',
+                    revenueGrowth: dealData.revenueGrowth * 0.5,
+                    expenseGrowth: dealData.expenseGrowth * 1.2,
+                    downPayment: dealData.downPayment
+                },
+                {
+                    name: 'Higher Down Payment',
+                    revenueGrowth: dealData.revenueGrowth,
+                    expenseGrowth: dealData.expenseGrowth,
+                    downPayment: dealData.downPayment * 1.25
+                }
+            ];
+
+            let html = '';
+            scenarios.forEach(scenario => {
+                const results = calculateScenarioMetrics(scenario);
+                
+                html += `
+                    <div class="scenario-card">
+                        <h3>${scenario.name}</h3>
+                        <div style="margin: 15px 0;">
+                            <div style="margin: 10px 0;">
+                                <strong>Revenue Growth:</strong> ${formatPercent(scenario.revenueGrowth * 100)}
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <strong>Expense Growth:</strong> ${formatPercent(scenario.expenseGrowth * 100)}
+                            </div>
+                            <div style="margin: 10px 0;">
+                                <strong>Down Payment:</strong> $${formatCurrency(scenario.downPayment)}
+                            </div>
+                        </div>
+                        <hr style="margin: 15px 0; border-color: var(--border-color);">
+                        <div class="results-grid" style="grid-template-columns: 1fr;">
+                            <div class="metric-card" style="border-left-color: var(--secondary-blue);">
+                                <div class="metric-label">Cash-on-Cash Return</div>
+                                <div class="metric-value ${results.cashOnCash > 15 ? 'success' : 'warning'}">
+                                    ${formatPercent(results.cashOnCash)}
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">5-Year Total Return</div>
+                                <div class="metric-value">${formatPercent(results.fiveYearROI)}</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">10-Year Equity</div>
+                                <div class="metric-value success">$${formatCurrency(results.tenYearEquity)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('scenarioComparison').innerHTML = html;
+            calculateBreakEven();
+            renderSensitivityChart();
+        }
+
+        function calculateScenarioMetrics(scenario) {
+            const totalCashInvested = scenario.downPayment + dealData.workingCapital + dealData.closingCosts;
+            const adjustedBankLoan = dealData.purchasePrice - scenario.downPayment - dealData.sellerFinancing;
+            
+            const bankMonthlyPayment = calculateMonthlyPayment(
+                adjustedBankLoan, 
+                dealData.bankRate / 12, 
+                dealData.bankTerm * 12
+            );
+            
+            const sellerMonthlyPayment = calculateMonthlyPayment(
+                dealData.sellerFinancing, 
+                dealData.sellerRate / 12, 
+                dealData.sellerTerm * 12
+            );
+
+            const totalAnnualDebtService = (bankMonthlyPayment + sellerMonthlyPayment) * 12;
+            const preTaxCashFlow = dealData.annualSDE - totalAnnualDebtService - dealData.annualCapex;
+            const cashOnCash = (preTaxCashFlow / totalCashInvested) * 100;
+
+            // 5-year projection
+            let fiveYearCashFlow = 0;
+            for (let i = 1; i <= 5; i++) {
+                fiveYearCashFlow += preTaxCashFlow * Math.pow(1 + scenario.revenueGrowth - scenario.expenseGrowth, i);
+            }
+            const fiveYearROI = (fiveYearCashFlow / totalCashInvested) * 100;
+
+            // 10-year equity estimation
+            const tenYearValue = dealData.purchasePrice * Math.pow(1 + scenario.revenueGrowth, 10);
+            const tenYearDebt = adjustedBankLoan * 0.3 + dealData.sellerFinancing * 0; // Approximate
+            const tenYearEquity = tenYearValue - tenYearDebt;
+
+            return {
+                cashOnCash,
+                fiveYearROI,
+                tenYearEquity
+            };
+        }
+
+        function calculateBreakEven() {
+            const totalCashInvested = dealData.calculations.totalCashInvested;
+            const annualCashFlow = dealData.calculations.preTaxCashFlow;
+            
+            const breakEvenYears = totalCashInvested / annualCashFlow;
+            const breakEvenMonths = breakEvenYears * 12;
+
+            // Revenue break-even
+            const fixedCosts = dealData.calculations.totalAnnualDebtService + dealData.annualCapex + dealData.buyerSalary;
+            const grossMargin = dealData.annualSDE / dealData.annualRevenue;
+            const breakEvenRevenue = fixedCosts / grossMargin;
+
+            const html = `
+                <div class="results-grid">
+                    <div class="metric-card positive">
+                        <div class="metric-label">Investment Payback Period</div>
+                        <div class="metric-value success">
+                            ${breakEvenYears.toFixed(1)} years
+                            <br><small>(${breakEvenMonths.toFixed(0)} months)</small>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Break-Even Revenue</div>
+                        <div class="metric-value">$${formatCurrency(breakEvenRevenue)}</div>
+                        <small style="color: #6c757d;">
+                            Current: $${formatCurrency(dealData.annualRevenue)}
+                        </small>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Revenue Safety Margin</div>
+                        <div class="metric-value ${((dealData.annualRevenue - breakEvenRevenue) / dealData.annualRevenue * 100) > 20 ? 'success' : 'warning'}">
+                            ${formatPercent((dealData.annualRevenue - breakEvenRevenue) / dealData.annualRevenue * 100)}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="assumptions-box">
+                    <h4>Break-Even Analysis</h4>
+                    <ul>
+                        <li>You will recoup your initial investment in ${breakEvenYears.toFixed(1)} years</li>
+                        <li>Business must maintain ${formatPercent((breakEvenRevenue / dealData.annualRevenue) * 100)} of current revenue to break even operationally</li>
+                        <li>Current revenue provides a ${formatPercent((dealData.annualRevenue - breakEvenRevenue) / dealData.annualRevenue * 100)} safety margin</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('breakEvenAnalysis').innerHTML = html;
+        }
+
+        function renderSensitivityChart() {
+            const ctx = document.getElementById('sensitivityChart');
+            
+            if (charts.sensitivity) {
+                charts.sensitivity.destroy();
+            }
+
+            const revenueChanges = [-20, -10, 0, 10, 20, 30];
+            const cashFlows = revenueChanges.map(change => {
+                const adjustedRevenue = dealData.annualRevenue * (1 + change/100);
+                const adjustedSDE = dealData.annualSDE * (1 + change/100);
+                const cashFlow = adjustedSDE - dealData.calculations.totalAnnualDebtService - dealData.annualCapex;
+                return cashFlow;
+            });
+
+            charts.sensitivity = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: revenueChanges.map(c => `${c > 0 ? '+' : ''}${c}%`),
+                    datasets: [{
+                        label: 'Annual Cash Flow',
+                        data: cashFlows,
+                        backgroundColor: cashFlows.map(cf => 
+                            cf > 0 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)'
+                        ),
+                        borderColor: cashFlows.map(cf => 
+                            cf > 0 ? 'rgb(40, 167, 69)' : 'rgb(220, 53, 69)'
+                        ),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Sensitivity to Revenue Changes',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Revenue Change from Base Case'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Valuation Methods
+        function calculateValuations() {
+            // Get industry multiples (these would ideally come from web search)
+            const industryMultiples = getIndustryMultiples(dealData.businessType);
+
+            const valuations = {
+                sdeMultiple: dealData.annualSDE * industryMultiples.sde,
+                ebitdaMultiple: dealData.annualEBITDA * industryMultiples.ebitda,
+                revenueMultiple: dealData.annualRevenue * industryMultiples.revenue,
+                assetBased: dealData.ffeValue + dealData.inventoryValue,
+                currentPrice: dealData.purchasePrice
+            };
+
+            // Calculate implied multiples from purchase price
+            const impliedSDEMultiple = dealData.purchasePrice / dealData.annualSDE;
+            const impliedEBITDAMultiple = dealData.purchasePrice / dealData.annualEBITDA;
+            const impliedRevenueMultiple = dealData.purchasePrice / dealData.annualRevenue;
+
+            const html = `
+                <div class="results-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">SDE Multiple Valuation</div>
+                        <div class="metric-value">$${formatCurrency(valuations.sdeMultiple)}</div>
+                        <small style="color: #6c757d;">
+                            Using ${industryMultiples.sde}x SDE multiple
+                        </small>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">EBITDA Multiple Valuation</div>
+                        <div class="metric-value">$${formatCurrency(valuations.ebitdaMultiple)}</div>
+                        <small style="color: #6c757d;">
+                            Using ${industryMultiples.ebitda}x EBITDA multiple
+                        </small>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Revenue Multiple Valuation</div>
+                        <div class="metric-value">$${formatCurrency(valuations.revenueMultiple)}</div>
+                        <small style="color: #6c757d;">
+                            Using ${industryMultiples.revenue}x revenue multiple
+                        </small>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Asset-Based Valuation</div>
+                        <div class="metric-value">$${formatCurrency(valuations.assetBased)}</div>
+                        <small style="color: #6c757d;">
+                            FF&E + Inventory
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card-header" style="margin-top: 30px;">Valuation Analysis</div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Valuation</th>
+                            <th>vs. Purchase Price</th>
+                            <th>Assessment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${generateValuationRow('SDE Multiple', valuations.sdeMultiple, dealData.purchasePrice)}
+                        ${generateValuationRow('EBITDA Multiple', valuations.ebitdaMultiple, dealData.purchasePrice)}
+                        ${generateValuationRow('Revenue Multiple', valuations.revenueMultiple, dealData.purchasePrice)}
+                        ${generateValuationRow('Asset-Based', valuations.assetBased, dealData.purchasePrice)}
+                    </tbody>
+                </table>
+
+                <div class="card-header" style="margin-top: 30px;">Implied Multiples from Purchase Price</div>
+                <div class="results-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Implied SDE Multiple</div>
+                        <div class="metric-value">${impliedSDEMultiple.toFixed(2)}x</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Implied EBITDA Multiple</div>
+                        <div class="metric-value">${impliedEBITDAMultiple.toFixed(2)}x</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Implied Revenue Multiple</div>
+                        <div class="metric-value">${impliedRevenueMultiple.toFixed(2)}x</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('valuationResults').innerHTML = html;
+        }
+
+        function generateValuationRow(method, valuation, purchasePrice) {
+            const difference = valuation - purchasePrice;
+            const percentDiff = (difference / purchasePrice) * 100;
+            
+            let assessment, cssClass;
+            if (percentDiff > 10) {
+                assessment = 'Undervalued - Good Deal';
+                cssClass = 'success';
+            } else if (percentDiff > -10) {
+                assessment = 'Fair Value';
+                cssClass = 'warning';
+            } else {
+                assessment = 'Overvalued - Caution';
+                cssClass = 'danger';
+            }
+
+            return `
+                <tr>
+                    <td><strong>${method}</strong></td>
+                    <td>$${formatCurrency(valuation)}</td>
+                    <td class="${cssClass}">
+                        ${difference >= 0 ? '+' : ''}$${formatCurrency(Math.abs(difference))}
+                        (${percentDiff >= 0 ? '+' : ''}${percentDiff.toFixed(1)}%)
+                    </td>
+                    <td><span class="alert alert-${cssClass === 'success' ? 'success' : cssClass === 'warning' ? 'warning' : 'danger'}" style="padding: 5px 10px; display: inline-block;">${assessment}</span></td>
+                </tr>
+            `;
+        }
+
+        function getIndustryMultiples(businessType) {
+            // These are typical ranges - in production, these would come from real-time market data
+            const multiples = {
+                'restaurant': { sde: 2.5, ebitda: 4.0, revenue: 0.5 },
+                'retail': { sde: 2.0, ebitda: 3.5, revenue: 0.4 },
+                'manufacturing': { sde: 3.5, ebitda: 5.5, revenue: 0.7 },
+                'services': { sde: 3.0, ebitda: 5.0, revenue: 0.8 },
+                'healthcare': { sde: 4.0, ebitda: 6.0, revenue: 0.6 },
+                'technology': { sde: 4.5, ebitda: 7.0, revenue: 1.5 },
+                'real-estate': { sde: 3.0, ebitda: 5.0, revenue: 0.5 },
+                'other': { sde: 2.5, ebitda: 4.0, revenue: 0.5 }
+            };
+
+            return multiples[businessType] || multiples['other'];
+        }
+
+        function searchIndustryBenchmarks() {
+            const businessType = dealData.businessType || 'general';
+            const searchQuery = `${businessType} business valuation multiples 2024`;
+            
+            // In production, this would trigger a web search
+            alert(`This feature would search for:\n"${searchQuery}"\n\nIntegration with real-time market data coming soon!`);
+            
+            // For now, show example data
+            const exampleHTML = `
+                <div class="alert alert-info">
+                    <strong>Example Industry Benchmarks for ${businessType.charAt(0).toUpperCase() + businessType.slice(1)} Industry:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>Median SDE Multiple: 2.5x - 3.5x</li>
+                        <li>Median EBITDA Multiple: 4.0x - 6.0x</li>
+                        <li>Typical Down Payment: 20% - 30%</li>
+                        <li>Average DSCR Requirement: 1.25x - 1.35x</li>
+                        <li>Market trends: Stable demand, competitive financing environment</li>
+                    </ul>
+                </div>
+                <button class="btn btn-primary" onclick="searchIndustryBenchmarks()">Refresh Industry Data</button>
+            `;
+            
+            document.getElementById('industryBenchmarks').innerHTML = exampleHTML;
+        }
+
+        // Visual Analytics
+        function updateVisualAnalytics() {
+            renderCashFlowChart();
+            renderROIChart();
+            renderDebtPaydownChart();
+        }
+
+        function renderCashFlowChart() {
+            const ctx = document.getElementById('cashFlowChart');
+            
+            if (charts.cashFlow) {
+                charts.cashFlow.destroy();
+            }
+
+            const years = [];
+            const revenue = [];
+            const cashFlow = [];
+            
+            for (let i = 0; i <= 10; i++) {
+                years.push(`Year ${i}`);
+                const yearRevenue = dealData.annualRevenue * Math.pow(1 + dealData.revenueGrowth, i);
+                const yearSDE = dealData.annualSDE * Math.pow(1 + dealData.revenueGrowth, i);
+                const yearCashFlow = yearSDE - dealData.calculations.totalAnnualDebtService - dealData.annualCapex;
+                
+                revenue.push(yearRevenue);
+                cashFlow.push(yearCashFlow);
+            }
+
+            charts.cashFlow = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Annual Revenue',
+                            data: revenue,
+                            borderColor: 'rgb(0, 102, 204)',
+                            backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Annual Cash Flow',
+                            data: cashFlow,
+                            borderColor: 'rgb(40, 167, 69)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '10-Year Revenue & Cash Flow Projection',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Revenue'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Cash Flow'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderROIChart() {
+            const ctx = document.getElementById('roiChart');
+            
+            if (charts.roi) {
+                charts.roi.destroy();
+            }
+
+            const years = [];
+            const cumulativeROI = [];
+            const cumulativeCash = [];
+            
+            let totalCash = 0;
+            
+            for (let i = 1; i <= 10; i++) {
+                years.push(`Year ${i}`);
+                const yearCashFlow = dealData.calculations.preTaxCashFlow * Math.pow(1 + dealData.revenueGrowth, i);
+                totalCash += yearCashFlow;
+                
+                const roi = (totalCash / dealData.calculations.totalCashInvested) * 100;
+                cumulativeROI.push(roi);
+                cumulativeCash.push(totalCash);
+            }
+
+            charts.roi = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Cumulative Cash Returned',
+                            data: cumulativeCash,
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                            borderColor: 'rgb(40, 167, 69)',
+                            borderWidth: 2,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cumulative ROI %',
+                            data: cumulativeROI,
+                            type: 'line',
+                            borderColor: 'rgb(212, 175, 55)',
+                            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.4,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cumulative ROI & Cash Returns',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Cash Returned ($)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'ROI %'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(0) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderDebtPaydownChart() {
+            const ctx = document.getElementById('debtPaydownChart');
+            
+            if (charts.debtPaydown) {
+                charts.debtPaydown.destroy();
+            }
+
+            const years = [];
+            const principal = [];
+            const interest = [];
+            
+            for (let i = 1; i <= Math.min(dealData.bankTerm, 10); i++) {
+                years.push(`Year ${i}`);
+                
+                const principalPaid = calculatePrincipalPaidInYear(
+                    dealData.bankLoan,
+                    dealData.bankRate / 12,
+                    dealData.bankTerm * 12,
+                    i
+                );
+                
+                const totalPayment = dealData.calculations.bankMonthlyPayment * 12;
+                const interestPaid = totalPayment - principalPaid;
+                
+                principal.push(principalPaid);
+                interest.push(interestPaid);
+            }
+
+            charts.debtPaydown = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [
+                        {
+                            label: 'Principal Paid',
+                            data: principal,
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                            borderColor: 'rgb(40, 167, 69)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Interest Paid',
+                            data: interest,
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderColor: 'rgb(220, 53, 69)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Loan Amortization - Principal vs Interest',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Save & Load Deals
+        function saveDeal() {
+            if (!dealData.dealName || dealData.dealName === 'Unnamed Deal') {
+                alert('Please enter a deal name before saving.');
+                return;
+            }
+
+            const dealToSave = {
+                ...dealData,
+                savedDate: new Date().toISOString(),
+                id: Date.now()
+            };
+
+            // Check if deal with same name exists
+            const existingIndex = savedDeals.findIndex(d => d.dealName === dealData.dealName);
+            if (existingIndex >= 0) {
+                if (confirm('A deal with this name already exists. Overwrite?')) {
+                    savedDeals[existingIndex] = dealToSave;
+                } else {
+                    return;
+                }
+            } else {
+                savedDeals.push(dealToSave);
+            }
+
+            localStorage.setItem('savedDeals', JSON.stringify(savedDeals));
+            showNotification('Deal saved successfully!', 'success');
+            displaySavedDeals();
+        }
+
+        function displaySavedDeals() {
+            if (savedDeals.length === 0) {
+                document.getElementById('savedDealsList').innerHTML = `
+                    <div class="alert alert-info">No saved deals yet. Complete a deal analysis and click "Save This Deal" to save it.</div>
+                `;
+                return;
+            }
+
+            let html = '<ul class="saved-deals-list">';
+            savedDeals.forEach((deal, index) => {
+                const savedDate = new Date(deal.savedDate).toLocaleDateString();
+                html += `
+                    <li class="saved-deal-item">
+                        <div>
+                            <strong>${deal.dealName}</strong>
+                            <br>
+                            <small>Purchase Price: $${formatCurrency(deal.purchasePrice)} | Saved: ${savedDate}</small>
+                        </div>
+                        <div class="deal-actions">
+                            <button class="icon-btn load" onclick="loadDeal(${index})">Load</button>
+                            <button class="icon-btn delete" onclick="deleteDeal(${index})">Delete</button>
+                        </div>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+
+            document.getElementById('savedDealsList').innerHTML = html;
+        }
+
+        function loadDeal(index) {
+            const deal = savedDeals[index];
+            
+            // Populate all input fields
+            document.getElementById('dealName').value = deal.dealName;
+            document.getElementById('businessType').value = deal.businessType;
+            document.getElementById('purchasePrice').value = formatCurrency(deal.purchasePrice);
+            document.getElementById('downPayment').value = formatCurrency(deal.downPayment);
+            document.getElementById('sellerFinancing').value = formatCurrency(deal.sellerFinancing);
+            document.getElementById('sellerRate').value = deal.sellerRate * 100;
+            document.getElementById('sellerTerm').value = deal.sellerTerm;
+            document.getElementById('bankRate').value = deal.bankRate * 100;
+            document.getElementById('bankTerm').value = deal.bankTerm;
+            document.getElementById('annualRevenue').value = formatCurrency(deal.annualRevenue);
+            document.getElementById('annualSDE').value = formatCurrency(deal.annualSDE);
+            document.getElementById('annualEBITDA').value = formatCurrency(deal.annualEBITDA);
+            document.getElementById('workingCapital').value = formatCurrency(deal.workingCapital);
+            document.getElementById('closingCosts').value = formatCurrency(deal.closingCosts);
+            document.getElementById('ffeValue').value = formatCurrency(deal.ffeValue);
+            document.getElementById('inventoryValue').value = formatCurrency(deal.inventoryValue);
+            document.getElementById('annualCapex').value = formatCurrency(deal.annualCapex);
+            document.getElementById('buyerSalary').value = formatCurrency(deal.buyerSalary);
+            document.getElementById('revenueGrowth').value = deal.revenueGrowth * 100;
+            document.getElementById('expenseGrowth').value = deal.expenseGrowth * 100;
+            document.getElementById('exitTimeline').value = deal.exitTimeline;
+
+            calculateDerivedFields();
+            
+            showNotification('Deal loaded successfully!', 'success');
+            showTab('deal-input');
+            document.querySelectorAll('.nav-tab')[0].classList.add('active');
+        }
+
+        function deleteDeal(index) {
+            if (confirm('Are you sure you want to delete this deal?')) {
+                savedDeals.splice(index, 1);
+                localStorage.setItem('savedDeals', JSON.stringify(savedDeals));
+                displaySavedDeals();
+                showNotification('Deal deleted', 'success');
+            }
+        }
+
+        // PDF Generation
+        function generatePDF() {
+            if (!dealData.dealName) {
+                alert('Please calculate the deal analysis first.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(0, 51, 102);
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('Business Deal Analysis Report', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text('Starting Gate Financial', 105, 30, { align: 'center' });
+
+            // Deal Info
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.text(dealData.dealName, 20, 55);
+            
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 62);
+
+            // Deal Summary
+            let y = 75;
+            doc.setFontSize(14);
+            doc.setTextColor(0, 51, 102);
+            doc.text('Deal Summary', 20, y);
+            
+            y += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            const summaryData = [
+                ['Purchase Price:', `$${formatCurrency(dealData.purchasePrice)}`],
+                ['Down Payment:', `$${formatCurrency(dealData.downPayment)} (${((dealData.downPayment/dealData.purchasePrice)*100).toFixed(1)}%)`],
+                ['Bank Loan:', `$${formatCurrency(dealData.bankLoan)}`],
+                ['Seller Financing:', `$${formatCurrency(dealData.sellerFinancing)}`],
+                ['Annual Revenue:', `$${formatCurrency(dealData.annualRevenue)}`],
+                ['Annual SDE:', `$${formatCurrency(dealData.annualSDE)}`]
+            ];
+
+            summaryData.forEach(([label, value]) => {
+                doc.text(label, 20, y);
+                doc.text(value, 100, y);
+                y += 7;
+            });
+
+            // Key Metrics
+            y += 10;
+            doc.setFontSize(14);
+            doc.setTextColor(0, 51, 102);
+            doc.text('Key Investment Metrics', 20, y);
+            
+            y += 10;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+
+            if (dealData.calculations) {
+                const metricsData = [
+                    ['Cash-on-Cash Return:', `${formatPercent(dealData.calculations.cashOnCashReturn)}`],
+                    ['DSCR:', `${dealData.calculations.dscr.toFixed(2)}x`],
+                    ['Total Cash Invested:', `$${formatCurrency(dealData.calculations.totalCashInvested)}`],
+                    ['Annual Cash Flow:', `$${formatCurrency(dealData.calculations.preTaxCashFlow)}`],
+                    ['Annual Debt Service:', `$${formatCurrency(dealData.calculations.totalAnnualDebtService)}`]
+                ];
+
+                metricsData.forEach(([label, value]) => {
+                    doc.text(label, 20, y);
+                    doc.text(value, 100, y);
+                    y += 7;
+                });
+            }
+
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Starting Gate Financial | Richardson, TX', 105, 285, { align: 'center' });
+            doc.text('This report is for informational purposes only. Consult with financial advisors before making investment decisions.', 105, 290, { align: 'center' });
+
+            // Save PDF
+            doc.save(`${dealData.dealName.replace(/\s+/g, '_')}_Analysis.pdf`);
+            showNotification('PDF Report Generated!', 'success');
+        }
+
+        // Utility Functions
+        function showNotification(message, type) {
+            // Simple notification - could be enhanced with a toast library
+            alert(message);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupInputFormatting();
+            displaySavedDeals();
+        });
+    </script>
+</body>
+</html>
