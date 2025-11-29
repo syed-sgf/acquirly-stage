@@ -239,25 +239,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Final CTA - FIXED WITH SGF BRANDING */}
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <div className="rounded-2xl bg-gradient-to-r from-brand-green-600 to-brand-green-700 p-12 text-center text-white shadow-2xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        <div className="rounded-2xl bg-white border-4 border-brand-green-600 p-12 text-center shadow-2xl">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-brand-slate-900">
             Ready to Analyze Your Next Deal?
           </h2>
-          <p className="text-xl mb-8 text-brand-green-50">
+          <p className="text-xl mb-8 text-brand-slate-700">
             Join hundreds of buyers, brokers, and lenders making smarter acquisition decisions
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/core"
-              className="rounded-xl bg-white px-8 py-4 text-lg text-brand-green-700 font-semibold hover:bg-gray-50 transition-all inline-block"
+              className="rounded-xl bg-brand-green-600 px-8 py-4 text-lg text-white font-semibold hover:bg-brand-green-700 transition-all inline-block shadow-lg"
             >
               Start Free Now →
             </Link>
             <Link
               href="/deals/demo"
-              className="rounded-xl border-2 border-white px-8 py-4 text-lg text-white font-semibold hover:bg-white hover:text-brand-green-700 transition-all inline-block"
+              className="rounded-xl border-3 border-brand-gold-500 bg-white px-8 py-4 text-lg text-brand-slate-900 font-semibold hover:bg-brand-gold-50 transition-all inline-block"
             >
               View Sample Deal
             </Link>
