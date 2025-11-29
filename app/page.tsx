@@ -2,60 +2,268 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="bg-bg">
-      <section className="mx-auto max-w-4xl px-6 pt-16 pb-10 text-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-brand-slate-900">
-          Unlock the Power of Smart Acquisitions
+    <main className="bg-gradient-to-b from-white to-brand-green-50">
+      {/* Hero Section */}
+      <section className="mx-auto max-w-5xl px-6 pt-20 pb-12 text-center">
+        <div className="inline-block mb-4 rounded-full bg-brand-green-100 px-4 py-1.5 text-sm font-medium text-brand-green-700">
+          🚀 Professional Deal Analysis Platform
+        </div>
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-brand-slate-900 leading-tight">
+          Analyze Any Business Deal<br />
+          <span className="text-brand-green-600">in Minutes, Not Days</span>
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-brand-slate-600">
-          Acquirely by Starting Gate Financial provides the tools and insights you need to make informed decisions and
-          accelerate your acquisition process. Start your journey today.
+        <p className="mx-auto mt-6 max-w-2xl text-xl text-brand-slate-600 leading-relaxed">
+          Professional acquisition intelligence for <span className="font-semibold text-brand-green-700">business buyers</span>, <span className="font-semibold text-brand-green-700">brokers</span>, and <span className="font-semibold text-brand-green-700">lenders</span>. 
+          SBA-compliant calculations, instant valuations, and lender-ready reports—all in one platform.
         </p>
-
-        <div className="mt-8 flex items-center justify-center gap-3">
+        
+        {/* CTA Buttons */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/core"
-            className="rounded-xl bg-brand-green-600 px-5 py-3 text-white font-medium shadow-soft hover:brightness-95"
+            className="w-full sm:w-auto rounded-xl bg-brand-green-600 px-8 py-4 text-lg text-white font-semibold shadow-lg hover:bg-brand-green-700 transition-all hover:scale-105"
           >
-            Start Free with Core
+            Start Free with Core →
           </Link>
-
-          {/* Fixed: add visible text for Pro CTA */}
           <Link
             href="/pro"
-            className="rounded-xl border border-brand-green-600 px-5 py-3 text-brand-green-700 font-medium shadow-soft hover:bg-brand-green-50"
+            className="w-full sm:w-auto rounded-xl border-2 border-brand-green-600 px-8 py-4 text-lg text-brand-green-700 font-semibold hover:bg-brand-green-50 transition-all"
           >
-            Explore Pro
+            Explore Pro Features
           </Link>
+        </div>
+        <p className="mt-4 text-sm text-brand-slate-500">
+          No credit card required • Get started in 30 seconds
+        </p>
+      </section>
 
-          {/* New: quick link to the sample deal page */}
-          <Link
-            href="/deals/demo"
-            className="rounded-xl border px-5 py-3 font-medium hover:bg-gray-50"
-          >
-            Try Sample Deal →
-          </Link>
+      {/* Stats Section */}
+      <section className="mx-auto max-w-5xl px-6 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 bg-white rounded-2xl shadow-lg p-8">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-green-600">500+</div>
+            <div className="text-sm text-brand-slate-600 mt-1">Deals Analyzed</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-green-600">$50M+</div>
+            <div className="text-sm text-brand-slate-600 mt-1">Financing Secured</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-green-600">95%</div>
+            <div className="text-sm text-brand-slate-600 mt-1">User Satisfaction</div>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-green-600">24/7</div>
+            <div className="text-sm text-brand-slate-600 mt-1">Access Anywhere</div>
+          </div>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
-            <h3 className="text-lg font-semibold text-brand-slate-900">SBA-friendly analysis</h3>
-            <p className="mt-2 text-sm text-brand-slate-600">DSCR, amortization, sources &amp; uses, and lender-ready summaries.</p>
+      {/* Feature Cards - Enhanced */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="text-3xl font-bold text-center text-brand-slate-900 mb-3">
+          Built for Acquisition Professionals
+        </h2>
+        <p className="text-center text-brand-slate-600 mb-12 max-w-2xl mx-auto">
+          Whether you're buying your first business or managing a portfolio, Acquirely delivers the insights you need to move deals forward with confidence.
+        </p>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Card 1: Business Buyers */}
+          <div className="rounded-2xl bg-white p-8 ring-2 ring-gray-200 hover:ring-brand-green-400 transition-all hover:shadow-xl">
+            <div className="w-12 h-12 rounded-xl bg-brand-green-100 flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-brand-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-brand-slate-900 mb-2">For Business Buyers</h3>
+            <p className="text-brand-slate-600 text-sm mb-4">Make confident acquisition decisions with comprehensive financial analysis</p>
+            <ul className="space-y-2 text-sm text-brand-slate-700">
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Cash-on-Cash return & ROI calculator</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>10-year wealth projection & equity build-up</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Scenario modeling (best/worst case)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Professional PDF reports for lenders</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Break-even analysis & payback period</span>
+              </li>
+            </ul>
           </div>
-          <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
-            <h3 className="text-lg font-semibold text-brand-slate-900">Pro deal model</h3>
-            <p className="mt-2 text-sm text-brand-slate-600">Assumptions, financing, and returns (ROI, NPV, Payback) in minutes.</p>
+
+          {/* Card 2: Business Brokers */}
+          <div className="rounded-2xl bg-white p-8 ring-2 ring-brand-green-400 hover:shadow-xl transition-all relative">
+            <div className="absolute -top-3 right-4 bg-brand-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+              MOST POPULAR
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-brand-gold-100 flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-brand-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-brand-slate-900 mb-2">For Business Brokers</h3>
+            <p className="text-brand-slate-600 text-sm mb-4">Close deals faster with client-ready presentations and instant analysis</p>
+            <ul className="space-y-2 text-sm text-brand-slate-700">
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-gold-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Instant valuation using 6 methods</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-gold-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>White-label reports with your branding</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-gold-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Deal comparison tools for buyers</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-gold-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Save & manage multiple deals</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-brand-gold-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Client presentation mode</span>
+              </li>
+            </ul>
           </div>
-          <div className="rounded-2xl bg-white p-6 ring-1 ring-gray-200">
-            <h3 className="text-lg font-semibold text-brand-slate-900">Built for buyers &amp; brokers</h3>
-            <p className="mt-2 text-sm text-brand-slate-600">Fast, clear, and consistent—so decisions move forward, not sideways.</p>
+
+          {/* Card 3: Lenders */}
+          <div className="rounded-2xl bg-white p-8 ring-2 ring-gray-200 hover:ring-brand-green-400 transition-all hover:shadow-xl">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-brand-slate-900 mb-2">For Lenders & SBA</h3>
+            <p className="text-brand-slate-600 text-sm mb-4">SBA-compliant calculations and underwriting-ready documentation</p>
+            <ul className="space-y-2 text-sm text-brand-slate-700">
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>DSCR with industry benchmarks</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Sources & Uses breakdown</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Cash flow waterfall analysis</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Amortization schedules (10-year)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Risk assessment & leverage ratios</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <h2 className="text-3xl font-bold text-center text-brand-slate-900 mb-12">
+          Get Started in 3 Simple Steps
+        </h2>
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
+              1
+            </div>
+            <h3 className="font-semibold text-lg mb-2">Enter Deal Details</h3>
+            <p className="text-sm text-brand-slate-600">
+              Input asking price, revenue, cash flow, and financing structure in minutes
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
+              2
+            </div>
+            <h3 className="font-semibold text-lg mb-2">Instant Analysis</h3>
+            <p className="text-sm text-brand-slate-600">
+              Get DSCR, ROI, cash-on-cash returns, and comprehensive metrics instantly
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
+              3
+            </div>
+            <h3 className="font-semibold text-lg mb-2">Export & Share</h3>
+            <p className="text-sm text-brand-slate-600">
+              Generate professional PDF reports ready for lenders, partners, or clients
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="mx-auto max-w-4xl px-6 py-16">
+        <div className="rounded-2xl bg-gradient-to-r from-brand-green-600 to-brand-green-700 p-12 text-center text-white shadow-2xl">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Analyze Your Next Deal?
+          </h2>
+          <p className="text-xl mb-8 text-brand-green-50">
+            Join hundreds of buyers, brokers, and lenders making smarter acquisition decisions
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/core"
+              className="rounded-xl bg-white px-8 py-4 text-lg text-brand-green-700 font-semibold hover:bg-gray-50 transition-all inline-block"
+            >
+              Start Free Now →
+            </Link>
+            <Link
+              href="/deals/demo"
+              className="rounded-xl border-2 border-white px-8 py-4 text-lg text-white font-semibold hover:bg-white hover:text-brand-green-700 transition-all inline-block"
+            >
+              View Sample Deal
+            </Link>
           </div>
         </div>
       </section>
     </main>
   );
 }
-
