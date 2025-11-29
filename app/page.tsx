@@ -8,7 +8,7 @@ export default function Home() {
         <div className="inline-block mb-4 rounded-full bg-brand-green-100 px-4 py-1.5 text-sm font-medium text-brand-green-700">
           🚀 Professional Deal Analysis Platform
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-brand-slate-900 leading-tight">
+        <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-brand-slate-900 leading-tight">
           Analyze Any Business Deal<br />
           <span className="text-brand-green-600">in Minutes, Not Days</span>
         </h1>
@@ -213,7 +213,7 @@ export default function Home() {
             <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
               1
             </div>
-            <h3 className="font-semibold text-lg mb-2">Enter Deal Details</h3>
+            <h3 className="font-bold text-lg mb-2 text-brand-slate-900">Enter Deal Details</h3>
             <p className="text-sm text-brand-slate-600">
               Input asking price, revenue, cash flow, and financing structure in minutes
             </p>
@@ -222,7 +222,7 @@ export default function Home() {
             <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
               2
             </div>
-            <h3 className="font-semibold text-lg mb-2">Instant Analysis</h3>
+            <h3 className="font-bold text-lg mb-2 text-brand-slate-900">Instant Analysis</h3>
             <p className="text-sm text-brand-slate-600">
               Get DSCR, ROI, cash-on-cash returns, and comprehensive metrics instantly
             </p>
@@ -231,7 +231,7 @@ export default function Home() {
             <div className="w-16 h-16 rounded-full bg-brand-green-600 text-white text-2xl font-bold flex items-center justify-center mx-auto mb-4">
               3
             </div>
-            <h3 className="font-semibold text-lg mb-2">Export & Share</h3>
+            <h3 className="font-bold text-lg mb-2 text-brand-slate-900">Export & Share</h3>
             <p className="text-sm text-brand-slate-600">
               Generate professional PDF reports ready for lenders, partners, or clients
             </p>
@@ -239,13 +239,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA - FIXED WITH SGF BRANDING */}
+      {/* Final CTA - NO BORDER, CLEAN DESIGN */}
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <div className="rounded-2xl bg-white border-4 border-brand-green-600 p-12 text-center shadow-2xl">
+        <div className="rounded-2xl bg-white p-12 text-center shadow-xl">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-brand-slate-900">
             Ready to Analyze Your Next Deal?
           </h2>
-          <p className="text-xl mb-8 text-brand-slate-700">
+          <p className="text-lg mb-8 text-brand-slate-600">
             Join hundreds of buyers, brokers, and lenders making smarter acquisition decisions
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -257,7 +257,7 @@ export default function Home() {
             </Link>
             <Link
               href="/deals/demo"
-              className="rounded-xl border-3 border-brand-gold-500 bg-white px-8 py-4 text-lg text-brand-slate-900 font-semibold hover:bg-brand-gold-50 transition-all inline-block"
+              className="rounded-xl border-2 border-brand-slate-300 bg-white px-8 py-4 text-lg text-brand-slate-900 font-semibold hover:border-brand-green-600 hover:bg-brand-green-50 transition-all inline-block"
             >
               View Sample Deal
             </Link>
