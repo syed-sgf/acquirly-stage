@@ -1,0 +1,22 @@
+// Add inside theme.extend.colors in tailwind.config.ts:
+
+sgf: {
+  green: {
+    50: '#E8F5E9',
+    100: '#C8E6C9',
+    500: '#2E7D32',
+    600: '#1B5E20',
+    700: '#145214',
+  },
+  gold: {
+    50: '#FFF8E1',
+    100: '#FFECB3',
+    400: '#FFCA28',
+    500: '#D4AF37',
+    600: '#C9A227',
+  },
+  navy: {
+    500: '#1A365D',
+    600: '#153050',
+  }
+},

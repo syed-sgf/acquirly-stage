@@ -1,73 +1,324 @@
-"use client";
-import { useMemo, useState } from "react";
-import { fmtDSCR, fmtUSD, dscrBand, dscrBadgeClass } from "@/lib/num";
-import { pmtMonthly } from "@/lib/pro-logic";
-export default function Core(){
-  const [sde,setSde]=useState("450000");
-  const [salary,setSalary]=useState("120000");
-  const [capex,setCapex]=useState("50000");
-  const [rentAddback,setRentAddback]=useState("120000");
-  const [termAmt,setTermAmt]=useState("1300000");
-  const [termApr,setTermApr]=useState("10.5");
-  const [termYears,setTermYears]=useState("10");
-  const [locAmt,setLocAmt]=useState("200000");
-  const [locUtil,setLocUtil]=useState("35");
-  const [locApr,setLocApr]=useState("12");
-  const num=(v:string)=>Number(String(v).replace(/[^0-9.\-]/g,""))||0;
-  const calc = useMemo(()=>{
-    const _sde=num(sde), _sal=num(salary), _cap=num(capex), _rent=num(rentAddback);
-    const _termAmt=num(termAmt), _termApr=num(termApr)/100, _yrs=num(termYears);
-    const _locAmt=num(locAmt), _util=Math.min(1,Math.max(0,num(locUtil)/100)), _locApr=num(locApr)/100;
-    const lendable=_sde - _sal - _cap + _rent;
-    const termPmtMo=pmtMonthly(_termApr,_yrs,_termAmt);
-    const termDebt=termPmtMo*12;
-    const locInterest=_locAmt*_util*_locApr;
-    const debtTotal=termDebt + locInterest;
-    const dscr = debtTotal>0 ? lendable/debtTotal : null;
-    return { lendable, termDebt, locInterest, debtTotal, dscr };
-  },[sde,salary,capex,rentAddback,termAmt,termApr,termYears,locAmt,locUtil,locApr]);
-  const band=dscrBand(calc.dscr ?? null);
+'use client';
+
+import { useState, useCallback, useEffect } from 'react';
+import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone } from 'lucide-react';
+import Tooltip from '@/components/ui/Tooltip';
+import DSCRLegend from '@/components/core/DSCRLegend';
+import FlowIndicator from '@/components/core/FlowIndicator';
+import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+
+interface DSCRResult {
+  value: number;
+  colorClass: 'red' | 'amber' | 'green';
+  status: string;
+  statusDescription: string;
+}
+
+const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+};
+
+const formatCurrencyDetailed = (value: number): string => {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+};
+
+const parseCurrencyInput = (value: string): number => {
+  return parseFloat(value.replace(/[^0-9.-]/g, '')) || 0;
+};
+
+const formatInputValue = (value: string): string => {
+  const num = parseCurrencyInput(value);
+  if (isNaN(num) || num === 0) return value.replace(/[^0-9]/g, '');
+  return num.toLocaleString('en-US');
+};
+
+const calculateMonthlyPayment = (principal: number, annualRate: number, years: number): number => {
+  if (!principal || !annualRate || !years) return 0;
+  const monthlyRate = (annualRate / 100) / 12;
+  const numPayments = years * 12;
+  if (monthlyRate === 0) return principal / numPayments;
+  return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+};
+
+const getDSCRResult = (dscr: number): DSCRResult => {
+  if (dscr <= 1.15) {
+    return { value: dscr, colorClass: 'red', status: 'High Risk', statusDescription: 'Likely loan decline - insufficient cash flow coverage' };
+  }
+  if (dscr <= 1.24) {
+    return { value: dscr, colorClass: 'amber', status: 'Marginal', statusDescription: 'May need restructuring - consider higher down payment or longer term' };
+  }
+  return { value: dscr, colorClass: 'green', status: 'Bankable', statusDescription: 'Meets lender requirements - strong debt coverage' };
+};
+
+export default function CoreCalculatorPage() {
+  const [sde, setSde] = useState<string>('');
+  const [capex, setCapex] = useState<string>('');
+  const [loanAmount, setLoanAmount] = useState<string>('');
+  const [interestRate, setInterestRate] = useState<string>('');
+  const [loanTerm, setLoanTerm] = useState<string>('');
+  const [lendableCF, setLendableCF] = useState<number>(0);
+  const [annualDebtService, setAnnualDebtService] = useState<number>(0);
+  const [dscrResult, setDscrResult] = useState<DSCRResult | null>(null);
+
+  const calculateDSCR = useCallback(() => {
+    const sdeValue = parseCurrencyInput(sde);
+    const capexValue = parseCurrencyInput(capex);
+    const loanAmountValue = parseCurrencyInput(loanAmount);
+    const interestRateValue = parseFloat(interestRate) || 0;
+    const loanTermValue = parseInt(loanTerm) || 0;
+    const lcf = sdeValue - capexValue;
+    setLendableCF(lcf);
+    const monthlyPayment = calculateMonthlyPayment(loanAmountValue, interestRateValue, loanTermValue);
+    const ads = monthlyPayment * 12;
+    setAnnualDebtService(ads);
+    if (lcf > 0 && ads > 0) {
+      setDscrResult(getDSCRResult(lcf / ads));
+    } else {
+      setDscrResult(null);
+    }
+  }, [sde, capex, loanAmount, interestRate, loanTerm]);
+
+  useEffect(() => { calculateDSCR(); }, [calculateDSCR]);
+
+  const handleCurrencyInput = (value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+    setter(formatInputValue(value));
+  };
+
+  const getStatusIcon = (colorClass: string) => {
+    switch (colorClass) {
+      case 'red': return <AlertCircle className="w-5 h-5" />;
+      case 'amber': return <AlertTriangle className="w-5 h-5" />;
+      case 'green': return <CheckCircle className="w-5 h-5" />;
+      default: return null;
+    }
+  };
+
+  const getColorClass = (colorClass: string) => {
+    switch (colorClass) {
+      case 'red': return 'text-red-600';
+      case 'amber': return 'text-sgf-gold-500';
+      case 'green': return 'text-sgf-green-500';
+      default: return 'text-gray-300';
+    }
+  };
+
+  const getBadgeClass = (colorClass: string) => {
+    switch (colorClass) {
+      case 'red': return 'bg-red-100 text-red-700';
+      case 'amber': return 'bg-sgf-gold-100 text-sgf-gold-600';
+      case 'green': return 'bg-sgf-green-50 text-sgf-green-600';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="text-3xl font-bold">Core Calculator</h1>
-      <p className="mt-2 text-brand-slate-600 text-sm">
-        DSCR colors: ≤1.15 <span className="text-red-600 font-medium">red</span> · 1.16–1.24 <span className="text-amber-600 font-medium">amber</span> · ≥1.25 <span className="text-green-600 font-medium">green</span>.
-      </p>
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <section className="rounded-2xl border bg-white p-5">
-          <h2 className="text-xl font-semibold">Business Cash Flow</h2>
-          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
-            <label>Annual SDE/EBITDA<input className="mt-1 w-full rounded-lg border px-3 py-2" value={sde} onChange={e=>setSde(e.target.value)} /></label>
-            <label>Buyer salary (min)<input className="mt-1 w-full rounded-lg border px-3 py-2" value={salary} onChange={e=>setSalary(e.target.value)} /></label>
-            <label>Annual CAPEX (maint+new)<input className="mt-1 w-full rounded-lg border px-3 py-2" value={capex} onChange={e=>setCapex(e.target.value)} /></label>
-            <label>Rents paid to owner (add-back)<input className="mt-1 w-full rounded-lg border px-3 py-2" value={rentAddback} onChange={e=>setRentAddback(e.target.value)} /></label>
+    <div className="min-h-screen bg-gray-50">
+      {/* SGF Branded Header */}
+      <div className="bg-gradient-to-r from-sgf-green-600 to-sgf-green-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">SGF</span>
+                </div>
+                <span className="text-sgf-gold-400 text-sm font-medium">Starting Gate Financial</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">Core DSCR Calculator</h1>
+              <p className="mt-1 text-sgf-green-100 text-sm md:text-base">
+                Analyze debt service coverage ratio to assess loan viability and investment strength
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a href="tel:+19725550123" className="hidden sm:inline-flex items-center gap-2 text-white/80 hover:text-white text-sm">
+                <Phone className="w-4 h-4" />
+                (972) 555-0123
+              </a>
+              <button className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-medium text-white hover:bg-white/20 transition-colors">
+                <FileText className="w-4 h-4 mr-2" />
+                Export PDF
+              </button>
+            </div>
           </div>
-          <div className="mt-4 rounded bg-gray-50 p-3 text-sm">Lendable CF: <b>{fmtUSD(calc.lendable)}</b></div>
-        </section>
-        <section className="rounded-2xl border bg-white p-5">
-          <h2 className="text-xl font-semibold">Debt Assumptions</h2>
-          <div className="mt-3 grid grid-cols-3 gap-3 text-sm">
-            <label>Term amt<input className="mt-1 w-full rounded-lg border px-3 py-2" value={termAmt} onChange={e=>setTermAmt(e.target.value)} /></label>
-            <label>APR %<input className="mt-1 w-full rounded-lg border px-3 py-2" value={termApr} onChange={e=>setTermApr(e.target.value)} /></label>
-            <label>Years<input className="mt-1 w-full rounded-lg border px-3 py-2" value={termYears} onChange={e=>setTermYears(e.target.value)} /></label>
-            <label>LOC limit<input className="mt-1 w-full rounded-lg border px-3 py-2" value={locAmt} onChange={e=>setLocAmt(e.target.value)} /></label>
-            <label>Utilization %<input className="mt-1 w-full rounded-lg border px-3 py-2" value={locUtil} onChange={e=>setLocUtil(e.target.value)} /></label>
-            <label>LOC APR %<input className="mt-1 w-full rounded-lg border px-3 py-2" value={locApr} onChange={e=>setLocApr(e.target.value)} /></label>
-          </div>
-          <div className="mt-4 grid grid-cols-1 gap-2 rounded bg-gray-50 p-3 text-sm">
-            <div>Annual term loan debt service: <b>{fmtUSD(calc.termDebt)}</b></div>
-            <div>LOC interest (annual): <b>{fmtUSD(calc.locInterest)}</b></div>
-            <div>Total annual debt service: <b>{fmtUSD(calc.debtTotal)}</b></div>
-          </div>
-        </section>
-      </div>
-      <section className="mt-6 rounded-2xl border bg-white p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">DSCR</h2>
-          <span className={`rounded-md px-2 py-1 text-xs font-medium ${dscrBadgeClass(band)}`}>{fmtDSCR(calc.dscr)}</span>
         </div>
-        <p className="mt-2 text-sm text-brand-slate-600">DSCR = Lendable CF ÷ Total annual debt service</p>
-      </section>
-    </main>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <DSCRLegend />
+        <FlowIndicator />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          {/* Card 1: Business Cash Flow */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sgf-green-50 to-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-sgf-green-500 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-gray-900">Business Cash Flow</span>
+              </div>
+              <span className="text-xs font-bold text-sgf-green-600 bg-sgf-green-50 px-3 py-1 rounded-full border border-sgf-green-200">STEP 1</span>
+            </div>
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                  Annual SDE / EBITDA
+                  <Tooltip title="Seller's Discretionary Earnings / EBITDA" content={<><p className="mb-2"><strong>SDE</strong> = Net Income + Owner Salary + Benefits + Interest + Depreciation + One-time Expenses</p><p><strong>EBITDA</strong> = Earnings Before Interest, Taxes, Depreciation & Amortization</p></>} />
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input type="text" value={sde} onChange={(e) => handleCurrencyInput(e.target.value, setSde)} placeholder="e.g., 500,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-green-500 focus:border-sgf-green-500 font-mono text-lg" />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                  Annual CAPEX
+                  <Tooltip title="Capital Expenditures" content={<><p className="mb-2"><strong>Maintenance:</strong> Equipment repairs, replacements, upkeep</p><p><strong>Growth:</strong> New equipment, expansion, upgrades</p><p className="mt-2 text-xs text-gray-400">Typical: 2-5% of revenue</p></>} />
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input type="text" value={capex} onChange={(e) => handleCurrencyInput(e.target.value, setCapex)} placeholder="e.g., 25,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-green-500 focus:border-sgf-green-500 font-mono text-lg" />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                  Lendable Cash Flow
+                  <Tooltip title="Lendable Cash Flow" content={<><p>Cash available to service debt after CAPEX.</p><p className="mt-2 text-xs text-sgf-gold-400 font-mono">LCF = SDE − CAPEX</p></>} />
+                </label>
+                <div className="bg-sgf-green-50 border-2 border-sgf-green-200 rounded-lg px-4 py-3 font-mono text-lg font-semibold text-sgf-green-700">{formatCurrencyDetailed(lendableCF)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Debt Assumptions */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sgf-gold-50 to-white">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
+                  <Calculator className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-gray-900">Debt Assumptions</span>
+              </div>
+              <span className="text-xs font-bold text-sgf-gold-600 bg-sgf-gold-50 px-3 py-1 rounded-full border border-sgf-gold-200">STEP 2</span>
+            </div>
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Loan Amount</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input type="text" value={loanAmount} onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)} placeholder="e.g., 750,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 font-mono text-lg" />
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Interest Rate (Annual)</label>
+                <div className="relative">
+                  <input type="text" value={interestRate} onChange={(e) => setInterestRate(e.target.value.replace(/[^0-9.]/g, ''))} placeholder="e.g., 8.5" className="w-full pl-4 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 font-mono text-lg" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
+                </div>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Loan Term</label>
+                <select value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 bg-white text-lg">
+                  <option value="">Select term...</option>
+                  <option value="5">5 Years</option>
+                  <option value="7">7 Years</option>
+                  <option value="10">10 Years</option>
+                  <option value="15">15 Years</option>
+                  <option value="20">20 Years</option>
+                  <option value="25">25 Years</option>
+                </select>
+              </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+                  Total Annual Debt Service
+                  <Tooltip title="Annual Debt Service" content={<><p>Total yearly payments (principal + interest).</p><p className="mt-2 text-xs text-sgf-gold-400 font-mono">= Monthly Payment × 12</p></>} />
+                </label>
+                <div className="bg-sgf-gold-50 border-2 border-sgf-gold-200 rounded-lg px-4 py-3 font-mono text-lg font-semibold text-sgf-gold-700">{formatCurrencyDetailed(annualDebtService)}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: DSCR Result */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${dscrResult ? (dscrResult.colorClass === 'green' ? 'bg-sgf-green-500' : dscrResult.colorClass === 'amber' ? 'bg-sgf-gold-500' : 'bg-red-500') : 'bg-gray-400'}`}>
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-gray-900">DSCR Result</span>
+              </div>
+              <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">RESULT</span>
+            </div>
+            <div className="p-6">
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <span className={`text-5xl md:text-6xl font-bold font-mono ${dscrResult ? getColorClass(dscrResult.colorClass) : 'text-gray-300'}`}>
+                  {dscrResult ? `${dscrResult.value.toFixed(2)}x` : '--'}
+                </span>
+                <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mt-2 mb-4">Debt Service Coverage Ratio</div>
+                {dscrResult && (
+                  <>
+                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${getBadgeClass(dscrResult.colorClass)}`}>
+                      {getStatusIcon(dscrResult.colorClass)}
+                      {dscrResult.status}
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-gray-200 text-left space-y-3">
+                      <div className="flex justify-between py-2 border-b border-dashed border-gray-200">
+                        <span className="text-sm text-gray-600">Lendable Cash Flow</span>
+                        <span className="font-mono font-semibold text-sgf-green-600">{formatCurrency(lendableCF)}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-dashed border-gray-200">
+                        <span className="text-sm text-gray-600">÷ Total Annual Debt Service</span>
+                        <span className="font-mono font-semibold text-sgf-gold-600">{formatCurrency(annualDebtService)}</span>
+                      </div>
+                      <div className="flex justify-between py-2">
+                        <span className="text-sm font-semibold text-gray-900">= DSCR</span>
+                        <span className={`font-mono font-bold text-xl ${getColorClass(dscrResult.colorClass)}`}>{dscrResult.value.toFixed(2)}x</span>
+                      </div>
+                    </div>
+                    <div className="mt-4 bg-sgf-green-50 border border-sgf-green-200 rounded-lg px-4 py-3">
+                      <p className="text-xs font-mono text-sgf-green-700">DSCR = Lendable CF ÷ Total Annual Debt Service</p>
+                    </div>
+                    <p className="mt-4 text-sm text-gray-500">{dscrResult.statusDescription}</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Premium Products CTA */}
+        <PremiumProductsCTA />
+
+        {/* Financing CTA Section */}
+        <div className="mt-12 bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-4">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                Ready to Finance?
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
+              <p className="text-sgf-green-100 max-w-lg">
+                Connect with Starting Gate Financial for competitive business acquisition loans, 
+                SBA 7(a) financing, and commercial real estate solutions.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
+                <FileText className="w-5 h-5" />
+                Apply for Financing
+              </a>
+              <a href="https://startinggatefinancial.com/contact" className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
+                <MessageSquare className="w-5 h-5" />
+                Schedule Call
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
