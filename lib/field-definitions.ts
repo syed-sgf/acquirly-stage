@@ -108,3 +108,96 @@ export const INDUSTRY_BENCHMARKS = {
     description: "Down Payment as % of Purchase Price",
   },
 };
+
+// Quick rules for deal analysis
+export const QUICK_RULES = {
+  "SBA 7(a) Requirements": [
+    "Minimum 10% down payment (stronger with 15-25%)",
+    "DSCR of 1.25x or higher required",
+    "Maximum loan amount: $5M (up to $5.5M including working capital)",
+    "Business must operate for profit in the US",
+    "Owner must work full-time in the business",
+  ],
+  "Deal Structure Best Practices": [
+    "Target purchase price of 2.5x-4.5x SDE for most businesses",
+    "Negotiate seller financing to reduce bank loan and improve DSCR",
+    "Ensure working capital is adequate (1-3 months operating expenses)",
+    "Factor in 3-5% closing costs on total transaction",
+    "Consider asset allocation for tax benefits",
+  ],
+  "Cash Flow Analysis": [
+    "Cash-on-Cash return of 20%+ is strong for leveraged deals",
+    "Ensure cash flow covers debt service with 25%+ cushion",
+    "Factor in owner salary requirement before calculating excess cash",
+    "Budget for maintenance CapEx (typically 2-5% of revenue)",
+    "Consider seasonality and working capital needs",
+  ],
+  "Risk Mitigation": [
+    "Higher down payment = lower risk, better terms",
+    "Seller financing shows seller confidence in business",
+    "Verify cash flow through tax returns (3 years minimum)",
+    "Understand customer concentration (no customer >25% of revenue)",
+    "Review key person dependencies and transition plan",
+  ],
+  "Valuation Red Flags": [
+    "Purchase price >5x SDE (unless SaaS/tech with recurring revenue)",
+    "Declining revenue trend over past 3 years",
+    "DSCR below 1.15x (tight cash flow)",
+    "Heavy reliance on owner relationships",
+    "Significant deferred maintenance or CapEx needs",
+  ],
+};
+
+// Search function for field definitions
+export function searchFieldDefinitions(query: string): Array<{
+  field: string;
+  label: string;
+  definition: string;
+  category: string;
+}> {
+  if (!query || query.trim().length < 2) {
+    return [];
+  }
+
+  const searchTerm = query.toLowerCase().trim();
+  const results: Array<{
+    field: string;
+    label: string;
+    definition: string;
+    category: string;
+  }> = [];
+
+  Object.entries(FIELD_DEFINITIONS).forEach(([field, definition]) => {
+    const fieldLabel = field
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (str) => str.toUpperCase())
+      .trim();
+    
+    const fieldLower = field.toLowerCase();
+    const labelLower = fieldLabel.toLowerCase();
+    const definitionLower = definition.toLowerCase();
+
+    if (
+      fieldLower.includes(searchTerm) ||
+      labelLower.includes(searchTerm) ||
+      definitionLower.includes(searchTerm)
+    ) {
+      let category = "Other";
+      for (const [cat, fields] of Object.entries(FIELD_CATEGORIES)) {
+        if (fields.includes(field)) {
+          category = cat;
+          break;
+        }
+      }
+
+      results.push({
+        field,
+        label: fieldLabel,
+        definition,
+        category,
+      });
+    }
+  });
+
+  return results;
+}
