@@ -10,3 +10,4 @@ out
 updated/
 
 /lib/generated/prisma
+.vscode/

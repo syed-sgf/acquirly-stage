@@ -1,14 +1,65 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma 5 Schema - Phase 1 Minimal
 
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// PHASE 1 MINIMAL MODELS - DSCR Only
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  
+  plan          String    @default("free")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  deals         Deal[]
+  
+  @@map("users")
+}
+
+model Deal {
+  id          String   @id @default(cuid())
+  name        String
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  analyses    Analysis[]
+  
+  @@index([userId])
+  @@map("deals")
+}
+
+model Analysis {
+  id        String   @id @default(cuid())
+  type      String   @default("dscr")
+  
+  inputs    Json
+  outputs   Json
+  
+  dealId    String
+  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([dealId])
+  @@map("analyses")
 }
