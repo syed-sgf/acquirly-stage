@@ -12,15 +12,22 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, account, user }) {
+      if (account && user) {
+        token.id = user.id;
+        token.plan = user.plan || "free";
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
-        session.user.plan = user.plan || "free";
+        session.user.id = token.id as string;
+        session.user.plan = (token.plan as string) || "free";
       }
       return session;
     },
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",  // Changed from "database" to bypass Prisma issue
   },
 };
