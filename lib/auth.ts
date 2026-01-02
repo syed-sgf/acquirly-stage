@@ -13,14 +13,10 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-  },
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // Add user's plan to session
         session.user.plan = user.plan || "free";
       }
       return session;
