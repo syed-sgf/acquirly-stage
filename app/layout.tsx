@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import StageRibbon from "@/components/StageRibbon";
 import StageWatermark from "@/components/StageWatermark";
 import Footer from "@/components/Footer";
+import { Providers } from "./providers";
 
 export const metadata = {
   title: "Acquirely | Starting Gate Financial",
@@ -13,11 +14,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen bg-bg text-brand-slate-900" suppressHydrationWarning>
-        <StageRibbon />
-        <StageWatermark />
-        <Navbar />
-        {children}
-        <Footer />
+        <Providers>
+          <StageRibbon />
+          <StageWatermark />
+          <Navbar />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

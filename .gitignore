@@ -11,3 +11,6 @@ updated/
 
 /lib/generated/prisma
 .vscode/
+.env
+*.backup*.tsx
+main
