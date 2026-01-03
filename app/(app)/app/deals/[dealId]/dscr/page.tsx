@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
 
@@ -138,15 +139,46 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6 md:space-y-8">
-        {/* Header */}
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center space-x-2 text-sm text-gray-600">
+          <Link href="/app" className="hover:text-emerald-600 transition">
+            Dashboard
+          </Link>
+          <span>/</span>
+          <Link href="/app/deals" className="hover:text-emerald-600 transition">
+            Deals
+          </Link>
+          <span>/</span>
+          <Link href={`/app/deals/${dealId}`} className="hover:text-emerald-600 transition">
+            {deal.name}
+          </Link>
+          <span>/</span>
+          <span className="text-gray-900 font-medium">DSCR Calculator</span>
+        </nav>
+
+        {/* Header with Back Button */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">DSCR Calculator</h1>
-            <p className="text-sm md:text-base text-gray-600 mt-1">Debt Service Coverage Ratio Analysis for {deal.name}</p>
+          <div className="flex items-center gap-4">
+            <Link 
+              href={`/app/deals/${dealId}`}
+              className="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 transition group"
+            >
+              <svg className="w-5 h-5 text-gray-600 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">DSCR Calculator</h1>
+              <p className="text-sm md:text-base text-gray-600 mt-1">Debt Service Coverage Ratio Analysis</p>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-500">Deal ID</div>
-            <div className="text-sm font-mono">{dealId.substring(0, 8)}...</div>
+          <div className="hidden md:flex items-center gap-3">
+            <Link 
+              href={`/app/deals/${dealId}`}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition text-sm font-medium"
+            >
+              View Deal Overview
+            </Link>
           </div>
         </div>
 
@@ -367,7 +399,7 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
 
         {/* CTA Section */}
         <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1">
                 Need Financing for This Deal?
@@ -384,6 +416,22 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
             >
               Apply Now
             </a>
+          </div>
+        </div>
+
+        {/* Bottom Navigation */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+          <Link 
+            href={`/app/deals/${dealId}`}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Deal Overview
+          </Link>
+          <div className="text-xs text-gray-500">
+            Deal ID: <span className="font-mono">{dealId.substring(0, 12)}...</span>
           </div>
         </div>
       </div>
