@@ -2,14 +2,15 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
-export default async function DealPage({ 
-  params 
-}: { 
-  params: { dealId: string } 
+export default async function DealPage({
+  params
+}: {
+  params: { dealId: string }
 }) {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user) {
     redirect('/');
   }
@@ -28,7 +29,7 @@ export default async function DealPage({
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-4">{deal.name}</h1>
-      
+
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold mb-2">🎉 Welcome to ACQUIRELY!</h2>
         <p className="text-gray-700 mb-4">
@@ -48,9 +49,13 @@ export default async function DealPage({
           <p className="text-gray-600 mb-4">
             Calculate debt service coverage ratio for loan qualification
           </p>
-          <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+
+          <Link
+            href={`/app/deals/${deal.id}/dscr`}
+            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
             Calculate DSCR →
-          </button>
+          </Link>
         </div>
 
         <div className="border rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -58,6 +63,7 @@ export default async function DealPage({
           <p className="text-gray-600 mb-4">
             Complete business acquisition financial modeling
           </p>
+
           <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
             Analyze Deal →
           </button>
