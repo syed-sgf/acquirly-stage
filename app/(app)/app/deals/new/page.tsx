@@ -14,7 +14,6 @@ export default async function NewDealPage() {
     'use server';
 
     const name = formData.get('name') as string;
-    const businessType = formData.get('businessType') as string;
 
     if (!name || name.trim().length === 0) {
       throw new Error('Deal name is required');
@@ -23,7 +22,6 @@ export default async function NewDealPage() {
     const deal = await prisma.deal.create({
       data: {
         name: name.trim(),
-        businessType: businessType || null,
         status: 'active',
         userId: session!.user!.id,
       },
@@ -66,32 +64,6 @@ export default async function NewDealPage() {
             />
             <p className="mt-1 text-sm text-gray-500">
               Give your deal a descriptive name to easily identify it later
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Business Type (Optional)
-            </label>
-            <select
-              name="businessType"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-            >
-              <option value="">Select a business type...</option>
-              <option value="restaurant">Restaurant / Food Service</option>
-              <option value="retail">Retail</option>
-              <option value="manufacturing">Manufacturing</option>
-              <option value="services">Professional Services</option>
-              <option value="healthcare">Healthcare</option>
-              <option value="technology">Technology</option>
-              <option value="realestate">Real Estate</option>
-              <option value="construction">Construction</option>
-              <option value="automotive">Automotive</option>
-              <option value="hospitality">Hospitality</option>
-              <option value="other">Other</option>
-            </select>
-            <p className="mt-1 text-sm text-gray-500">
-              This helps us provide industry-specific benchmarks and insights
             </p>
           </div>
 
