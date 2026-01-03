@@ -6,31 +6,29 @@ import { redirect } from 'next/navigation';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
 
-function getDscrStatus(dscr: number) {
+function dscrMeta(dscr: number) {
   if (dscr >= 1.25) {
     return {
-      label: 'Strong',
+      label: 'STRONG',
       color: 'text-green-700',
-      bg: 'bg-green-50 border-green-200',
-      note: 'Meets or exceeds most lender DSCR requirements',
+      bg: 'bg-green-50 border-green-300',
+      message: 'Meets or exceeds most lender DSCR requirements',
     };
   }
-
   if (dscr >= 1.15) {
     return {
-      label: 'Marginal',
+      label: 'MARGINAL',
       color: 'text-yellow-700',
-      bg: 'bg-yellow-50 border-yellow-200',
-      note: 'May qualify with compensating factors',
+      bg: 'bg-yellow-50 border-yellow-300',
+      message: 'May qualify with compensating factors',
     };
   }
-
   return {
-    label: 'Weak',
+    label: 'WEAK',
     color: 'text-red-700',
-    bg: 'bg-red-50 border-red-200',
-    note: 'Below typical lender minimums',
-    };
+    bg: 'bg-red-50 border-red-300',
+    message: 'Below typical lender minimums',
+  };
 }
 
 export default async function DscrPage({
@@ -39,42 +37,43 @@ export default async function DscrPage({
   params: { dealId: string };
 }) {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user) {
-    redirect('/');
-  }
+  if (!session?.user) redirect('/');
 
   const deal = await prisma.deal.findFirst({
-    where: {
-      id: params.dealId,
-      userId: session.user.id,
-    },
+    where: { id: params.dealId, userId: session.user.id },
   });
 
-  if (!deal) {
-    redirect('/app');
-  }
+  if (!deal) redirect('/app');
 
   const dealId = deal.id;
 
-  async function createDscrAnalysis(formData: FormData) {
+  async function runDscr(formData: FormData) {
     'use server';
 
-    const noi = Number(formData.get('noi'));
-    const debtService = Number(formData.get('debtService'));
+    const grossRevenue = Number(formData.get('grossRevenue'));
+    const operatingExpenses = Number(formData.get('operatingExpenses'));
+    const annualDebtService = Number(formData.get('annualDebtService'));
 
-    if (!noi || !debtService || debtService <= 0) {
-      throw new Error('Invalid DSCR inputs');
+    if (!grossRevenue || !annualDebtService) {
+      throw new Error('Missing inputs');
     }
 
-    const dscr = Number((noi / debtService).toFixed(2));
+    const noi = grossRevenue - operatingExpenses;
+    const dscr = Number((noi / annualDebtService).toFixed(2));
 
     await prisma.analysis.create({
       data: {
         type: 'dscr',
         dealId,
-        inputs: { noi, debtService },
-        outputs: { dscr },
+        inputs: {
+          grossRevenue,
+          operatingExpenses,
+          annualDebtService,
+          noi,
+        },
+        outputs: {
+          dscr,
+        },
       },
     });
 
@@ -82,95 +81,117 @@ export default async function DscrPage({
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-8 space-y-8">
+    <div className="max-w-5xl mx-auto p-8 space-y-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold">DSCR Calculator</h1>
+        <h1 className="text-3xl font-bold">DSCR Analysis</h1>
         <p className="text-gray-600 mt-1">
-          Measure whether this deal’s cash flow supports the proposed debt.
-        </p>
-        <p className="text-sm text-gray-500 mt-1">
-          Commonly used by SBA, DSCR, and bank lenders
+          Lender-style cash flow and debt service coverage analysis
         </p>
       </div>
 
-      {/* Calculator */}
-      <form action={createDscrAnalysis} className="space-y-6 border rounded-lg p-6">
-        <div>
-          <label className="block font-medium mb-1">
-            Net Operating Income (Annual)
-          </label>
-          <input
-            name="noi"
-            type="number"
-            step="any"
-            required
-            placeholder="e.g. 120000"
-            className="w-full border rounded px-3 py-2"
-          />
-          <p className="text-sm text-gray-500 mt-1">
-            NOI after operating expenses, before debt service
-          </p>
+      {/* SECTION 1 — BUSINESS CASH FLOW */}
+      <div className="border rounded-xl p-6 bg-white shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          1️⃣ Business Cash Flow
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-medium mb-1">
+              Gross Annual Revenue
+            </label>
+            <input
+              name="grossRevenue"
+              type="number"
+              form="dscr-form"
+              placeholder="e.g. 500000"
+              required
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">
+              Operating Expenses (Annual)
+            </label>
+            <input
+              name="operatingExpenses"
+              type="number"
+              form="dscr-form"
+              placeholder="e.g. 320000"
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
         </div>
 
-        <div>
+        <p className="text-sm text-gray-500 mt-3">
+          Excludes debt service, depreciation, and owner distributions
+        </p>
+      </div>
+
+      {/* SECTION 2 — DEBT ASSUMPTIONS */}
+      <div className="border rounded-xl p-6 bg-white shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">
+          2️⃣ Debt Assumptions
+        </h2>
+
+        <div className="max-w-md">
           <label className="block font-medium mb-1">
             Annual Debt Service
           </label>
           <input
-            name="debtService"
+            name="annualDebtService"
             type="number"
-            step="any"
+            form="dscr-form"
+            placeholder="e.g. 150000"
             required
-            placeholder="e.g. 90000"
             className="w-full border rounded px-3 py-2"
           />
-          <p className="text-sm text-gray-500 mt-1">
-            Total annual principal + interest payments
-          </p>
         </div>
 
-        <div className="flex gap-3">
+        <p className="text-sm text-gray-500 mt-3">
+          Principal + interest payments for all loans
+        </p>
+      </div>
+
+      {/* ACTION */}
+      <form id="dscr-form" action={runDscr}>
+        <div className="flex gap-4">
           <button
             type="submit"
-            className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700"
           >
             Calculate DSCR
           </button>
 
           <a
             href={`/app/deals/${dealId}`}
-            className="px-6 py-2 border rounded"
+            className="px-6 py-3 border rounded-lg"
           >
-            Cancel
+            Back to Deal
           </a>
         </div>
       </form>
 
-      {/* Lender Guidance */}
-      <div className="border rounded-lg p-6 bg-gray-50">
-        <h3 className="font-semibold mb-3">Typical Lender Guidelines</h3>
-        <ul className="text-sm text-gray-700 space-y-1">
-          <li>• ≥ 1.25x — Strong / Preferred</li>
-          <li>• 1.15x–1.24x — Marginal (compensating factors needed)</li>
-          <li>• &lt; 1.15x — Weak / Likely decline</li>
-        </ul>
+      {/* SECTION 3 — RESULT (Shown after submit via redirect param later) */}
+      <div className="border rounded-xl p-6 bg-gray-50">
+        <h2 className="text-xl font-semibold mb-2">
+          3️⃣ DSCR Result
+        </h2>
+        <p className="text-gray-600">
+          Result will appear here after calculation and is saved to the deal.
+        </p>
       </div>
 
-      {/* Roadmap Signals */}
-      <div className="flex gap-3">
-        <button
-          disabled
-          className="opacity-50 cursor-not-allowed border px-4 py-2 rounded"
-        >
-          Export PDF (Coming Soon)
-        </button>
-        <button
-          disabled
-          className="opacity-50 cursor-not-allowed border px-4 py-2 rounded"
-        >
-          Compare Scenarios (Coming Soon)
-        </button>
+      {/* LENDER BENCHMARKS */}
+      <div className="border rounded-xl p-6 bg-slate-50">
+        <h3 className="font-semibold mb-2">Typical Lender Benchmarks</h3>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li>• ≥ 1.25x — Strong / Preferred</li>
+          <li>• 1.15x – 1.24x — Marginal</li>
+          <li>• &lt; 1.15x — Weak</li>
+        </ul>
       </div>
     </div>
   );
