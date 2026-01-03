@@ -22,7 +22,6 @@ export default async function NewDealPage() {
     const deal = await prisma.deal.create({
       data: {
         name: name.trim(),
-        status: 'active',
         userId: session!.user!.id,
       },
     });

@@ -51,10 +51,14 @@ export default async function DealsPage() {
             </div>
           </div>
           <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-            <div className="text-sm text-gray-600 mb-1">Active Deals</div>
+            <div className="text-sm text-gray-600 mb-1">Recent Activity</div>
             <div className="text-3xl font-bold text-gray-900">
-              {deals.filter(d => d.status === 'active').length}
+              {deals.filter(d => {
+                const daysSinceUpdate = (Date.now() - new Date(d.updatedAt).getTime()) / (1000 * 60 * 60 * 24);
+                return daysSinceUpdate <= 7;
+              }).length}
             </div>
+            <div className="text-xs text-gray-500 mt-1">Last 7 days</div>
           </div>
         </div>
 
@@ -83,16 +87,6 @@ export default async function DealsPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-xl font-semibold text-gray-900">{deal.name}</h3>
-                      {deal.status === 'active' && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-                          Active
-                        </span>
-                      )}
-                      {deal.status === 'archived' && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300">
-                          Archived
-                        </span>
-                      )}
                     </div>
                     <div className="flex items-center gap-6 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
