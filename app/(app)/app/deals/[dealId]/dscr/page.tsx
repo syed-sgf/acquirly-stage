@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic';
 
 import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
-import { redirect } from 'next/navigation';
 
 export default async function DscrPage({
   params,
@@ -16,6 +17,7 @@ export default async function DscrPage({
     redirect('/');
   }
 
+  // Verify deal ownership
   const deal = await prisma.deal.findFirst({
     where: {
       id: params.dealId,
@@ -26,6 +28,9 @@ export default async function DscrPage({
   if (!deal) {
     redirect('/app');
   }
+
+  // Type-safe: deal is guaranteed beyond this point
+  const dealId = deal.id;
 
   async function createDscrAnalysis(formData: FormData) {
     'use server';
@@ -42,7 +47,7 @@ export default async function DscrPage({
     await prisma.analysis.create({
       data: {
         type: 'dscr',
-        dealId: deal.id,
+        dealId: dealId,
         inputs: {
           noi,
           debtService,
@@ -53,7 +58,7 @@ export default async function DscrPage({
       },
     });
 
-    redirect(`/app/deals/${deal.id}`);
+    redirect(`/app/deals/${dealId}`);
   }
 
   return (
@@ -96,7 +101,7 @@ export default async function DscrPage({
           </button>
 
           <a
-            href={`/app/deals/${deal.id}`}
+            href={`/app/deals/${dealId}`}
             className="px-5 py-2 border rounded"
           >
             Cancel
