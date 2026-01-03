@@ -16,8 +16,7 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  // Dashboard metrics
-  const [dealCount, analysisCount, firstDeal] = await Promise.all([
+  const [dealCount, analysisCount, recentDeals] = await Promise.all([
     prisma.deal.count({
       where: { userId },
     }),
@@ -26,20 +25,25 @@ export default async function DashboardPage() {
         deal: { userId },
       },
     }),
-    prisma.deal.findFirst({
+    prisma.deal.findMany({
       where: { userId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
     }),
   ]);
+
+  const primaryDeal = recentDeals[0];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       {/* Header */}
-      <h1 className="text-3xl font-bold mb-2">
-        Welcome, {session.user.name || "there"}!
+      <h1 className="text-3xl font-bold mb-1">
+        Welcome back, {session.user.name || "there"} 👋
       </h1>
       <p className="text-gray-600 mb-8">
-        Manage your deals and analyze acquisitions
+        {dealCount > 0
+          ? `You have ${dealCount} deal${dealCount > 1 ? "s" : ""} ready for analysis`
+          : "Start your first deal to begin analyzing opportunities"}
       </p>
 
       {/* Metrics */}
@@ -59,35 +63,83 @@ export default async function DashboardPage() {
           <p className="text-3xl font-bold uppercase">
             {session.user.plan || "FREE"}
           </p>
+          <Link
+            href="/pricing"
+            className="text-sm text-green-600 hover:underline mt-1 inline-block"
+          >
+            Upgrade to Pro
+          </Link>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {firstDeal && (
+      {/* Primary Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        {primaryDeal ? (
           <Link
-            href={`/app/deals/${firstDeal.id}`}
+            href={`/app/deals/${primaryDeal.id}`}
             className="block bg-green-600 text-white rounded-lg p-6 hover:bg-green-700 transition"
           >
             <h2 className="text-xl font-semibold mb-1">
               Continue Your Deal
             </h2>
-            <p className="opacity-90">{firstDeal.name}</p>
+            <p className="opacity-90">{primaryDeal.name}</p>
+          </Link>
+        ) : (
+          <Link
+            href="/app/deals/new"
+            className="block bg-green-600 text-white rounded-lg p-6 hover:bg-green-700 transition"
+          >
+            <h2 className="text-xl font-semibold mb-1">
+              Create Your First Deal
+            </h2>
+            <p className="opacity-90">
+              Start analyzing a business acquisition
+            </p>
           </Link>
         )}
 
-        <Link
-          href="/app/deals/new"
-          className="block bg-white border rounded-lg p-6 hover:border-green-600 transition"
-        >
-          <h2 className="text-xl font-semibold mb-1">
-            Create New Deal
-          </h2>
-          <p className="text-gray-600">
-            Start a new business acquisition analysis
-          </p>
-        </Link>
+        {dealCount > 0 && (
+          <Link
+            href="/app/deals/new"
+            className="block bg-white border rounded-lg p-6 hover:border-green-600 transition"
+          >
+            <h2 className="text-xl font-semibold mb-1">
+              Create New Deal
+            </h2>
+            <p className="text-gray-600">
+              Add another opportunity to your portfolio
+            </p>
+          </Link>
+        )}
       </div>
+
+      {/* Recent Deals */}
+      {recentDeals.length > 0 && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Recent Deals</h2>
+          <div className="bg-white border rounded-lg divide-y">
+            {recentDeals.map((deal) => (
+              <Link
+                key={deal.id}
+                href={`/app/deals/${deal.id}`}
+                className="block px-6 py-4 hover:bg-gray-50 transition"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">{deal.name}</p>
+                    <p className="text-sm text-gray-500">
+                      Updated {deal.updatedAt.toLocaleDateString()}
+                    </p>
+                  </div>
+                  <span className="text-green-600 font-medium">
+                    Open →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
