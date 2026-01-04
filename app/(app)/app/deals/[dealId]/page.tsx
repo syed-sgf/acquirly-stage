@@ -170,41 +170,46 @@ export default async function DealOverviewPage({ params }: { params: { dealId: s
               const analysisCount = analysisCounts[calc.id] || 0;
               const isComingSoon = calc.comingSoon;
 
-              return (
-                <Link
-                  key={calc.id}
-                  href={isComingSoon ? '#' : `/app/deals/${deal.id}/${calc.href}`}
-                  className={`
-                    block bg-white rounded-2xl border-2 p-6 transition-all
-                    ${isComingSoon 
-                      ? 'border-gray-200 opacity-60 cursor-not-allowed' 
-                      : 'border-gray-200 hover:border-emerald-300 hover:shadow-lg cursor-pointer'
-                    }
-                  `}
-                  onClick={(e) => isComingSoon && e.preventDefault()}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="text-3xl">{calc.icon}</div>
-                    {isComingSoon ? (
+              if (isComingSoon) {
+                return (
+                  <div
+                    key={calc.id}
+                    className="block bg-white rounded-2xl border-2 border-gray-200 p-6 opacity-60 cursor-not-allowed"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="text-3xl">{calc.icon}</div>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300">
                         Coming Soon
                       </span>
-                    ) : analysisCount > 0 ? (
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{calc.name}</h3>
+                    <p className="text-sm text-gray-600">{calc.description}</p>
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={calc.id}
+                  href={`/app/deals/${deal.id}/${calc.href}`}
+                  className="block bg-white rounded-2xl border-2 border-gray-200 hover:border-emerald-300 hover:shadow-lg cursor-pointer p-6 transition-all"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="text-3xl">{calc.icon}</div>
+                    {analysisCount > 0 && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
                         {analysisCount} {analysisCount === 1 ? 'analysis' : 'analyses'}
                       </span>
-                    ) : null}
+                    )}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{calc.name}</h3>
                   <p className="text-sm text-gray-600">{calc.description}</p>
-                  {!isComingSoon && (
-                    <div className="mt-4 flex items-center text-emerald-600 font-medium text-sm">
-                      Open Calculator
-                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  )}
+                  <div className="mt-4 flex items-center text-emerald-600 font-medium text-sm">
+                    Open Calculator
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </Link>
               );
             })}
