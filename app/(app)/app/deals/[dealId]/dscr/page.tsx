@@ -5,21 +5,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/db';
-
-function fmtMoney(n: number) {
-  if (!Number.isFinite(n)) return '-';
-  return new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
-function fmtPercent(n: number) {
-  if (!Number.isFinite(n)) return '-';
-  return n.toFixed(2) + '%';
-}
+import { formatCurrency, formatPercent } from '@/lib/format';
 
 function classifyDSCR(dscr: number) {
   if (dscr >= 1.25) {
@@ -55,7 +41,7 @@ function Tooltip({ children }: { children: React.ReactNode }) {
       <summary className="list-none inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-xs cursor-pointer hover:bg-emerald-200 transition">
         ?
       </summary>
-      <div className="absolute z-10 mt-2 w-72 rounded-lg border border-emerald-200 bg-white p-3 shadow-lg text-sm text-gray-700 hidden group-open:block">
+      <div className="absolute z-10 mt-2 w-72 rounded-lg border border-emerald-200 bg-white p-3 shadow-lg text-sm text-gray-700 hidden group-open:block right-0">
         {children}
       </div>
     </details>
@@ -161,7 +147,7 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
           <div className="flex items-center gap-4">
             <Link 
               href={`/app/deals/${dealId}`}
-              className="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 transition group"
+              className="flex items-center justify-center w-10 h-10 rounded-lg border-2 border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 transition group"
             >
               <svg className="w-5 h-5 text-gray-600 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -172,22 +158,14 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
               <p className="text-sm md:text-base text-gray-600 mt-1">Debt Service Coverage Ratio Analysis</p>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-3">
-            <Link 
-              href={`/app/deals/${dealId}`}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition text-sm font-medium"
-            >
-              View Deal Overview
-            </Link>
-          </div>
         </div>
 
         {/* FORM */}
         <form action={runDscr} className="space-y-6 md:space-y-8">
           {/* 1) BUSINESS CASH FLOW */}
-          <div className="rounded-2xl border-2 border-emerald-200 bg-white p-4 md:p-6 hover:border-emerald-400 hover:shadow-lg transition-all">
+          <div className="rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-6 hover:border-emerald-300 hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900">1) Business Cash Flow</h2>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900">1. Business Cash Flow</h2>
               <Tooltip>
                 <strong>Net Operating Income (NOI)</strong> is the cash available to service debt before loan payments.
                 <br /><br />
@@ -206,9 +184,9 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                   step="0.01"
                   min="0"
                   defaultValue={inputs.grossRevenue || ''}
-                  placeholder="$500,000" 
+                  placeholder="500000" 
                   required 
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" 
                 />
               </div>
 
@@ -222,9 +200,9 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                   step="0.01"
                   min="0"
                   defaultValue={inputs.operatingExpenses || ''}
-                  placeholder="$350,000" 
+                  placeholder="350000" 
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" 
                 />
               </div>
 
@@ -232,11 +210,11 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Net Cash Flow
                 </label>
-                <div className="border border-emerald-300 rounded-lg px-3 py-2 bg-emerald-50 text-gray-900 font-semibold flex items-center justify-between">
-                  {cashFlow > 0 ? fmtMoney(cashFlow) : 'Calculated on submit'}
-                  {cashFlow > 0 && (
+                <div className="border-2 border-emerald-300 rounded-lg px-3 py-2 bg-emerald-50 text-gray-900 font-semibold h-[42px] flex items-center justify-between">
+                  {cashFlow > 0 ? formatCurrency(cashFlow) : 'Calculated on submit'}
+                  {cashFlow > 0 && inputs.grossRevenue > 0 && (
                     <span className="text-xs text-emerald-700">
-                      {fmtPercent((cashFlow / inputs.grossRevenue) * 100)} margin
+                      {formatPercent((cashFlow / inputs.grossRevenue) * 100)} margin
                     </span>
                   )}
                 </div>
@@ -245,9 +223,9 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
           </div>
 
           {/* 2) DEBT ASSUMPTIONS */}
-          <div className="rounded-2xl border-2 border-emerald-200 bg-white p-4 md:p-6 hover:border-emerald-400 hover:shadow-lg transition-all">
+          <div className="rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-6 hover:border-emerald-300 hover:shadow-lg transition-all">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-900">2) Debt Assumptions</h2>
+              <h2 className="text-lg md:text-xl font-semibold text-gray-900">2. Debt Assumptions</h2>
               <Tooltip>
                 <strong>Loan terms</strong> used to calculate annual debt service.
                 <br /><br />
@@ -266,9 +244,9 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                   step="0.01"
                   min="0"
                   defaultValue={inputs.loanAmount || ''}
-                  placeholder="$400,000" 
+                  placeholder="400000" 
                   required 
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" 
                 />
               </div>
 
@@ -285,7 +263,7 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                   defaultValue={inputs.interestRate || ''}
                   placeholder="7.5" 
                   required 
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" 
                 />
               </div>
 
@@ -302,22 +280,22 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
                   defaultValue={inputs.loanTermYears || ''}
                   placeholder="10" 
                   required 
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition" 
                 />
               </div>
             </div>
 
             {/* Show calculated debt service if we have previous data */}
             {annualDebtService > 0 && (
-              <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg border-2 border-gray-200">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Monthly Payment:</span>
-                    <span className="ml-2 font-semibold">{fmtMoney(monthlyPayment)}</span>
+                    <span className="ml-2 font-semibold">{formatCurrency(monthlyPayment)}</span>
                   </div>
                   <div>
                     <span className="text-gray-600">Annual Debt Service:</span>
-                    <span className="ml-2 font-semibold">{fmtMoney(annualDebtService)}</span>
+                    <span className="ml-2 font-semibold">{formatCurrency(annualDebtService)}</span>
                   </div>
                 </div>
               </div>
@@ -333,9 +311,9 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
         </form>
 
         {/* 3) DSCR RESULT */}
-        <div className="rounded-2xl border-2 border-emerald-200 bg-white p-4 md:p-6">
+        <div className="rounded-2xl border-2 border-gray-200 bg-white p-4 md:p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg md:text-xl font-semibold text-gray-900">3) DSCR Result</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">3. DSCR Result</h2>
             <Tooltip>
               <strong>DSCR = Net Operating Income ÷ Annual Debt Service</strong>
               <br /><br />
@@ -363,18 +341,18 @@ export default async function DscrPage({ params }: { params: { dealId: string } 
 
               {/* Calculation Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
                   <div className="text-gray-600 mb-1">Net Cash Flow</div>
-                  <div className="text-xl font-bold text-gray-900">{fmtMoney(cashFlow)}</div>
+                  <div className="text-xl font-bold text-gray-900">{formatCurrency(cashFlow)}</div>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
                   <div className="text-gray-600 mb-1">Annual Debt Service</div>
-                  <div className="text-xl font-bold text-gray-900">{fmtMoney(annualDebtService)}</div>
+                  <div className="text-xl font-bold text-gray-900">{formatCurrency(annualDebtService)}</div>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
                   <div className="text-gray-600 mb-1">Excess Cash Flow</div>
                   <div className={`text-xl font-bold ${cashFlow - annualDebtService > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
-                    {fmtMoney(cashFlow - annualDebtService)}
+                    {formatCurrency(cashFlow - annualDebtService)}
                   </div>
                 </div>
               </div>
