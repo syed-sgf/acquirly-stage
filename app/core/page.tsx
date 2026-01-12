@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone } from 'lucide-react';
+import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone, Save } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import DSCRLegend from '@/components/core/DSCRLegend';
 import FlowIndicator from '@/components/core/FlowIndicator';
@@ -279,6 +279,22 @@ export default function CoreCalculatorPage() {
                       <p className="text-xs font-mono text-sgf-green-700">DSCR = Lendable CF ÷ Total Annual Debt Service</p>
                     </div>
                     <p className="mt-4 text-sm text-gray-500">{dscrResult.statusDescription}</p>
+                    
+                    {/* Save Analysis CTA */}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <a 
+                        href="/api/auth/signin?callbackUrl=/app/deals/new"
+                        className="block w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                          Save This Analysis
+                        </div>
+                      </a>
+                      <p className="mt-2 text-xs text-center text-gray-500">
+                        Create a free account to save unlimited calculations
+                      </p>
+                    </div>
                   </>
                 )}
               </div>
