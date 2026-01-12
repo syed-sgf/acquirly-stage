@@ -19,10 +19,44 @@ export default async function NewDealPage() {
       throw new Error('Deal name is required');
     }
 
+    // Find or create organization for this user
+    let membership = await prisma.membership.findFirst({
+      where: { userId: session!.user!.id },
+      include: { organization: true }
+    });
+
+    // If user has no organization, create one
+    if (!membership) {
+      const userEmail = session!.user!.email || session!.user!.id;
+      const userName = session!.user!.name || userEmail;
+      const orgName = `${userName}'s Organization`;
+      const slug = `org-${session!.user!.id.slice(0, 8)}`;
+
+      const organization = await prisma.organization.create({
+        data: {
+          name: orgName,
+          slug: slug,
+          members: {
+            create: {
+              userId: session!.user!.id,
+              role: 'owner'
+            }
+          }
+        }
+      });
+
+      membership = await prisma.membership.findFirst({
+        where: { userId: session!.user!.id },
+        include: { organization: true }
+      });
+    }
+
+    // Create the deal with both userId and organizationId
     const deal = await prisma.deal.create({
       data: {
         name: name.trim(),
         userId: session!.user!.id,
+        organizationId: membership!.organizationId,
       },
     });
 
