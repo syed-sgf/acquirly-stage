@@ -1,5 +1,3 @@
-// Prisma 5 Schema - Phase 1 Minimal (NextAuth Compatible)
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +8,6 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ==========================
-// USER
-// ==========================
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
@@ -22,10 +17,9 @@ model User {
 
   plan          String    @default("free")
 
-  // Required for NextAuth
   accounts      Account[]
   sessions      Session[]
-
+  memberships   Membership[]
   deals         Deal[]
 
   createdAt     DateTime  @default(now())
@@ -34,9 +28,6 @@ model User {
   @@map("users")
 }
 
-// ==========================
-// NEXTAUTH MODELS
-// ==========================
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -70,28 +61,57 @@ model Session {
   @@map("sessions")
 }
 
-// ==========================
-// DEALS
-// ==========================
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+
+  members   Membership[]
+  deals     Deal[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
+model Membership {
+  id             String   @id @default(cuid())
+  role           String   // owner | admin | member | viewer
+
+  userId         String
+  organizationId String
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([userId, organizationId])
+  @@map("memberships")
+}
+
 model Deal {
-  id          String   @id @default(cuid())
-  name        String
+  id              String   @id @default(cuid())
+  name            String
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  analyses    Analysis[]
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  analyses        Analysis[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@index([userId])
+  @@index([organizationId])
   @@map("deals")
 }
 
-// ==========================
-// ANALYSES
-// ==========================
 model Analysis {
   id        String   @id @default(cuid())
   type      String   @default("dscr")
