@@ -98,7 +98,7 @@ export default function NewDealPage() {
               />
             </div>
 
-            {localStorage.getItem('pendingDSCRAnalysis') && (
+            {typeof window !== 'undefined' && localStorage.getItem('pendingDSCRAnalysis') && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                 <p className="text-sm text-emerald-800">
                   💡 Your DSCR calculation will be automatically saved with this deal.
