@@ -11,14 +11,13 @@ export default function NewDealPage() {
   const router = useRouter();
   const [dealName, setDealName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if there's pending DSCR data from calculator
     const pendingData = localStorage.getItem('pendingDSCRAnalysis');
     if (pendingData) {
       try {
         const dscrData = JSON.parse(pendingData);
-        // Auto-fill deal name with DSCR result
         const name = `DSCR Analysis - ${dscrData.outputs.dscr.toFixed(2)}x - ${new Date().toLocaleDateString()}`;
         setDealName(name);
       } catch (e) {
@@ -30,9 +29,11 @@ export default function NewDealPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
-      // Step 1: Create the deal
+      console.log('Creating deal with name:', dealName);
+      
       const dealResponse = await fetch('/api/deals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,18 +42,23 @@ export default function NewDealPage() {
         }),
       });
 
+      console.log('Deal response status:', dealResponse.status);
+      
       if (!dealResponse.ok) {
-        throw new Error('Failed to create deal');
+        const errorData = await dealResponse.json();
+        console.error('Deal creation failed:', errorData);
+        throw new Error(errorData.error || 'Failed to create deal');
       }
 
       const deal = await dealResponse.json();
+      console.log('Deal created:', deal);
 
-      // Step 2: If there's pending DSCR data, save it as an analysis
       const pendingData = localStorage.getItem('pendingDSCRAnalysis');
       if (pendingData) {
         const dscrData = JSON.parse(pendingData);
+        console.log('Saving DSCR analysis...');
         
-        await fetch(`/api/deals/${deal.id}/analyses`, {
+        const analysisResponse = await fetch(`/api/deals/${deal.id}/analyses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -62,15 +68,21 @@ export default function NewDealPage() {
           }),
         });
 
-        // Clear the pending data
+        if (!analysisResponse.ok) {
+          const errorData = await analysisResponse.json();
+          console.error('Analysis save failed:', errorData);
+        } else {
+          console.log('Analysis saved successfully');
+        }
+
         localStorage.removeItem('pendingDSCRAnalysis');
       }
 
-      // Step 3: Redirect to the deal page
       router.push(`/app/deals/${deal.id}`);
     } catch (error) {
       console.error('Error creating deal:', error);
-      alert('Failed to create deal. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create deal. Please try again.';
+      setError(errorMessage);
       setLoading(false);
     }
   };
@@ -103,6 +115,12 @@ export default function NewDealPage() {
                 <p className="text-sm text-emerald-800">
                   💡 Your DSCR calculation will be automatically saved with this deal.
                 </p>
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800">{error}</p>
               </div>
             )}
 
