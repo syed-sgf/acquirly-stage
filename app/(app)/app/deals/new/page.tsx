@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function NewDealPage() {
   const router = useRouter();
@@ -9,10 +13,12 @@ export default function NewDealPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Check if there's pending DSCR data from calculator
     const pendingData = localStorage.getItem('pendingDSCRAnalysis');
     if (pendingData) {
       try {
         const dscrData = JSON.parse(pendingData);
+        // Auto-fill deal name with DSCR result
         const name = `DSCR Analysis - ${dscrData.outputs.dscr.toFixed(2)}x - ${new Date().toLocaleDateString()}`;
         setDealName(name);
       } catch (e) {
@@ -26,31 +32,41 @@ export default function NewDealPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/deals', {
+      // Step 1: Create the deal
+      const dealResponse = await fetch('/api/deals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: dealName || 'Untitled Deal' }),
+        body: JSON.stringify({
+          name: dealName || 'Untitled Deal',
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to create deal');
-      
-      const deal = await response.json();
+      if (!dealResponse.ok) {
+        throw new Error('Failed to create deal');
+      }
 
-      const dscrData = localStorage.getItem('pendingDSCRAnalysis');
-      if (dscrData) {
+      const deal = await dealResponse.json();
+
+      // Step 2: If there's pending DSCR data, save it as an analysis
+      const pendingData = localStorage.getItem('pendingDSCRAnalysis');
+      if (pendingData) {
+        const dscrData = JSON.parse(pendingData);
+        
         await fetch(`/api/deals/${deal.id}/analyses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'dscr',
-            name: 'DSCR Analysis',
-            ...JSON.parse(dscrData),
+            inputs: dscrData.inputs,
+            outputs: dscrData.outputs,
           }),
         });
-        
+
+        // Clear the pending data
         localStorage.removeItem('pendingDSCRAnalysis');
       }
 
+      // Step 3: Redirect to the deal page
       router.push(`/app/deals/${deal.id}`);
     } catch (error) {
       console.error('Error creating deal:', error);
@@ -60,47 +76,42 @@ export default function NewDealPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-6">Create New Deal</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2">
-            Deal Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={dealName}
-            onChange={(e) => setDealName(e.target.value)}
-            required
-            placeholder="e.g., Main Street Restaurant Acquisition"
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
-        
-        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <p className="text-sm text-emerald-800">
-            💡 Your DSCR calculation will be automatically saved with this deal.
-          </p>
-        </div>
-        
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition disabled:opacity-50"
-          >
-            {loading ? 'Creating...' : 'Create Deal'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/app/deals')}
-            className="px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+    <div className="container mx-auto py-8 max-w-2xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Deal</CardTitle>
+          <CardDescription>
+            Start analyzing a new business acquisition opportunity
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="dealName">Deal Name</Label>
+              <Input
+                id="dealName"
+                type="text"
+                value={dealName}
+                onChange={(e) => setDealName(e.target.value)}
+                placeholder="Enter deal name..."
+                required
+              />
+            </div>
+
+            {localStorage.getItem('pendingDSCRAnalysis') && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                <p className="text-sm text-emerald-800">
+                  💡 Your DSCR calculation will be automatically saved with this deal.
+                </p>
+              </div>
+            )}
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? 'Creating...' : 'Create Deal'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
