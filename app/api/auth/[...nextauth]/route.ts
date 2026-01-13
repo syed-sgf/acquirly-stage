@@ -18,10 +18,6 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    /**
-     * Persist user identity in JWT
-     * This runs on initial sign-in and subsequent requests
-     */
     async jwt({ token, user }) {
       if (user) {
         token.userId = user.id;
@@ -30,10 +26,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    /**
-     * Expose user identity on the session
-     * Required for RBAC
-     */
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.userId as string;
@@ -42,18 +34,22 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    /**
-     * SAFE redirect logic — prevents OAuth loops
-     */
     async redirect({ url, baseUrl }) {
+      // Allow relative URLs (like /app/deals/new)
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // Allow absolute URLs that match our domain
       if (url.startsWith(baseUrl)) {
         return url;
       }
-      return baseUrl;
+      
+      // Default to /app for safety
+      return `${baseUrl}/app`;
     },
   },
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
