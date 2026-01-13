@@ -5,14 +5,14 @@ import { prisma } from '@/lib/db';
 
 export async function POST(
   req: Request,
-  { params }: { params: { dealId: string } }
+  { params }: { params: Promise<{ dealId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const dealId = params.dealId;
+  const { dealId } = await params;
   const body = await req.json();
 
   // Verify user owns this deal
@@ -44,14 +44,14 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: { dealId: string } }
+  { params }: { params: Promise<{ dealId: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const dealId = params.dealId;
+  const { dealId } = await params;
 
   // Verify user owns this deal
   const deal = await prisma.deal.findFirst({
