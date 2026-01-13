@@ -27,15 +27,13 @@ export async function POST(
     return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
   }
 
-  // Create the analysis
+  // Create the analysis (no 'name' or 'metadata' fields in schema)
   const analysis = await prisma.analysis.create({
     data: {
       dealId: dealId,
       type: body.type || 'dscr',
-      name: body.name || 'Analysis',
       inputs: body.inputs || {},
       outputs: body.outputs || {},
-      metadata: body.metadata || {},
     },
   });
 
