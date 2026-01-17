@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -7,310 +5,234 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/format';
 
-const CALCULATORS = [
-  {
-    id: 'dscr',
-    name: 'DSCR Calculator',
-    description: 'Debt Service Coverage Ratio Analysis',
-    icon: '📊',
-    color: 'emerald',
-    href: 'dscr',
-  },
-  {
-    id: 'acquisition',
-    name: 'Business Acquisition Analyzer',
-    description: 'Complete deal analysis with ROI, equity, and scenarios',
-    icon: '💼',
-    color: 'emerald',
-    href: 'acquisition',
-    comingSoon: true,
-  },
-  {
-    id: 'valuation',
-    name: 'Business Valuation Calculator',
-    description: 'Multiple valuation methods and industry benchmarks',
-    icon: '💰',
-    color: 'amber',
-    href: 'valuation',
-    comingSoon: true,
-  },
-  {
-    id: 'reAcquisition',
-    name: 'Real Estate Acquisition Analyzer',
-    description: 'Commercial real estate deal analysis',
-    icon: '🏢',
-    color: 'emerald',
-    href: 're-acquisition',
-    comingSoon: true,
-  },
-  {
-    id: 'loanCapacity',
-    name: 'Loan Capacity Calculator',
-    description: 'Determine maximum borrowing power',
-    icon: '🎯',
-    color: 'blue',
-    href: 'loan-capacity',
-    comingSoon: true,
-  },
-];
-
-export default async function DealOverviewPage({ params }: { params: { dealId: string } }) {
+export default async function DealPage({ 
+  params 
+}: { 
+  params: Promise<{ dealId: string }> 
+}) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect('/');
+  if (!session?.user) {
+    redirect('/api/auth/signin');
+  }
 
-  const deal = await prisma.deal.findFirst({
-    where: { id: params.dealId, userId: session.user.id },
+  const { dealId } = await params;
+
+  const deal = await prisma.deal.findUnique({
+    where: { id: dealId },
     include: {
       analyses: {
         orderBy: { createdAt: 'desc' },
-        take: 10,
       },
     },
   });
 
-  if (!deal) redirect('/app');
+  if (!deal) {
+    redirect('/app/deals');
+  }
 
-  // Count analyses by type
-  const analysisCounts = deal.analyses.reduce((acc, analysis) => {
-    acc[analysis.type] = (acc[analysis.type] || 0) + 1;
+  // Group analyses by type
+  const analysesByType = deal.analyses.reduce((acc, analysis) => {
+    if (!acc[analysis.type]) acc[analysis.type] = [];
+    acc[analysis.type].push(analysis);
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, any[]>);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
-      <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
-        {/* Breadcrumb Navigation */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-600">
-          <Link href="/app" className="hover:text-emerald-600 transition">
-            Dashboard
-          </Link>
-          <span>/</span>
-          <Link href="/app/deals" className="hover:text-emerald-600 transition">
-            Deals
-          </Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{deal.name}</span>
-        </nav>
-
-        {/* Header */}
+    <div className="container mx-auto py-8">
+      {/* Header */}
+      <div className="mb-6">
+        <Link 
+          href="/app/deals"
+          className="text-emerald-600 hover:text-emerald-700 mb-2 inline-block"
+        >
+          ← Back to Deals
+        </Link>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/app/deals"
-              className="flex items-center justify-center w-10 h-10 rounded-lg border-2 border-gray-300 hover:border-emerald-500 hover:bg-emerald-50 transition group"
-            >
-              <svg className="w-5 h-5 text-gray-600 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </Link>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{deal.name}</h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Created {formatDate(deal.createdAt, 'long')} • Last updated {formatDate(deal.updatedAt, 'relative')}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Total Analyses</div>
-                <div className="text-3xl font-bold text-gray-900">{deal.analyses.length}</div>
-              </div>
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">DSCR Calculations</div>
-                <div className="text-3xl font-bold text-gray-900">{analysisCounts.dscr || 0}</div>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">Last Activity</div>
-                <div className="text-lg font-bold text-gray-900">
-                  {deal.analyses.length > 0 
-                    ? formatDate(deal.analyses[0].createdAt, 'relative')
-                    : 'No activity yet'
-                  }
-                </div>
-              </div>
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Calculators Section */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Available Calculators</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {CALCULATORS.map((calc) => {
-              const analysisCount = analysisCounts[calc.id] || 0;
-              const isComingSoon = calc.comingSoon;
-
-              if (isComingSoon) {
-                return (
-                  <div
-                    key={calc.id}
-                    className="block bg-white rounded-2xl border-2 border-gray-200 p-6 opacity-60 cursor-not-allowed"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="text-3xl">{calc.icon}</div>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300">
-                        Coming Soon
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{calc.name}</h3>
-                    <p className="text-sm text-gray-600">{calc.description}</p>
-                  </div>
-                );
-              }
-
-              return (
-                <Link
-                  key={calc.id}
-                  href={`/app/deals/${deal.id}/${calc.href}`}
-                  className="block bg-white rounded-2xl border-2 border-gray-200 hover:border-emerald-300 hover:shadow-lg cursor-pointer p-6 transition-all"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="text-3xl">{calc.icon}</div>
-                    {analysisCount > 0 && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        {analysisCount} {analysisCount === 1 ? 'analysis' : 'analyses'}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{calc.name}</h3>
-                  <p className="text-sm text-gray-600">{calc.description}</p>
-                  <div className="mt-4 flex items-center text-emerald-600 font-medium text-sm">
-                    Open Calculator
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent Analyses */}
-        {deal.analyses.length > 0 && (
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Analyses</h2>
-            <div className="bg-white rounded-2xl border-2 border-gray-200 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Results
-                      </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {deal.analyses.map((analysis) => {
-                      const calc = CALCULATORS.find(c => c.id === analysis.type);
-                      const outputs = analysis.outputs as any;
-                      
-                      return (
-                        <tr key={analysis.id} className="hover:bg-gray-50 transition">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <span className="text-2xl mr-3">{calc?.icon || '📊'}</span>
-                              <div className="text-sm font-medium text-gray-900">{calc?.name || analysis.type}</div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                            {formatDate(analysis.createdAt, 'long')}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {analysis.type === 'dscr' && outputs?.dscr && (
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                outputs.dscr >= 1.25 
-                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                                  : outputs.dscr >= 1.16
-                                  ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                  : 'bg-rose-100 text-rose-800 border border-rose-200'
-                              }`}>
-                                DSCR: {outputs.dscr}x
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            <Link 
-                              href={`/app/deals/${deal.id}/${calc?.href || analysis.type}`}
-                              className="text-emerald-600 hover:text-emerald-800 font-medium"
-                            >
-                              View →
-                            </Link>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <h1 className="text-3xl font-bold text-gray-900">{deal.name}</h1>
+            <p className="text-gray-600">Created {formatDate(deal.createdAt)}</p>
           </div>
-        )}
-
-        {/* Empty State for No Analyses */}
-        {deal.analyses.length === 0 && (
-          <div className="bg-white rounded-2xl border-2 border-gray-200 p-12 text-center">
-            <div className="text-6xl mb-4">🚀</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Ready to Analyze This Deal?</h3>
-            <p className="text-gray-600 mb-6">Choose a calculator above to get started with your analysis</p>
-          </div>
-        )}
-
-        {/* Bottom Navigation */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-          <Link 
-            href="/app/deals"
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back to All Deals
-          </Link>
-          <div className="text-xs text-gray-500">
-            Deal ID: <span className="font-mono">{deal.id.substring(0, 12)}...</span>
+          <div className="flex gap-3">
+            <Link
+              href={`/app/deals/${dealId}/edit`}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Edit Deal
+            </Link>
+            <Link
+              href="/core"
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+            >
+              New Analysis
+            </Link>
           </div>
         </div>
       </div>
+
+      {/* Analyses Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        {/* DSCR Analysis Card */}
+        <AnalysisCard
+          title="DSCR Analysis"
+          description="Debt Service Coverage Ratio"
+          count={analysesByType['dscr']?.length || 0}
+          href={`/app/deals/${dealId}/dscr`}
+          icon="📊"
+          color="emerald"
+        />
+
+        {/* Business Loan Card */}
+        <AnalysisCard
+          title="Business Loan"
+          description="Loan payment calculator"
+          count={analysesByType['business-loan']?.length || 0}
+          href={`/app/deals/${dealId}/business-loan`}
+          icon="💰"
+          color="blue"
+          comingSoon
+        />
+
+        {/* Acquisition Analysis Card */}
+        <AnalysisCard
+          title="Acquisition Analysis"
+          description="ROI & equity tracking"
+          count={analysesByType['acquisition']?.length || 0}
+          href={`/app/deals/${dealId}/acquisition`}
+          icon="🎯"
+          color="purple"
+          comingSoon
+        />
+
+        {/* Valuation Card */}
+        <AnalysisCard
+          title="Valuation"
+          description="Business value assessment"
+          count={analysesByType['valuation']?.length || 0}
+          href={`/app/deals/${dealId}/valuation`}
+          icon="💎"
+          color="yellow"
+          comingSoon
+        />
+
+        {/* CRE Loan Sizer Card */}
+        <AnalysisCard
+          title="CRE Loan Sizer"
+          description="Commercial real estate"
+          count={analysesByType['cre']?.length || 0}
+          href={`/app/deals/${dealId}/cre`}
+          icon="🏢"
+          color="indigo"
+          comingSoon
+        />
+      </div>
+
+      {/* Recent Activity */}
+      {deal.analyses.length > 0 && (
+        <div className="bg-white border rounded-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+          <div className="space-y-3">
+            {deal.analyses.slice(0, 5).map((analysis) => (
+              <div key={analysis.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {analysis.type.toUpperCase()} Analysis
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {formatDate(analysis.createdAt)}
+                  </p>
+                </div>
+                <Link
+                  href={`/app/deals/${dealId}/${analysis.type}`}
+                  className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+                >
+                  View →
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {deal.analyses.length === 0 && (
+        <div className="bg-white border rounded-lg p-12 text-center">
+          <div className="text-gray-400 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Analyses Yet</h3>
+          <p className="text-gray-600 mb-6">
+            Start analyzing this deal with our suite of calculators.
+          </p>
+          <Link
+            href="/core"
+            className="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition"
+          >
+            Run Your First Analysis →
+          </Link>
+        </div>
+      )}
     </div>
+  );
+}
+
+function AnalysisCard({
+  title,
+  description,
+  count,
+  href,
+  icon,
+  color,
+  comingSoon = false,
+}: {
+  title: string;
+  description: string;
+  count: number;
+  href: string;
+  icon: string;
+  color: string;
+  comingSoon?: boolean;
+}) {
+  const colorClasses = {
+    emerald: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    blue: 'bg-blue-50 border-blue-200 text-blue-700',
+    purple: 'bg-purple-50 border-purple-200 text-purple-700',
+    yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+    indigo: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+  };
+
+  const Content = (
+    <>
+      <div className="text-3xl mb-3">{icon}</div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-1">{title}</h3>
+      <p className="text-sm text-gray-600 mb-3">{description}</p>
+      {count > 0 && (
+        <p className="text-sm font-medium text-gray-700">
+          {count} {count === 1 ? 'analysis' : 'analyses'}
+        </p>
+      )}
+      {comingSoon && (
+        <span className="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded mt-2">
+          Coming Soon
+        </span>
+      )}
+    </>
+  );
+
+  if (comingSoon) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-6 opacity-60 cursor-not-allowed">
+        {Content}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={`block border-2 rounded-lg p-6 transition hover:shadow-lg ${colorClasses[color as keyof typeof colorClasses]}`}
+    >
+      {Content}
+    </Link>
   );
 }
