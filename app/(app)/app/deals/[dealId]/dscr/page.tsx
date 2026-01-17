@@ -170,6 +170,7 @@ function DSCRResults({ analysis }: { analysis: any }) {
           Starting Gate Financial specializes in business acquisition loans with competitive rates.
         </p>
         
+        <a
           href="https://startinggatefinancial.com/apply"
           target="_blank"
           rel="noopener noreferrer"
