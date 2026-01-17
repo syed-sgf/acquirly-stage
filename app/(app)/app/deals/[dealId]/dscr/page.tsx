@@ -175,7 +175,7 @@ function DSCRResults({ analysis }: { analysis: any }) {
           rel="noopener noreferrer"
           className="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition"
         >
-          Apply for Financing →
+          Apply for Financing &rarr;
         </a>
       </div>
     </div>
@@ -198,7 +198,7 @@ function EmptyState({ dealId }: { dealId: string }) {
         href="/core"
         className="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition"
       >
-        Calculate DSCR →
+        Calculate DSCR &rarr;
       </Link>
     </div>
   );
