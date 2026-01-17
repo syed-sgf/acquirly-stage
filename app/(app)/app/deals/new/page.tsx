@@ -14,21 +14,32 @@ export default function NewDealPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for pending DSCR analysis
+    // Check for pending analyses
     const pendingDSCR = localStorage.getItem('pendingDSCRAnalysis');
+    const pendingBusinessLoan = localStorage.getItem('pendingBusinessLoanAnalysis');
     
     if (pendingDSCR) {
       try {
         const data = JSON.parse(pendingDSCR);
         console.log('Found pending DSCR analysis:', data);
         
-        // Auto-fill deal name
         if (data.dscr) {
           const date = new Date().toLocaleDateString();
           setDealName(`DSCR Analysis - ${data.dscr.toFixed(2)}x - ${date}`);
         }
       } catch (err) {
         console.error('Error parsing pending DSCR:', err);
+      }
+    } else if (pendingBusinessLoan) {
+      try {
+        const data = JSON.parse(pendingBusinessLoan);
+        console.log('Found pending Business Loan analysis:', data);
+        
+        const date = new Date().toLocaleDateString();
+        const amount = data.inputs.loanAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+        setDealName(`Business Loan - ${amount} - ${date}`);
+      } catch (err) {
+        console.error('Error parsing pending Business Loan:', err);
       }
     }
   }, []);
@@ -61,12 +72,10 @@ export default function NewDealPage() {
 
       // Step 2: Check for pending DSCR analysis
       const pendingDSCR = localStorage.getItem('pendingDSCRAnalysis');
-      
       if (pendingDSCR) {
         console.log('Saving DSCR analysis to deal...');
         const dscrData = JSON.parse(pendingDSCR);
 
-        // Save the analysis
         const analysisResponse = await fetch(`/api/deals/${deal.id}/analyses`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -78,14 +87,37 @@ export default function NewDealPage() {
         });
 
         if (!analysisResponse.ok) {
-          console.error('Analysis save failed');
+          console.error('DSCR analysis save failed');
           throw new Error('Failed to save DSCR analysis');
         }
 
         console.log('DSCR analysis saved successfully');
-        
-        // Clear localStorage
         localStorage.removeItem('pendingDSCRAnalysis');
+      }
+
+      // Step 3: Check for pending Business Loan analysis
+      const pendingBusinessLoan = localStorage.getItem('pendingBusinessLoanAnalysis');
+      if (pendingBusinessLoan) {
+        console.log('Saving Business Loan analysis to deal...');
+        const loanData = JSON.parse(pendingBusinessLoan);
+
+        const analysisResponse = await fetch(`/api/deals/${deal.id}/analyses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'business-loan',
+            inputs: loanData.inputs,
+            outputs: loanData.outputs,
+          }),
+        });
+
+        if (!analysisResponse.ok) {
+          console.error('Business Loan analysis save failed');
+          throw new Error('Failed to save Business Loan analysis');
+        }
+
+        console.log('Business Loan analysis saved successfully');
+        localStorage.removeItem('pendingBusinessLoanAnalysis');
       }
 
       // Redirect to the deal page

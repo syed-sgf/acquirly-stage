@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone } from 'lucide-react';
+import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone, Save } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import DSCRLegend from '@/components/core/DSCRLegend';
 import FlowIndicator from '@/components/core/FlowIndicator';
@@ -89,6 +89,39 @@ export default function CoreCalculatorPage() {
       case 'red': return <AlertCircle className="w-5 h-5" />;
       case 'amber': return <AlertTriangle className="w-5 h-5" />;
       case 'green': return <CheckCircle className="w-5 h-5" />;
+  const handleSaveDSCR = () => {
+    if (!dscrResult) {
+      alert('Please calculate DSCR first');
+      return;
+    }
+
+    // Save to localStorage
+    const dscrData = {
+      dscr: dscrResult.value,
+      inputs: {
+        revenue: parseCurrencyInput(sde), // Using SDE as revenue for now
+        expenses: parseCurrencyInput(capex), // Using CAPEX as expenses for now
+        sde: parseCurrencyInput(sde),
+        capex: parseCurrencyInput(capex),
+        loanAmount: parseCurrencyInput(loanAmount),
+        interestRate: parseFloat(interestRate) || 0,
+        loanTerm: parseInt(loanTerm) || 0,
+      },
+      outputs: {
+        netCashFlow: lendableCF,
+        annualDebtService: annualDebtService,
+        dscr: dscrResult.value,
+        status: dscrResult.status,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem('pendingDSCRAnalysis', JSON.stringify(dscrData));
+    console.log('DSCR data saved to localStorage:', dscrData);
+
+    // Redirect to sign in with callback to new deal page
+    window.location.href = '/api/auth/signin?callbackUrl=/app/deals/new';
+  };
       default: return null;
     }
   };
@@ -130,10 +163,10 @@ export default function CoreCalculatorPage() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <a href="tel:+19725550123" className="hidden sm:inline-flex items-center gap-2 text-white/80 hover:text-white text-sm">
+              <button onClick={handleSaveDSCR} href="tel:+19725550123" className="hidden sm:inline-flex items-center gap-2 text-white/80 hover:text-white text-sm">
                 <Phone className="w-4 h-4" />
                 (972) 555-0123
-              </a>
+              </button>
               <button className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-medium text-white hover:bg-white/20 transition-colors">
                 <FileText className="w-4 h-4 mr-2" />
                 Export PDF
@@ -279,6 +312,22 @@ export default function CoreCalculatorPage() {
                       <p className="text-xs font-mono text-sgf-green-700">DSCR = Lendable CF ÷ Total Annual Debt Service</p>
                     </div>
                     <p className="mt-4 text-sm text-gray-500">{dscrResult.statusDescription}</p>
+                    
+                    {/* Save Analysis CTA */}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <button onClick={handleSaveDSCR} 
+                        
+                        className="block w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                          Save This Analysis
+                        </div>
+                      </button>
+                      <p className="mt-2 text-xs text-center text-gray-500">
+                        Create a free account to save unlimited calculations
+                      </p>
+                    </div>
                   </>
                 )}
               </div>
@@ -307,14 +356,14 @@ export default function CoreCalculatorPage() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
+              <button onClick={handleSaveDSCR} href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
                 <FileText className="w-5 h-5" />
                 Apply for Financing
-              </a>
-              <a href="https://startinggatefinancial.com/contact" className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
+              </button>
+              <button onClick={handleSaveDSCR} href="https://startinggatefinancial.com/contact" className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
                 <MessageSquare className="w-5 h-5" />
                 Schedule Call
-              </a>
+              </button>
             </div>
           </div>
         </div>

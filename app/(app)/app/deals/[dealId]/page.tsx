@@ -89,7 +89,6 @@ export default async function DealPage({
           href={`/app/deals/${dealId}/business-loan`}
           icon="💰"
           color="blue"
-          comingSoon
         />
 
         {/* Acquisition Analysis Card */}
@@ -114,14 +113,25 @@ export default async function DealPage({
           comingSoon
         />
 
+        {/* CRE Acquisition Analyzer Card */}
+        <AnalysisCard
+          title="CRE Acquisition"
+          description="Real estate deal analysis"
+          count={analysesByType['cre-acquisition']?.length || 0}
+          href={`/app/deals/${dealId}/cre-acquisition`}
+          icon="🏢"
+          color="indigo"
+          comingSoon
+        />
+
         {/* CRE Loan Sizer Card */}
         <AnalysisCard
           title="CRE Loan Sizer"
-          description="Commercial real estate"
-          count={analysesByType['cre']?.length || 0}
-          href={`/app/deals/${dealId}/cre`}
-          icon="🏢"
-          color="indigo"
+          description="Commercial loan capacity"
+          count={analysesByType['cre-loan']?.length || 0}
+          href={`/app/deals/${dealId}/cre-loan`}
+          icon="🏗️"
+          color="cyan"
           comingSoon
         />
       </div>
@@ -135,7 +145,7 @@ export default async function DealPage({
               <div key={analysis.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
                 <div>
                   <p className="font-medium text-gray-900">
-                    {analysis.type.toUpperCase()} Analysis
+                    {analysis.type.toUpperCase().replace('-', ' ')} Analysis
                   </p>
                   <p className="text-sm text-gray-600">
                     {formatDate(analysis.createdAt)}
@@ -199,6 +209,7 @@ function AnalysisCard({
     purple: 'bg-purple-50 border-purple-200 text-purple-700',
     yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700',
     indigo: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+    cyan: 'bg-cyan-50 border-cyan-200 text-cyan-700',
   };
 
   const Content = (
