@@ -78,6 +78,38 @@ export default function CoreCalculatorPage() {
     }
   }, [sde, capex, loanAmount, interestRate, loanTerm]);
 
+  const handleSaveDSCR = () => {
+    if (!dscrResult) {
+      alert('Please calculate DSCR first');
+      return;
+    }
+
+    // Save to localStorage
+    const dscrData = {
+      dscr: dscrResult.value,
+      inputs: {
+        revenue: parseCurrencyInput(sde),
+        expenses: parseCurrencyInput(capex),
+        loanAmount: parseCurrencyInput(loanAmount),
+        interestRate: parseFloat(interestRate) || 0,
+        loanTerm: parseInt(loanTerm) || 0,
+      },
+      outputs: {
+        netCashFlow: lendableCF,
+        annualDebtService: annualDebtService,
+        dscr: dscrResult.value,
+        status: dscrResult.status,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    localStorage.setItem('pendingDSCRAnalysis', JSON.stringify(dscrData));
+    console.log('DSCR data saved to localStorage:', dscrData);
+
+    // Redirect to sign in with callback to new deal page
+    window.location.href = '/api/auth/signin?callbackUrl=/app/deals/new';
+  };
+
   useEffect(() => { calculateDSCR(); }, [calculateDSCR]);
 
   const handleCurrencyInput = (value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
@@ -98,142 +130,169 @@ export default function CoreCalculatorPage() {
       case 'red': return 'text-red-600';
       case 'amber': return 'text-sgf-gold-500';
       case 'green': return 'text-sgf-green-500';
-      default: return 'text-gray-300';
+      default: return 'text-gray-500';
     }
   };
 
   const getBadgeClass = (colorClass: string) => {
     switch (colorClass) {
-      case 'red': return 'bg-red-100 text-red-700';
-      case 'amber': return 'bg-sgf-gold-100 text-sgf-gold-600';
-      case 'green': return 'bg-sgf-green-50 text-sgf-green-600';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'red': return 'bg-red-50 text-red-700 border border-red-200';
+      case 'amber': return 'bg-sgf-gold-50 text-sgf-gold-700 border border-sgf-gold-200';
+      case 'green': return 'bg-sgf-green-50 text-sgf-green-700 border border-sgf-green-200';
+      default: return 'bg-gray-50 text-gray-700 border border-gray-200';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* SGF Branded Header */}
-      <div className="bg-gradient-to-r from-sgf-green-600 to-sgf-green-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">SGF</span>
-                </div>
-                <span className="text-sgf-gold-400 text-sm font-medium">Starting Gate Financial</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Header */}
+        <div className="text-center mb-8 md:mb-12">
+          <div className="bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                Free Calculator
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Core DSCR Calculator</h1>
-              <p className="mt-1 text-sgf-green-100 text-sm md:text-base">
-                Analyze debt service coverage ratio to assess loan viability and investment strength
+              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">
+                Debt Service Coverage Ratio Analysis
               </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <a href="tel:+19725550123" className="hidden sm:inline-flex items-center gap-2 text-white/80 hover:text-white text-sm">
-                <Phone className="w-4 h-4" />
-                (972) 555-0123
-              </a>
-              <button className="inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm font-medium text-white hover:bg-white/20 transition-colors">
-                <FileText className="w-4 h-4 mr-2" />
-                Export PDF
-              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Legend */}
         <DSCRLegend />
+
+        {/* Flow Indicator */}
         <FlowIndicator />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        {/* Calculator Cards */}
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Card 1: Business Cash Flow */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sgf-green-50 to-white">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-sgf-green-500 rounded-lg flex items-center justify-center">
                   <DollarSign className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Business Cash Flow</span>
               </div>
-              <span className="text-xs font-bold text-sgf-green-600 bg-sgf-green-50 px-3 py-1 rounded-full border border-sgf-green-200">STEP 1</span>
+              <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">STEP 1</span>
             </div>
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  Annual SDE / EBITDA
-                  <Tooltip title="Seller's Discretionary Earnings / EBITDA" content={<><p className="mb-2"><strong>SDE</strong> = Net Income + Owner Salary + Benefits + Interest + Depreciation + One-time Expenses</p><p><strong>EBITDA</strong> = Earnings Before Interest, Taxes, Depreciation & Amortization</p></>} />
-                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label htmlFor="sde" className="text-sm font-semibold text-gray-700">Annual SDE / EBITDA</label>
+                  <Tooltip content="Seller's Discretionary Earnings or EBITDA - the cash flow available for debt service" />
+                </div>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input type="text" value={sde} onChange={(e) => handleCurrencyInput(e.target.value, setSde)} placeholder="e.g., 500,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-green-500 focus:border-sgf-green-500 font-mono text-lg" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input
+                    id="sde"
+                    type="text"
+                    value={sde}
+                    onChange={(e) => handleCurrencyInput(e.target.value, setSde)}
+                    placeholder="0"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
+                  />
                 </div>
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  Annual CAPEX
-                  <Tooltip title="Capital Expenditures" content={<><p className="mb-2"><strong>Maintenance:</strong> Equipment repairs, replacements, upkeep</p><p><strong>Growth:</strong> New equipment, expansion, upgrades</p><p className="mt-2 text-xs text-gray-400">Typical: 2-5% of revenue</p></>} />
-                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label htmlFor="capex" className="text-sm font-semibold text-gray-700">Less: Annual CAPEX</label>
+                  <Tooltip content="Capital expenditures - equipment replacement, major repairs, etc." />
+                </div>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input type="text" value={capex} onChange={(e) => handleCurrencyInput(e.target.value, setCapex)} placeholder="e.g., 25,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-green-500 focus:border-sgf-green-500 font-mono text-lg" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input
+                    id="capex"
+                    type="text"
+                    value={capex}
+                    onChange={(e) => handleCurrencyInput(e.target.value, setCapex)}
+                    placeholder="0"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
+                  />
                 </div>
               </div>
-              <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  Lendable Cash Flow
-                  <Tooltip title="Lendable Cash Flow" content={<><p>Cash available to service debt after CAPEX.</p><p className="mt-2 text-xs text-sgf-gold-400 font-mono">LCF = SDE − CAPEX</p></>} />
-                </label>
-                <div className="bg-sgf-green-50 border-2 border-sgf-green-200 rounded-lg px-4 py-3 font-mono text-lg font-semibold text-sgf-green-700">{formatCurrencyDetailed(lendableCF)}</div>
+              <div className="pt-4 border-t-2 border-dashed border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Lendable Cash Flow</span>
+                  <span className="text-xl font-bold font-mono text-sgf-green-600">{formatCurrency(lendableCF)}</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Card 2: Debt Assumptions */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sgf-gold-50 to-white">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
                   <Calculator className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Debt Assumptions</span>
               </div>
-              <span className="text-xs font-bold text-sgf-gold-600 bg-sgf-gold-50 px-3 py-1 rounded-full border border-sgf-gold-200">STEP 2</span>
+              <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">STEP 2</span>
             </div>
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Loan Amount</label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label htmlFor="loanAmount" className="text-sm font-semibold text-gray-700">Loan Amount</label>
+                  <Tooltip content="Total amount of debt (bank loan + seller note)" />
+                </div>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input type="text" value={loanAmount} onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)} placeholder="e.g., 750,000" className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 font-mono text-lg" />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input
+                    id="loanAmount"
+                    type="text"
+                    value={loanAmount}
+                    onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)}
+                    placeholder="0"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
+                  />
                 </div>
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Interest Rate (Annual)</label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label htmlFor="interestRate" className="text-sm font-semibold text-gray-700">Interest Rate</label>
+                  <Tooltip content="Weighted average interest rate across all debt" />
+                </div>
                 <div className="relative">
-                  <input type="text" value={interestRate} onChange={(e) => setInterestRate(e.target.value.replace(/[^0-9.]/g, ''))} placeholder="e.g., 8.5" className="w-full pl-4 pr-10 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 font-mono text-lg" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
+                  <input
+                    id="interestRate"
+                    type="text"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
                 </div>
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">Loan Term</label>
-                <select value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-sgf-gold-500 focus:border-sgf-gold-500 bg-white text-lg">
-                  <option value="">Select term...</option>
-                  <option value="5">5 Years</option>
-                  <option value="7">7 Years</option>
-                  <option value="10">10 Years</option>
-                  <option value="15">15 Years</option>
-                  <option value="20">20 Years</option>
-                  <option value="25">25 Years</option>
-                </select>
+                <div className="flex items-center gap-2 mb-2">
+                  <label htmlFor="loanTerm" className="text-sm font-semibold text-gray-700">Loan Term (Years)</label>
+                  <Tooltip content="Amortization period in years" />
+                </div>
+                <input
+                  id="loanTerm"
+                  type="text"
+                  value={loanTerm}
+                  onChange={(e) => setLoanTerm(e.target.value)}
+                  placeholder="10"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
+                />
               </div>
-              <div>
-                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  Total Annual Debt Service
-                  <Tooltip title="Annual Debt Service" content={<><p>Total yearly payments (principal + interest).</p><p className="mt-2 text-xs text-sgf-gold-400 font-mono">= Monthly Payment × 12</p></>} />
-                </label>
-                <div className="bg-sgf-gold-50 border-2 border-sgf-gold-200 rounded-lg px-4 py-3 font-mono text-lg font-semibold text-sgf-gold-700">{formatCurrencyDetailed(annualDebtService)}</div>
+              <div className="pt-4 border-t-2 border-dashed border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Annual Debt Service</span>
+                  <span className="text-xl font-bold font-mono text-sgf-gold-600">{formatCurrency(annualDebtService)}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -282,15 +341,15 @@ export default function CoreCalculatorPage() {
                     
                     {/* Save Analysis CTA */}
                     <div className="mt-6 pt-6 border-t border-gray-200">
-                      <a 
-                        href="/api/auth/signin?callbackUrl=/app/deals/new"
+                      <button 
+                        onClick={handleSaveDSCR}
                         className="block w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
                       >
                         <div className="flex items-center justify-center gap-2">
                           <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
                           Save This Analysis
                         </div>
-                      </a>
+                      </button>
                       <p className="mt-2 text-xs text-center text-gray-500">
                         Create a free account to save unlimited calculations
                       </p>
