@@ -188,19 +188,7 @@ export async function POST(
       });
     }
 
-    // Keep deal snapshot in sync
-    await prisma.deal.update({
-      where: { id: dealId },
-      data: {
-        purchasePrice: inputs.purchasePrice,
-        annualRevenue: inputs.annualRevenue,
-        annualSDE: inputs.annualSDE,
-        businessType: inputs.businessType,
-        updatedAt: new Date(),
-      },
-    });
-
-    return NextResponse.json({
+      return NextResponse.json({
       success: true,
       analysisId: analysis.id,
       name: analysis.name,
