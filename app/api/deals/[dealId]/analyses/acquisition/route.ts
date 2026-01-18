@@ -8,7 +8,8 @@ import {
   ANALYSIS_TYPES,
   resolveAnalysisName,
 } from "@/lib/analyses/constants";
-import { getEntitlements } from "@/lib/entitlements";
+
+import { getEntitlements } from "@/lib/entitlements/get";
 
 /* -----------------------------
    Schemas
