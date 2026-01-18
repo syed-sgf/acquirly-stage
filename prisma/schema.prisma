@@ -114,17 +114,13 @@ model Deal {
 
 model Analysis {
   id        String   @id @default(cuid())
-  type      String   @default("dscr")
-
+  dealId    String
+  type      String
+  name      String
   inputs    Json
   outputs   Json
-
-  dealId    String
-  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([dealId])
-  @@map("analyses")
+  deal Deal @relation(fields: [dealId], references: [id])
 }
