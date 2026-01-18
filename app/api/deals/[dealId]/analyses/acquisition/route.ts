@@ -33,7 +33,7 @@ const AcquisitionInputsSchema = z.object({
 
 const SaveAnalysisSchema = z.object({
   inputs: AcquisitionInputsSchema,
-  outputs: z.record(z.any()),
+  outputs: z.record(z.string(), z.any()),
 });
 
 export async function GET(
