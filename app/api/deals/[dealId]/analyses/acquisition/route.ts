@@ -1,16 +1,8 @@
-// ACQUIRELY - Acquisition Analysis API Route
-// GET: Load existing analysis
-// POST: Save/update analysis
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
-
-// ============================================
-// VALIDATION SCHEMAS
-// ============================================
 
 const AcquisitionInputsSchema = z.object({
   dealName: z.string().optional(),
@@ -41,12 +33,8 @@ const AcquisitionInputsSchema = z.object({
 
 const SaveAnalysisSchema = z.object({
   inputs: AcquisitionInputsSchema,
-  outputs: z.record(z.any()), // Flexible for calculated outputs
+  outputs: z.record(z.any()),
 });
-
-// ============================================
-// GET - Load Analysis
-// ============================================
 
 export async function GET(
   request: NextRequest,
@@ -54,47 +42,27 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
     const { dealId } = params;
     
-    // Verify deal ownership
     const deal = await prisma.deal.findFirst({
-      where: {
-        id: dealId,
-        userId: session.user.id,
-      },
+      where: { id: dealId, userId: session.user.id },
     });
     
     if (!deal) {
-      return NextResponse.json(
-        { error: 'Deal not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
     
-    // Find existing acquisition analysis
     const analysis = await prisma.analysis.findFirst({
-      where: {
-        dealId: dealId,
-        type: 'acquisition',
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
+      where: { dealId: dealId, type: 'acquisition' },
+      orderBy: { updatedAt: 'desc' },
     });
     
     if (!analysis) {
-      return NextResponse.json({
-        exists: false,
-        data: null,
-      });
+      return NextResponse.json({ exists: false, data: null });
     }
     
     return NextResponse.json({
@@ -110,16 +78,9 @@ export async function GET(
     
   } catch (error) {
     console.error('Error loading acquisition analysis:', error);
-    return NextResponse.json(
-      { error: 'Failed to load analysis' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load analysis' }, { status: 500 });
   }
 }
-
-// ============================================
-// POST - Save/Update Analysis
-// ============================================
 
 export async function POST(
   request: NextRequest,
@@ -127,32 +88,20 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
     const { dealId } = params;
     
-    // Verify deal ownership
     const deal = await prisma.deal.findFirst({
-      where: {
-        id: dealId,
-        userId: session.user.id,
-      },
+      where: { id: dealId, userId: session.user.id },
     });
     
     if (!deal) {
-      return NextResponse.json(
-        { error: 'Deal not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Deal not found' }, { status: 404 });
     }
     
-    // Parse and validate request body
     const body = await request.json();
     const validation = SaveAnalysisSchema.safeParse(body);
     
@@ -165,22 +114,15 @@ export async function POST(
     
     const { inputs, outputs } = validation.data;
     
-    // Check for existing analysis
     const existingAnalysis = await prisma.analysis.findFirst({
-      where: {
-        dealId: dealId,
-        type: 'acquisition',
-      },
+      where: { dealId: dealId, type: 'acquisition' },
     });
     
     let analysis;
     
     if (existingAnalysis) {
-      // Update existing
       analysis = await prisma.analysis.update({
-        where: {
-          id: existingAnalysis.id,
-        },
+        where: { id: existingAnalysis.id },
         data: {
           inputs: inputs as any,
           outputs: outputs as any,
@@ -188,7 +130,6 @@ export async function POST(
         },
       });
     } else {
-      // Create new
       analysis = await prisma.analysis.create({
         data: {
           dealId: dealId,
@@ -200,7 +141,6 @@ export async function POST(
       });
     }
     
-    // Also update the deal with key metrics
     await prisma.deal.update({
       where: { id: dealId },
       data: {
@@ -220,66 +160,6 @@ export async function POST(
     
   } catch (error) {
     console.error('Error saving acquisition analysis:', error);
-    return NextResponse.json(
-      { error: 'Failed to save analysis' },
-      { status: 500 }
-    );
-  }
-}
-
-// ============================================
-// DELETE - Remove Analysis
-// ============================================
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { dealId: string } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
-    const { dealId } = params;
-    
-    // Verify deal ownership
-    const deal = await prisma.deal.findFirst({
-      where: {
-        id: dealId,
-        userId: session.user.id,
-      },
-    });
-    
-    if (!deal) {
-      return NextResponse.json(
-        { error: 'Deal not found' },
-        { status: 404 }
-      );
-    }
-    
-    // Delete all acquisition analyses for this deal
-    await prisma.analysis.deleteMany({
-      where: {
-        dealId: dealId,
-        type: 'acquisition',
-      },
-    });
-    
-    return NextResponse.json({
-      success: true,
-      message: 'Analysis deleted',
-    });
-    
-  } catch (error) {
-    console.error('Error deleting acquisition analysis:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete analysis' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to save analysis' }, { status: 500 });
   }
 }
