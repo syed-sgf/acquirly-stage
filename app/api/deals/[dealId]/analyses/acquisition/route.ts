@@ -38,15 +38,15 @@ const SaveAnalysisSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { dealId: string } }
+  { params }: { params: Promise<{ dealId: string }> }
 ) {
   try {
+    const { dealId } = await params;
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const { dealId } = params;
     
     const deal = await prisma.deal.findFirst({
       where: { id: dealId, userId: session.user.id },
@@ -84,15 +84,15 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { dealId: string } }
+  { params }: { params: Promise<{ dealId: string }> }
 ) {
   try {
+    const { dealId } = await params;
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    const { dealId } = params;
     
     const deal = await prisma.deal.findFirst({
       where: { id: dealId, userId: session.user.id },

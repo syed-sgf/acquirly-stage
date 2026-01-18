@@ -5,15 +5,17 @@ import { prisma } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { dealId: string } }
+  { params }: { params: Promise<{ dealId: string }> }
 ) {
+  const { dealId } = await params;
+  
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   
   const deal = await prisma.deal.findFirst({
-    where: { id: params.dealId, userId: session.user.id },
+    where: { id: dealId, userId: session.user.id },
   });
   
   if (!deal) {
