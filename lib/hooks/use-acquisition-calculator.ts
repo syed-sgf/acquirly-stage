@@ -1,213 +1,235 @@
-/**
- * useAcquisitionCalculator Hook
- * 
- * React hook that manages acquisition analysis state and calculations
- * Provides autosave functionality and real-time calculation updates
- */
+// ACQUIRELY - Acquisition Calculator React Hook
+// Manages state, calculations, and autosave
 
-import { useState, useCallback, useEffect } from 'react';
-import { useDebounce } from './use-debounce';
-import type { 
-  AcquisitionInputs, 
-  AcquisitionAnalysis 
+'use client';
+
+import { useState, useCallback, useEffect, useRef } from 'react';
+import {
+  AcquisitionInputs,
+  CalculatedMetrics,
+  DEFAULT_INPUTS,
+  calculateAcquisitionAnalysis,
 } from '@/lib/calculations/acquisition-analysis';
-import { analyzeAcquisition, validateInputs } from '@/lib/calculations/acquisition-analysis';
 
 interface UseAcquisitionCalculatorOptions {
-  dealId?: string;
-  initialInputs?: Partial<AcquisitionInputs>;
-  autoSave?: boolean;
-  onSave?: (analysis: AcquisitionAnalysis) => Promise<void>;
+  dealId: string;
+  initialData?: Partial<AcquisitionInputs>;
+  onSave?: (inputs: AcquisitionInputs, outputs: CalculatedMetrics) => Promise<void>;
+  autosaveDelay?: number;
 }
 
-interface SaveStatus {
-  status: 'idle' | 'saving' | 'saved' | 'error';
-  message?: string;
-  lastSaved?: Date;
+interface UseAcquisitionCalculatorReturn {
+  inputs: AcquisitionInputs;
+  outputs: CalculatedMetrics | null;
+  updateInput: <K extends keyof AcquisitionInputs>(key: K, value: AcquisitionInputs[K]) => void;
+  updateInputs: (updates: Partial<AcquisitionInputs>) => void;
+  resetToDefaults: () => void;
+  calculate: () => void;
+  save: () => Promise<void>;
+  isCalculating: boolean;
+  isSaving: boolean;
+  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
+  lastSaved: Date | null;
+  hasUnsavedChanges: boolean;
+  error: string | null;
 }
 
-export function useAcquisitionCalculator(options: UseAcquisitionCalculatorOptions = {}) {
-  const { dealId, initialInputs, autoSave = true, onSave } = options;
-
-  // Default inputs
-  const defaultInputs: AcquisitionInputs = {
-    dealName: '',
-    businessType: 'other',
-    purchasePrice: 500000,
-    downPayment: 125000,
-    sellerFinancing: 0,
-    sellerFinancingRate: 6.0,
-    sellerFinancingTerm: 5,
-    bankLoan: 375000,
-    bankInterestRate: 7.5,
-    bankLoanTerm: 10,
-    annualRevenue: 1000000,
-    annualSDE: 200000,
-    annualEBITDA: 180000,
-    workingCapital: 25000,
-    closingCosts: 15000,
-    ffeValue: 100000,
-    inventoryValue: 50000,
-    annualCapex: 10000,
-    buyerSalary: 0,
-    revenueGrowth: 5,
-    expenseGrowth: 3,
-    exitTimeline: 10,
-    ...initialInputs
-  };
-
+export function useAcquisitionCalculator({
+  dealId,
+  initialData,
+  onSave,
+  autosaveDelay = 2000,
+}: UseAcquisitionCalculatorOptions): UseAcquisitionCalculatorReturn {
   // State
-  const [inputs, setInputs] = useState<AcquisitionInputs>(defaultInputs);
-  const [analysis, setAnalysis] = useState<AcquisitionAnalysis | null>(null);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>({ status: 'idle' });
+  const [inputs, setInputs] = useState<AcquisitionInputs>({
+    ...DEFAULT_INPUTS,
+    ...initialData,
+  });
+  const [outputs, setOutputs] = useState<CalculatedMetrics | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
-
-  // Debounced inputs for autosave (wait 1 second after user stops typing)
-  const debouncedInputs = useDebounce(inputs, 1000);
-
-  /**
-   * Calculate analysis from current inputs
-   */
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Refs for autosave
+  const autosaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedInputsRef = useRef<string>('');
+  
+  // Calculate on mount and when inputs change
+  useEffect(() => {
+    const result = calculateAcquisitionAnalysis(inputs);
+    setOutputs(result);
+  }, [inputs]);
+  
+  // Autosave logic
+  useEffect(() => {
+    const currentInputsString = JSON.stringify(inputs);
+    
+    // Check if inputs have changed since last save
+    if (currentInputsString !== lastSavedInputsRef.current) {
+      setHasUnsavedChanges(true);
+      
+      // Clear existing timer
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current);
+      }
+      
+      // Set new autosave timer
+      if (onSave && outputs) {
+        autosaveTimerRef.current = setTimeout(async () => {
+          try {
+            setSaveStatus('saving');
+            setIsSaving(true);
+            await onSave(inputs, outputs);
+            lastSavedInputsRef.current = currentInputsString;
+            setLastSaved(new Date());
+            setSaveStatus('saved');
+            setHasUnsavedChanges(false);
+            setError(null);
+            
+            // Reset to idle after 3 seconds
+            setTimeout(() => setSaveStatus('idle'), 3000);
+          } catch (err) {
+            setSaveStatus('error');
+            setError(err instanceof Error ? err.message : 'Failed to save');
+          } finally {
+            setIsSaving(false);
+          }
+        }, autosaveDelay);
+      }
+    }
+    
+    return () => {
+      if (autosaveTimerRef.current) {
+        clearTimeout(autosaveTimerRef.current);
+      }
+    };
+  }, [inputs, outputs, onSave, autosaveDelay]);
+  
+  // Update single input
+  const updateInput = useCallback(<K extends keyof AcquisitionInputs>(
+    key: K,
+    value: AcquisitionInputs[K]
+  ) => {
+    setInputs(prev => ({ ...prev, [key]: value }));
+  }, []);
+  
+  // Update multiple inputs
+  const updateInputs = useCallback((updates: Partial<AcquisitionInputs>) => {
+    setInputs(prev => ({ ...prev, ...updates }));
+  }, []);
+  
+  // Reset to defaults
+  const resetToDefaults = useCallback(() => {
+    setInputs(DEFAULT_INPUTS);
+    setError(null);
+  }, []);
+  
+  // Manual calculate
   const calculate = useCallback(() => {
     setIsCalculating(true);
-    
     try {
-      // Validate inputs
-      const validationErrors = validateInputs(inputs);
-      setErrors(validationErrors);
-      
-      if (validationErrors.length === 0) {
-        // Calculate bank loan (derived field)
-        const calculatedInputs = {
-          ...inputs,
-          bankLoan: inputs.purchasePrice - inputs.downPayment - inputs.sellerFinancing
-        };
-        
-        // Run analysis
-        const result = analyzeAcquisition(calculatedInputs);
-        setAnalysis(result);
-      } else {
-        setAnalysis(null);
-      }
-    } catch (error) {
-      console.error('Calculation error:', error);
-      setErrors(['An error occurred during calculation']);
-      setAnalysis(null);
+      const result = calculateAcquisitionAnalysis(inputs);
+      setOutputs(result);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Calculation error');
     } finally {
       setIsCalculating(false);
     }
   }, [inputs]);
-
-  /**
-   * Update a single input field
-   */
-  const updateInput = useCallback(<K extends keyof AcquisitionInputs>(
-    field: K,
-    value: AcquisitionInputs[K]
-  ) => {
-    setInputs(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
-  /**
-   * Update multiple input fields at once
-   */
-  const updateInputs = useCallback((updates: Partial<AcquisitionInputs>) => {
-    setInputs(prev => ({
-      ...prev,
-      ...updates
-    }));
-  }, []);
-
-  /**
-   * Reset to default inputs
-   */
-  const reset = useCallback(() => {
-    setInputs(defaultInputs);
-    setAnalysis(null);
-    setErrors([]);
-    setSaveStatus({ status: 'idle' });
-  }, [defaultInputs]);
-
-  /**
-   * Load inputs from a saved analysis
-   */
-  const loadAnalysis = useCallback((savedAnalysis: AcquisitionAnalysis) => {
-    setInputs(savedAnalysis.inputs);
-    setAnalysis(savedAnalysis);
-    setErrors([]);
-  }, []);
-
-  /**
-   * Save current analysis
-   */
+  
+  // Manual save
   const save = useCallback(async () => {
-    if (!analysis || !onSave) return;
-
-    setSaveStatus({ status: 'saving', message: 'Saving...' });
-
-    try {
-      await onSave(analysis);
-      setSaveStatus({
-        status: 'saved',
-        message: 'Saved successfully',
-        lastSaved: new Date()
-      });
-
-      // Reset to idle after 3 seconds
-      setTimeout(() => {
-        setSaveStatus(prev => ({
-          ...prev,
-          status: 'idle'
-        }));
-      }, 3000);
-    } catch (error) {
-      console.error('Save error:', error);
-      setSaveStatus({
-        status: 'error',
-        message: error instanceof Error ? error.message : 'Failed to save'
-      });
-    }
-  }, [analysis, onSave]);
-
-  /**
-   * Auto-save when debounced inputs change
-   */
-  useEffect(() => {
-    if (autoSave && analysis && dealId && onSave) {
-      save();
-    }
-  }, [debouncedInputs, autoSave, analysis, dealId, onSave, save]);
-
-  /**
-   * Recalculate whenever inputs change
-   */
-  useEffect(() => {
-    calculate();
-  }, [calculate]);
-
-  return {
-    // State
-    inputs,
-    analysis,
-    errors,
-    isCalculating,
-    saveStatus,
+    if (!onSave || !outputs) return;
     
-    // Actions
+    try {
+      setSaveStatus('saving');
+      setIsSaving(true);
+      await onSave(inputs, outputs);
+      lastSavedInputsRef.current = JSON.stringify(inputs);
+      setLastSaved(new Date());
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      setError(null);
+      
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch (err) {
+      setSaveStatus('error');
+      setError(err instanceof Error ? err.message : 'Failed to save');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [inputs, outputs, onSave]);
+  
+  return {
+    inputs,
+    outputs,
     updateInput,
     updateInputs,
+    resetToDefaults,
     calculate,
-    reset,
-    loadAnalysis,
     save,
-    
-    // Computed
-    hasErrors: errors.length > 0,
-    isValid: errors.length === 0 && analysis !== null,
-    canSave: analysis !== null && errors.length === 0
+    isCalculating,
+    isSaving,
+    saveStatus,
+    lastSaved,
+    hasUnsavedChanges,
+    error,
   };
+}
+
+// ============================================
+// DEBOUNCE HOOK
+// ============================================
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// ============================================
+// LOCAL STORAGE HOOK (for public calculators)
+// ============================================
+
+export function useLocalStorageInputs(key: string, initialValue: AcquisitionInputs) {
+  const [storedValue, setStoredValue] = useState<AcquisitionInputs>(() => {
+    if (typeof window === 'undefined') {
+      return initialValue;
+    }
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error('Error reading from localStorage:', error);
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: AcquisitionInputs | ((val: AcquisitionInputs) => AcquisitionInputs)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      }
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  };
+
+  return [storedValue, setValue] as const;
 }
