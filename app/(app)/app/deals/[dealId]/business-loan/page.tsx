@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calculator, DollarSign, Percent, Clock, RefreshCw, TrendingUp } from 'lucide-react';
 
@@ -44,7 +44,6 @@ const formatCurrencyShort = (value: number): string => {
 
 export default function DealBusinessLoanPage() {
   const params = useParams();
-  const router = useRouter();
   const dealId = params.dealId as string;
 
   const [analysis, setAnalysis] = useState<BusinessLoanAnalysis | null>(null);
@@ -61,7 +60,6 @@ export default function DealBusinessLoanPage() {
         
         const analyses = await response.json();
         
-        // Find the most recent business-loan analysis
         const businessLoanAnalysis = analyses
           .filter((a: BusinessLoanAnalysis) => a.type === 'business-loan')
           .sort((a: BusinessLoanAnalysis, b: BusinessLoanAnalysis) => 
@@ -142,7 +140,6 @@ export default function DealBusinessLoanPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <Link
@@ -169,7 +166,6 @@ export default function DealBusinessLoanPage() {
         </Link>
       </div>
 
-      {/* Loan Details Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
           <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -191,7 +187,6 @@ export default function DealBusinessLoanPage() {
         </div>
       </div>
 
-      {/* Results Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-5 text-white">
           <div className="flex items-center gap-2 mb-2">
@@ -232,7 +227,6 @@ export default function DealBusinessLoanPage() {
         </div>
       </div>
 
-      {/* Payment Breakdown */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <h3 className="text-lg font-bold text-gray-900 mb-4">Payment Breakdown</h3>
         <div className="flex items-center gap-8">
@@ -281,7 +275,6 @@ export default function DealBusinessLoanPage() {
         </div>
       </div>
 
-      {/* CTA */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl p-6 text-white">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
