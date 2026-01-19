@@ -781,5 +781,4 @@ export function formatYears(years: number): string {
 // Type alias for backwards compatibility
 export type AcquisitionAnalysis = CalculatedMetrics;
 
-// Type alias for backwards compatibility
-export type AcquisitionAnalysis = CalculatedMetrics;
+
