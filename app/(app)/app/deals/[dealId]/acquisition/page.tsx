@@ -1,7 +1,7 @@
 'use client';
 /**
  * Business Acquisition Analyzer - Deal-Specific Route
- * Professional UI matching Core calculator styling
+ * Professional UI with SGF Brand Colors (Emerald Green & Gold)
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
@@ -91,9 +91,9 @@ export default function AcquisitionAnalyzerPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-sgf-green-500 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading analysis...</p>
         </div>
       </div>
@@ -109,30 +109,30 @@ export default function AcquisitionAnalyzerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Navigation */}
         <Link 
           href={`/app/deals/${dealId}`}
-          className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 mb-6 font-medium"
+          className="inline-flex items-center gap-2 text-sgf-green-500 hover:text-sgf-green-600 mb-6 font-medium"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Deal
         </Link>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden mb-8">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="bg-gradient-to-r from-sgf-green-500 via-sgf-green-600 to-sgf-green-700 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden mb-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           
           <div className="relative z-10 flex items-center justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
+              <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 Pro Calculator
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Business Acquisition Analyzer</h1>
-              <p className="text-emerald-100 mt-2">
+              <p className="text-sgf-green-100 mt-2">
                 Comprehensive ROI, equity tracking & valuation analysis
               </p>
             </div>
@@ -183,7 +183,7 @@ export default function AcquisitionAnalyzerPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap transition-colors border-b-2 ${
                     activeTab === tab.id
-                      ? 'border-emerald-600 text-emerald-600 bg-emerald-50/50'
+                      ? 'border-sgf-green-500 text-sgf-green-600 bg-sgf-green-50/50'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -219,11 +219,11 @@ export default function AcquisitionAnalyzerPage() {
         </div>
 
         {/* Starting Gate Financial CTA */}
-        <div className="mt-8 bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="mt-8 bg-gradient-to-r from-sgf-green-500 to-sgf-green-600 rounded-2xl p-8 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 max-w-3xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to Finance This Deal?</h2>
-            <p className="text-lg mb-6 text-emerald-100">
+            <p className="text-lg mb-6 text-sgf-green-100">
               Starting Gate Financial offers competitive financing solutions for business acquisitions.
               Let our team help you structure the best deal possible.
             </p>
@@ -231,7 +231,7 @@ export default function AcquisitionAnalyzerPage() {
               href="https://startinggatefinancial.com/apply"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white font-semibold px-8 py-3 rounded-lg transition-colors shadow-lg"
             >
               Apply for Financing Now
               <ArrowLeft className="w-4 h-4 rotate-180" />
@@ -259,7 +259,7 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-sgf-green-500 rounded-lg flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-gray-900">Purchase Structure</span>
@@ -303,7 +303,7 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-gray-900">Business Financials</span>
@@ -346,14 +346,14 @@ interface ROITabProps {
 
 function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
   const getDSCRColor = (dscr: number) => {
-    if (dscr >= 1.25) return { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700' };
-    if (dscr >= 1.0) return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' };
+    if (dscr >= 1.25) return { bg: 'bg-sgf-green-50', border: 'border-sgf-green-200', text: 'text-sgf-green-700' };
+    if (dscr >= 1.0) return { bg: 'bg-sgf-gold-50', border: 'border-sgf-gold-200', text: 'text-sgf-gold-700' };
     return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' };
   };
 
   const getCoCColor = (coc: number) => {
-    if (coc >= 15) return { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700' };
-    if (coc >= 10) return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700' };
+    if (coc >= 15) return { bg: 'bg-sgf-green-50', border: 'border-sgf-green-200', text: 'text-sgf-green-700' };
+    if (coc >= 10) return { bg: 'bg-sgf-gold-50', border: 'border-sgf-gold-200', text: 'text-sgf-gold-700' };
     return { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700' };
   };
 
@@ -411,7 +411,7 @@ function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">Annual Pre-Tax Cash Flow</p>
-              <p className="text-2xl font-bold text-emerald-600">{formatCurrency(outputs.annualPreTaxCashFlow)}</p>
+              <p className="text-2xl font-bold text-sgf-green-600">{formatCurrency(outputs.annualPreTaxCashFlow)}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600 mb-1">Annual Debt Service</p>
@@ -453,12 +453,12 @@ function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
                 <td className="px-6 py-4 text-sm font-semibold text-gray-900">Year {year.year}</td>
                 <td className="px-6 py-4 text-sm text-right text-gray-900">{formatCurrency(year.businessValue)}</td>
                 <td className="px-6 py-4 text-sm text-right text-gray-900">{formatCurrency(year.totalDebt)}</td>
-                <td className="px-6 py-4 text-sm text-right font-semibold text-emerald-600">{formatCurrency(year.ownerEquity)}</td>
+                <td className="px-6 py-4 text-sm text-right font-semibold text-sgf-green-600">{formatCurrency(year.ownerEquity)}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <div className="w-16 bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-emerald-500 h-2 rounded-full transition-all"
+                        className="bg-sgf-green-500 h-2 rounded-full transition-all"
                         style={{ width: `${Math.min(year.equityPercent, 100)}%` }}
                       />
                     </div>
@@ -490,13 +490,13 @@ interface ScenariosTabProps {
 function ScenariosTab({ outputs, formatCurrency, formatPercent }: ScenariosTabProps) {
   const scenarios = [
     { key: 'baseCase', name: 'Base Case', color: 'gray', description: 'Current assumptions' },
-    { key: 'bestCase', name: 'Best Case', color: 'emerald', description: 'Optimistic growth' },
+    { key: 'bestCase', name: 'Best Case', color: 'green', description: 'Optimistic growth' },
     { key: 'worstCase', name: 'Worst Case', color: 'red', description: 'Conservative estimate' },
   ];
 
   const colorClasses = {
     gray: 'bg-white border-gray-200',
-    emerald: 'bg-emerald-50 border-emerald-200',
+    green: 'bg-sgf-green-50 border-sgf-green-200',
     red: 'bg-red-50 border-red-200',
   };
 
@@ -583,8 +583,8 @@ function ValuationTab({ outputs, formatCurrency }: ValuationTabProps) {
           <tbody className="divide-y divide-gray-200">
             {methods.map((method) => {
               const assessmentColors = {
-                undervalued: 'bg-emerald-100 text-emerald-800',
-                fair: 'bg-amber-100 text-amber-800',
+                undervalued: 'bg-sgf-green-100 text-sgf-green-800',
+                fair: 'bg-sgf-gold-100 text-sgf-gold-800',
                 overvalued: 'bg-red-100 text-red-800',
               };
               
@@ -649,7 +649,7 @@ function InputField({ label, value, onChange, prefix, suffix, step, tooltip }: I
           step={step}
           className={`
             w-full rounded-lg border border-gray-300 shadow-sm
-            focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20
+            focus:border-sgf-green-500 focus:ring-2 focus:ring-sgf-green-500/20
             ${prefix ? 'pl-8' : 'pl-4'}
             ${suffix ? 'pr-12' : 'pr-4'}
             py-3 text-gray-900 font-medium
