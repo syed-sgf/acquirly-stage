@@ -40,8 +40,8 @@ export default function AcquisitionAnalyzerPage() {
   // Initialize calculator
   const {
     inputs,
-    analysis,
-    errors,
+    outputs,
+    error,
     isCalculating,
     saveStatus,
     updateInput,
@@ -94,7 +94,7 @@ export default function AcquisitionAnalyzerPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E7D32] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading analysis...</p>
+          <p className="text-gray-600">Loading outputs...</p>
         </div>
       </div>
     );
@@ -187,19 +187,19 @@ export default function AcquisitionAnalyzerPage() {
           <InputsTab inputs={inputs} updateInput={updateInput} />
         )}
         
-        {activeTab === 'roi' && analysis && (
+        {activeTab === 'roi' && outputs && (
           <ROITab analysis={analysis} formatCurrency={formatCurrency} formatPercent={formatPercent} />
         )}
         
-        {activeTab === 'equity' && analysis && (
+        {activeTab === 'equity' && outputs && (
           <EquityTab analysis={analysis} formatCurrency={formatCurrency} />
         )}
         
-        {activeTab === 'scenarios' && analysis && (
+        {activeTab === 'scenarios' && outputs && (
           <ScenariosTab analysis={analysis} formatCurrency={formatCurrency} formatPercent={formatPercent} />
         )}
         
-        {activeTab === 'valuation' && analysis && (
+        {activeTab === 'valuation' && outputs && (
           <ValuationTab analysis={analysis} formatCurrency={formatCurrency} />
         )}
       </div>
@@ -302,7 +302,7 @@ interface ROITabProps {
   formatPercent: (value: number) => string;
 }
 
-function ROITab({ analysis, formatCurrency, formatPercent }: ROITabProps) {
+function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
   const { roiMetrics } = analysis;
   
   return (
@@ -341,7 +341,7 @@ function ROITab({ analysis, formatCurrency, formatPercent }: ROITabProps) {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Annual Debt Service</span>
-            <span className="font-semibold">{formatCurrency(analysis.debtService.annualDebtService)}</span>
+            <span className="font-semibold">{formatCurrency(outputs.debtService.annualDebtService)}</span>
           </div>
         </div>
       </div>
@@ -354,7 +354,7 @@ interface EquityTabProps {
   formatCurrency: (value: number) => string;
 }
 
-function EquityTab({ analysis, formatCurrency }: EquityTabProps) {
+function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
   const { equitySchedule } = analysis;
   
   return (
@@ -394,7 +394,7 @@ interface ScenariosTabProps {
   formatPercent: (value: number) => string;
 }
 
-function ScenariosTab({ analysis, formatCurrency, formatPercent }: ScenariosTabProps) {
+function ScenariosTab({ outputs, formatCurrency, formatPercent }: ScenariosTabProps) {
   const { scenarios } = analysis;
   
   return (
@@ -427,7 +427,7 @@ interface ValuationTabProps {
   formatCurrency: (value: number) => string;
 }
 
-function ValuationTab({ analysis, formatCurrency }: ValuationTabProps) {
+function ValuationTab({ outputs, formatCurrency }: ValuationTabProps) {
   const { valuations } = analysis;
   
   return (
