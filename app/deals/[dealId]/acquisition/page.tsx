@@ -45,10 +45,9 @@ export default function AcquisitionAnalyzerPage() {
     isCalculating,
     saveStatus,
     updateInput,
-    loadAnalysis
   } = useAcquisitionCalculator({
     dealId,
-    autoSave: true,
+    autosaveDelay: 2000,
     onSave: handleSave
   });
 
@@ -61,7 +60,7 @@ export default function AcquisitionAnalyzerPage() {
         if (response.ok) {
           const data = await response.json();
           if (data.outputs) {
-            loadAnalysis(data.outputs);
+            (data.outputs);
           }
         }
       } catch (error) {
@@ -72,7 +71,7 @@ export default function AcquisitionAnalyzerPage() {
     };
 
     loadExistingAnalysis();
-  }, [dealId, loadAnalysis]);
+  }, [dealId, ]);
 
   // Format currency
   const formatCurrency = (value: number) => {
