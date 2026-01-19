@@ -99,7 +99,6 @@ export default async function DealPage({
           href={`/app/deals/${dealId}/acquisition`}
           icon="🎯"
           color="purple"
-          comingSoon
         />
 
         {/* Valuation Card */}
