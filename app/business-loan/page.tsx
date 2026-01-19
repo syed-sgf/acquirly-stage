@@ -184,21 +184,21 @@ export default function BusinessLoanCalculatorPage() {
   const displayRows = showFullTable ? amortization : amortization.slice(0, 12);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {/* Header */}
         <div className="text-center mb-8 md:mb-12">
-          <div className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="bg-gradient-to-r from-sgf-green-500 via-sgf-green-600 to-sgf-green-700 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
             
             <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
+              <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 Free Calculator
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Business Loan Calculator</h1>
-              <p className="text-emerald-100 mt-2 max-w-2xl mx-auto">
+              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">
                 Calculate monthly payments, total interest, and view complete amortization schedule
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function BusinessLoanCalculatorPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-sgf-green-500 rounded-lg flex items-center justify-center">
                   <DollarSign className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Loan Details</span>
@@ -231,7 +231,7 @@ export default function BusinessLoanCalculatorPage() {
                     value={loanAmount}
                     onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)}
                     placeholder="500,000"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default function BusinessLoanCalculatorPage() {
                     value={interestRate}
                     onChange={(e) => setInterestRate(e.target.value)}
                     placeholder="7.5"
-                    className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-emerald-500 focus:outline-none transition-colors"
+                    className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
                 </div>
@@ -261,7 +261,7 @@ export default function BusinessLoanCalculatorPage() {
                   value={loanTerm}
                   onChange={(e) => setLoanTerm(e.target.value)}
                   placeholder="10"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-emerald-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function BusinessLoanCalculatorPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
                   <Calculator className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Payment Summary</span>
@@ -282,7 +282,7 @@ export default function BusinessLoanCalculatorPage() {
               {result ? (
                 <div className="space-y-4">
                   <div className="bg-gray-50 rounded-xl p-6 text-center">
-                    <span className="text-4xl md:text-5xl font-bold font-mono text-emerald-600">
+                    <span className="text-4xl md:text-5xl font-bold font-mono text-sgf-green-500">
                       {formatCurrency(result.monthlyPayment)}
                     </span>
                     <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider mt-2">Monthly Payment</div>
@@ -303,8 +303,8 @@ export default function BusinessLoanCalculatorPage() {
                     </div>
                   </div>
 
-                  <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
-                    <p className="text-xs text-emerald-700">
+                  <div className="mt-4 bg-sgf-green-50 border border-sgf-green-200 rounded-lg px-4 py-3">
+                    <p className="text-xs text-sgf-green-700">
                       Interest is {((result.totalInterest / parseCurrencyInput(loanAmount)) * 100).toFixed(1)}% of your loan amount
                     </p>
                   </div>
@@ -322,7 +322,7 @@ export default function BusinessLoanCalculatorPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${result ? 'bg-emerald-500' : 'bg-gray-400'}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${result ? 'bg-sgf-green-500' : 'bg-gray-400'}`}>
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Actions</span>
@@ -337,7 +337,7 @@ export default function BusinessLoanCalculatorPage() {
                     <div className="space-y-3">
                       <button 
                         onClick={handleSaveLoan}
-                        className="block w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
+                        className="block w-full bg-gradient-to-r from-sgf-green-500 to-sgf-green-600 hover:from-sgf-green-600 hover:to-sgf-green-700 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
                       >
                         <div className="flex items-center justify-center gap-2">
                           <Save className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -377,7 +377,7 @@ export default function BusinessLoanCalculatorPage() {
           <div className="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
                   <Table className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-gray-900">Amortization Schedule</span>
@@ -402,7 +402,7 @@ export default function BusinessLoanCalculatorPage() {
                     <tr key={row.month} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                       <td className="px-6 py-3 text-sm font-medium text-gray-900">{row.month}</td>
                       <td className="px-6 py-3 text-sm font-mono text-right text-gray-900">{formatCurrency(row.payment)}</td>
-                      <td className="px-6 py-3 text-sm font-mono text-right text-emerald-600 font-semibold">{formatCurrency(row.principal)}</td>
+                      <td className="px-6 py-3 text-sm font-mono text-right text-sgf-green-600 font-semibold">{formatCurrency(row.principal)}</td>
                       <td className="px-6 py-3 text-sm font-mono text-right text-red-600">{formatCurrency(row.interest)}</td>
                       <td className="px-6 py-3 text-sm font-mono text-right font-bold text-gray-900">{formatCurrency(row.balance)}</td>
                     </tr>
@@ -414,7 +414,7 @@ export default function BusinessLoanCalculatorPage() {
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-center">
                 <button
                   onClick={() => setShowFullTable(!showFullTable)}
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors"
+                  className="text-sgf-green-500 hover:text-sgf-green-600 font-semibold text-sm transition-colors"
                 >
                   {showFullTable ? '← Show First Year Only' : `View All ${amortization.length} Payments →`}
                 </button>
@@ -424,24 +424,24 @@ export default function BusinessLoanCalculatorPage() {
         )}
 
         {/* Financing CTA */}
-        <div className="mt-12 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="mt-12 bg-gradient-to-r from-sgf-green-500 via-sgf-green-600 to-sgf-green-700 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
           
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-4">
+              <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-4">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 Ready to Finance?
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
-              <p className="text-emerald-100 max-w-lg">
+              <p className="text-sgf-green-100 max-w-lg">
                 Connect with Starting Gate Financial for competitive business acquisition loans, 
                 SBA 7(a) financing, and commercial real estate solutions.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-amber-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-amber-600 transition-colors shadow-lg">
+              <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
                 <FileText className="w-5 h-5" />
                 Apply for Financing
               </a>
