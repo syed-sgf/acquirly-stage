@@ -27,7 +27,7 @@ export default function AcquisitionAnalyzerPage() {
     const response = await fetch(`/api/deals/${dealId}/analyses/acquisition`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inputs: analysis.inputs })
+      body: JSON.stringify({ inputs: inputs })
     });
 
     if (!response.ok) {
