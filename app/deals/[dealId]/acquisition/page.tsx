@@ -14,7 +14,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useAcquisitionCalculator } from '@/lib/hooks/use-acquisition-calculator';
-import type { AcquisitionAnalysis, AcquisitionInputs } from '@/lib/calculations/acquisition-analysis';
+import type { AcquisitionAnalysis, AcquisitionInputs, CalculatedMetrics } from '@/lib/calculations/acquisition-analysis';
 
 export default function AcquisitionAnalyzerPage() {
   const params = useParams();
@@ -23,18 +23,16 @@ export default function AcquisitionAnalyzerPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Save handler
-  const handleSave = useCallback(async (analysis: AcquisitionAnalysis) => {
+  const handleSave = useCallback(async (inputs: AcquisitionInputs, outputs: CalculatedMetrics) => {
     const response = await fetch(`/api/deals/${dealId}/analyses/acquisition`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inputs: inputs })
+      body: JSON.stringify({ inputs, outputs })
     });
-
     if (!response.ok) {
       throw new Error('Failed to save analysis');
     }
-
-    return response.json();
+  }, [dealId]);
   }, [dealId]);
 
   // Initialize calculator
