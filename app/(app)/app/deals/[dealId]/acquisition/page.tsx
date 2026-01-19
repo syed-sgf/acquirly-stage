@@ -94,6 +94,16 @@ export default function AcquisitionAnalyzerPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Back Navigation */}
+      <div className="mb-4">
+        <a 
+          href={`/app/deals/${dealId}`}
+          className="text-emerald-600 hover:text-emerald-700 inline-flex items-center"
+        >
+          ← Back to Deal
+        </a>
+      </div>
+
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -200,8 +210,7 @@ export default function AcquisitionAnalyzerPage() {
             Starting Gate Financial offers competitive financing solutions for business acquisitions.
             Let our team help you structure the best deal possible.
           </p>
-          
-            <a 
+          <a 
             href="https://startinggatefinancial.com/apply"
             target="_blank"
             rel="noopener noreferrer"
