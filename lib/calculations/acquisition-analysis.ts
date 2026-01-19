@@ -777,3 +777,9 @@ export function formatYears(years: number): string {
   if (months === 0) return `${wholeYears} years`;
   return `${wholeYears} years, ${months} months`;
 }
+
+// Type alias for backwards compatibility
+export type AcquisitionAnalysis = CalculatedMetrics;
+
+// Type alias for backwards compatibility
+export type AcquisitionAnalysis = CalculatedMetrics;
