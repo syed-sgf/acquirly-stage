@@ -255,8 +255,8 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
           <InputField
             label="Bank Interest Rate"
             type="number"
-            value={inputs.bankInterestRate}
-            onChange={(v: string) => updateInput('bankInterestRate', Number(v))}
+            value={inputs.bankLoanRate}
+            onChange={(v: string) => updateInput('bankLoanRate', Number(v))}
             suffix="%"
             step="0.1"
           />
