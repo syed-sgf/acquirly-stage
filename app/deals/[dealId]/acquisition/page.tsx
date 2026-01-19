@@ -79,13 +79,6 @@ export default function AcquisitionAnalyzerPage() {
 
   // Format percentage
   const formatPercent = (value: number) => {
-  // Format percentage
-  const formatPercent = (value: number) => {
-    }).format(value);
-  };
-
-  // Format percentage
-  const formatPercent = (value: number) => {
     return `${value.toFixed(2)}%`;
   };
 
@@ -94,7 +87,7 @@ export default function AcquisitionAnalyzerPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E7D32] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading outputs...</p>
+          <p className="text-gray-600">Loading analysis...</p>
         </div>
       </div>
     );
@@ -116,13 +109,13 @@ export default function AcquisitionAnalyzerPage() {
           
           {/* Save Status Indicator */}
           <div className="flex items-center space-x-2">
-            {saveStatus.status === 'saving' && (
+            {saveStatus === 'saving' && (
               <div className="flex items-center text-gray-600">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
                 <span>Saving...</span>
               </div>
             )}
-            {saveStatus.status === 'saved' && (
+            {saveStatus === 'saved' && (
               <div className="flex items-center text-[#2E7D32]">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -130,7 +123,7 @@ export default function AcquisitionAnalyzerPage() {
                 <span>Saved</span>
               </div>
             )}
-            {saveStatus.status === 'error' && (
+            {saveStatus === 'error' && (
               <div className="flex items-center text-red-600">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -142,14 +135,10 @@ export default function AcquisitionAnalyzerPage() {
         </div>
 
         {/* Error Messages */}
-        {errors.length > 0 && (
+        {error && (
           <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h3>
-            <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
-              {errors.map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
+            <h3 className="text-sm font-medium text-red-800 mb-2">Error:</h3>
+            <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
       </div>
@@ -188,19 +177,19 @@ export default function AcquisitionAnalyzerPage() {
         )}
         
         {activeTab === 'roi' && outputs && (
-          <ROITab analysis={analysis} formatCurrency={formatCurrency} formatPercent={formatPercent} />
+          <ROITab outputs={outputs} formatCurrency={formatCurrency} formatPercent={formatPercent} />
         )}
         
         {activeTab === 'equity' && outputs && (
-          <EquityTab analysis={analysis} formatCurrency={formatCurrency} />
+          <EquityTab outputs={outputs} formatCurrency={formatCurrency} />
         )}
         
         {activeTab === 'scenarios' && outputs && (
-          <ScenariosTab analysis={analysis} formatCurrency={formatCurrency} formatPercent={formatPercent} />
+          <ScenariosTab outputs={outputs} formatCurrency={formatCurrency} formatPercent={formatPercent} />
         )}
         
         {activeTab === 'valuation' && outputs && (
-          <ValuationTab analysis={analysis} formatCurrency={formatCurrency} />
+          <ValuationTab outputs={outputs} formatCurrency={formatCurrency} />
         )}
       </div>
 
@@ -212,7 +201,7 @@ export default function AcquisitionAnalyzerPage() {
             Starting Gate Financial offers competitive financing solutions for business acquisitions.
             Let our team help you structure the best deal possible.
           </p>
-          <a
+          
             href="https://startinggatefinancial.com/apply"
             target="_blank"
             rel="noopener noreferrer"
@@ -297,34 +286,32 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
 }
 
 interface ROITabProps {
-  analysis: AcquisitionAnalysis;
+  outputs: CalculatedMetrics;
   formatCurrency: (value: number) => string;
   formatPercent: (value: number) => string;
 }
 
 function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
-  const { roiMetrics } = analysis;
-  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MetricCard
           title="Cash-on-Cash Return"
-          value={formatPercent(roiMetrics.cashOnCashReturn)}
+          value={formatPercent(outputs.cashOnCashReturn)}
           description="Annual return on cash invested"
-          color={roiMetrics.cashOnCashReturn >= 15 ? 'green' : roiMetrics.cashOnCashReturn >= 10 ? 'yellow' : 'red'}
+          color={outputs.cashOnCashReturn >= 15 ? 'green' : outputs.cashOnCashReturn >= 10 ? 'yellow' : 'red'}
         />
         <MetricCard
           title="DSCR"
-          value={`${roiMetrics.dscr.toFixed(2)}x`}
+          value={`${outputs.dscr.toFixed(2)}x`}
           description="Debt service coverage ratio"
-          color={roiMetrics.dscr >= 1.25 ? 'green' : roiMetrics.dscr >= 1.0 ? 'yellow' : 'red'}
+          color={outputs.dscr >= 1.25 ? 'green' : outputs.dscr >= 1.0 ? 'yellow' : 'red'}
         />
         <MetricCard
           title="Payback Period"
-          value={`${roiMetrics.paybackPeriodYears.toFixed(1)} yrs`}
+          value={`${outputs.paybackPeriodYears.toFixed(1)} yrs`}
           description="Time to recover investment"
-          color={roiMetrics.paybackPeriodYears <= 5 ? 'green' : roiMetrics.paybackPeriodYears <= 7 ? 'yellow' : 'red'}
+          color={outputs.paybackPeriodYears <= 5 ? 'green' : outputs.paybackPeriodYears <= 7 ? 'yellow' : 'red'}
         />
       </div>
 
@@ -333,15 +320,15 @@ function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-600">Total Cash Invested</span>
-            <span className="font-semibold">{formatCurrency(roiMetrics.totalCashInvested)}</span>
+            <span className="font-semibold">{formatCurrency(outputs.totalCashInvested)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Annual Pre-Tax Cash Flow</span>
-            <span className="font-semibold">{formatCurrency(roiMetrics.annualPreTaxCashFlow)}</span>
+            <span className="font-semibold">{formatCurrency(outputs.annualPreTaxCashFlow)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Annual Debt Service</span>
-            <span className="font-semibold">{formatCurrency(outputs.debtService.annualDebtService)}</span>
+            <span className="font-semibold">{formatCurrency(outputs.annualDebtService)}</span>
           </div>
         </div>
       </div>
@@ -350,13 +337,11 @@ function ROITab({ outputs, formatCurrency, formatPercent }: ROITabProps) {
 }
 
 interface EquityTabProps {
-  analysis: AcquisitionAnalysis;
+  outputs: CalculatedMetrics;
   formatCurrency: (value: number) => string;
 }
 
 function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
-  const { equitySchedule } = analysis;
-  
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">10-Year Equity Build-Up</h3>
@@ -372,13 +357,13 @@ function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {equitySchedule.slice(0, 11).map((year) => (
+            {outputs.equitySchedule?.slice(0, 11).map((year) => (
               <tr key={year.year}>
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">{year.year}</td>
                 <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(year.businessValue)}</td>
                 <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(year.totalDebt)}</td>
                 <td className="px-4 py-3 text-sm text-right font-semibold text-[#2E7D32]">{formatCurrency(year.ownerEquity)}</td>
-                <td className="px-4 py-3 text-sm text-right text-gray-900">{year.equityPercentage.toFixed(1)}%</td>
+                <td className="px-4 py-3 text-sm text-right text-gray-900">{year.equityPercent.toFixed(1)}%</td>
               </tr>
             ))}
           </tbody>
@@ -389,47 +374,72 @@ function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
 }
 
 interface ScenariosTabProps {
-  analysis: AcquisitionAnalysis;
+  outputs: CalculatedMetrics;
   formatCurrency: (value: number) => string;
   formatPercent: (value: number) => string;
 }
 
 function ScenariosTab({ outputs, formatCurrency, formatPercent }: ScenariosTabProps) {
-  const { scenarios } = analysis;
-  
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Scenario Comparison</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {scenarios.map((scenario) => (
-          <div key={scenario.name} className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-semibold text-gray-900 mb-2">{scenario.name}</h4>
-            <p className="text-sm text-gray-600 mb-4">{scenario.description}</p>
+        {outputs.scenarios?.baseCase && (
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-2">Base Case</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Cash-on-Cash:</span>
-                <span className="font-semibold">{formatPercent(scenario.metrics.cashOnCashReturn)}</span>
+                <span className="font-semibold">{formatPercent(outputs.scenarios.baseCase.cashOnCashReturn)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">DSCR:</span>
-                <span className="font-semibold">{scenario.metrics.dscr.toFixed(2)}x</span>
+                <span className="font-semibold">{outputs.scenarios.baseCase.dscr.toFixed(2)}x</span>
               </div>
             </div>
           </div>
-        ))}
+        )}
+        {outputs.scenarios?.bestCase && (
+          <div className="bg-green-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-2">Best Case</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cash-on-Cash:</span>
+                <span className="font-semibold">{formatPercent(outputs.scenarios.bestCase.cashOnCashReturn)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">DSCR:</span>
+                <span className="font-semibold">{outputs.scenarios.bestCase.dscr.toFixed(2)}x</span>
+              </div>
+            </div>
+          </div>
+        )}
+        {outputs.scenarios?.worstCase && (
+          <div className="bg-red-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-2">Worst Case</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Cash-on-Cash:</span>
+                <span className="font-semibold">{formatPercent(outputs.scenarios.worstCase.cashOnCashReturn)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">DSCR:</span>
+                <span className="font-semibold">{outputs.scenarios.worstCase.dscr.toFixed(2)}x</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
 interface ValuationTabProps {
-  analysis: AcquisitionAnalysis;
+  outputs: CalculatedMetrics;
   formatCurrency: (value: number) => string;
 }
 
 function ValuationTab({ outputs, formatCurrency }: ValuationTabProps) {
-  const { valuations } = analysis;
-  
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Valuation Methods</h3>
@@ -439,29 +449,47 @@ function ValuationTab({ outputs, formatCurrency }: ValuationTabProps) {
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Method</th>
               <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Valuation</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">vs Ask Price</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">vs Purchase Price</th>
               <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Assessment</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {valuations.map((val) => (
-              <tr key={val.method}>
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{val.method}</td>
-                <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(val.value)}</td>
-                <td className="px-4 py-3 text-sm text-right text-gray-900">
-                  {formatCurrency(val.vsAskPrice)} ({val.vsAskPricePercent > 0 ? '+' : ''}{val.vsAskPricePercent}%)
-                </td>
-                <td className="px-4 py-3 text-sm text-center">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    val.assessment === 'undervalued' ? 'bg-green-100 text-green-800' :
-                    val.assessment === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {val.assessment}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {outputs.valuations && (
+              <>
+                <tr>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">SDE Multiple</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(outputs.valuations.sdeMultiple.value)}</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900">
+                    {formatCurrency(outputs.valuations.sdeMultiple.vsPurchasePrice)} ({outputs.valuations.sdeMultiple.vsPurchasePricePercent > 0 ? '+' : ''}{outputs.valuations.sdeMultiple.vsPurchasePricePercent.toFixed(1)}%)
+                  </td>
+                  <td className="px-4 py-3 text-sm text-center">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      outputs.valuations.sdeMultiple.assessment === 'undervalued' ? 'bg-green-100 text-green-800' :
+                      outputs.valuations.sdeMultiple.assessment === 'fair' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {outputs.valuations.sdeMultiple.assessment}
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">EBITDA Multiple</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(outputs.valuations.ebitdaMultiple.value)}</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-900">
+                    {formatCurrency(outputs.valuations.ebitdaMultiple.vsPurchasePrice)} ({outputs.valuations.ebitdaMultiple.vsPurchasePricePercent > 0 ? '+' : ''}{outputs.valuations.ebitdaMultiple.vsPurchasePricePercent.toFixed(1)}%)
+                  </td>
+                  <td className="px-4 py-3 text-sm text-center">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      outputs.valuations.ebitdaMultiple.assessment === 'undervalued' ? 'bg-green-100 text-green-800' :
+                      outputs.valuations.ebitdaMultiple.assessment === 'fair' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {outputs.valuations.ebitdaMultiple.assessment}
+                    </span>
+                  </td>
+                </tr>
+              </>
+            )}
           </tbody>
         </table>
       </div>
