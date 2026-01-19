@@ -148,7 +148,7 @@ export async function POST(
 
     // TEMP: until org billing is wired
     const plan = (session.user as any)?.plan ?? "free";
-    const entitlements = getEntitlements(plan);
+   const entitlements = getEntitlements(plan, session.user.email ?? undefined);
 
     if (!entitlements.canSaveAnalyses) {
       return NextResponse.json(
