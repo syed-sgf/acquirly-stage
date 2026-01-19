@@ -474,13 +474,6 @@ function EquityTab({ outputs, formatCurrency }: EquityTabProps) {
   );
 }
 
-// Define the ScenarioData type for type guard
-interface ScenarioData {
-  cashOnCashReturn: number;
-  dscr: number;
-  annualPreTaxCashFlow: number;
-}
-
 interface ScenariosTabProps {
   outputs: CalculatedMetrics;
   formatCurrency: (value: number) => string;
@@ -494,34 +487,17 @@ function ScenariosTab({ outputs, formatCurrency, formatPercent }: ScenariosTabPr
     { key: 'worstCase', name: 'Worst Case', color: 'red', description: 'Conservative estimate' },
   ];
 
-  const colorClasses = {
-    gray: 'bg-white border-gray-200',
-    emerald: 'bg-emerald-50 border-emerald-200',
-    red: 'bg-red-50 border-red-200',
-  };
-
-  // Type guard function to check if data is ScenarioData
-  const isScenarioData = (data: unknown): data is ScenarioData => {
-    return (
-      data !== null &&
-      data !== undefined &&
-      typeof data === 'object' &&
-      !Array.isArray(data) &&
-      'cashOnCashReturn' in data &&
-      'dscr' in data &&
-      'annualPreTaxCashFlow' in data
-    );
-  };
-
   return (
     <div className="grid md:grid-cols-3 gap-6">
       {scenarios.map((scenario) => {
         const data = outputs.scenarios?.[scenario.key as keyof typeof outputs.scenarios];
-        
-        // Type guard: skip if data is not ScenarioData
-        if (!isScenarioData(data)) {
-          return null;
-        }
+        if (!data) return null;
+
+        const colorClasses = {
+          gray: 'bg-white border-gray-200',
+          emerald: 'bg-emerald-50 border-emerald-200',
+          red: 'bg-red-50 border-red-200',
+        };
 
         return (
           <div key={scenario.key} className={`${colorClasses[scenario.color as keyof typeof colorClasses]} border rounded-xl overflow-hidden`}>
