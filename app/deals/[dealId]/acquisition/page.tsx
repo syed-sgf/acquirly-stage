@@ -202,6 +202,7 @@ export default function AcquisitionAnalyzerPage() {
             Let our team help you structure the best deal possible.
           </p>
           
+            <a 
             href="https://startinggatefinancial.com/apply"
             target="_blank"
             rel="noopener noreferrer"
