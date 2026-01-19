@@ -1,5 +1,4 @@
 'use client';
-
 /**
  * Business Acquisition Analyzer - Deal-Specific Route
  * 
@@ -10,11 +9,10 @@
  * - Multiple analysis tabs
  * - Starting Gate Financial CTAs
  */
-
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useAcquisitionCalculator } from '@/lib/hooks/use-acquisition-calculator';
-import type { AcquisitionAnalysis, AcquisitionInputs, CalculatedMetrics } from '@/lib/calculations/acquisition-analysis';
+import type { AcquisitionInputs, CalculatedMetrics } from '@/lib/calculations/acquisition-analysis';
 
 export default function AcquisitionAnalyzerPage() {
   const params = useParams();
@@ -32,7 +30,6 @@ export default function AcquisitionAnalyzerPage() {
     if (!response.ok) {
       throw new Error('Failed to save analysis');
     }
-  }, [dealId]);
   }, [dealId]);
 
   // Initialize calculator
@@ -58,18 +55,17 @@ export default function AcquisitionAnalyzerPage() {
         if (response.ok) {
           const data = await response.json();
           if (data.outputs) {
-            (data.outputs);
+            console.log('Loaded existing analysis:', data.outputs);
           }
         }
-      } catch (error) {
+      } catch (err) {
         console.log('No existing analysis found, starting fresh');
       } finally {
         setIsLoading(false);
       }
     };
-
     loadExistingAnalysis();
-  }, [dealId, ]);
+  }, [dealId]);
 
   // Format currency
   const formatCurrency = (value: number) => {
@@ -78,6 +74,13 @@ export default function AcquisitionAnalyzerPage() {
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
+    }).format(value);
+  };
+
+  // Format percentage
+  const formatPercent = (value: number) => {
+  // Format percentage
+  const formatPercent = (value: number) => {
     }).format(value);
   };
 
