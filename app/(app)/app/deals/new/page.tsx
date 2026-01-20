@@ -44,7 +44,7 @@ async function createDeal(formData: FormData) {
 
   // If no organization exists, create a default one for this user
   if (!membership) {
-    const orgName = `${session.user.name || 'My'}'s Organization`;
+    const orgName = session.user.name ? `${session.user.name}'s Organization` : 'My Organization';
     const org = await prisma.organization.create({
       data: {
         name: orgName,
@@ -67,6 +67,9 @@ async function createDeal(formData: FormData) {
       name: name.trim(),
       userId: session.user.id,
       organizationId: membership.organizationId,
+      status: 'active',
+      stage: 'analysis',
+      priority: 'medium',
     },
   });
 
