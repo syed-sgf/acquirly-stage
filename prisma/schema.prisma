@@ -1,3 +1,10 @@
+// =============================================================================
+// ACQUIRELY - Complete Prisma Schema
+// =============================================================================
+// Supports: Individual users, Brokers, Organizations, Full monetization
+// Version: 2.0
+// =============================================================================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,20 +15,43 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// =============================================================================
+// AUTHENTICATION & USER MANAGEMENT
+// =============================================================================
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   emailVerified DateTime?
   name          String?
   image         String?
-
-  plan          String    @default("free")
-
+  phone         String?
+  
+  // Subscription (for individual users not in an org)
+  plan              String    @default("free") // free | core | pro
+  planStatus        String    @default("active") // active | canceled | past_due
+  stripeCustomerId  String?   @unique
+  stripeSubscriptionId String?
+  planExpiresAt     DateTime?
+  
+  // Profile
+  title         String?   // Job title: Broker, Consultant, etc.
+  company       String?   // Company name (if not using org)
+  location      String?
+  bio           String?
+  
+  // Preferences
+  preferences   Json?     // UI preferences, default settings, etc.
+  
+  // Relations
   accounts      Account[]
   sessions      Session[]
   memberships   Membership[]
   deals         Deal[]
-
+  clients       Client[]      // Clients this user manages
+  exports       Export[]
+  activities    Activity[]
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -41,7 +71,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -54,73 +84,521 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
+  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessions")
 }
 
+// =============================================================================
+// ORGANIZATION & TEAM MANAGEMENT
+// =============================================================================
+
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-
-  members   Membership[]
-  deals     Deal[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  type        String   @default("brokerage") // brokerage | consulting | accounting | lending | other
+  
+  // Subscription (org-level billing for Team/Enterprise)
+  plan              String    @default("free") // free | team | enterprise
+  planStatus        String    @default("active")
+  stripeCustomerId  String?   @unique
+  stripeSubscriptionId String?
+  planExpiresAt     DateTime?
+  maxUsers          Int       @default(1)
+  
+  // Branding (white-label)
+  logoUrl       String?
+  primaryColor  String?   // Hex color
+  secondaryColor String?
+  website       String?
+  
+  // Contact
+  email         String?
+  phone         String?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  country       String?   @default("US")
+  
+  // Settings
+  settings      Json?     // Org-wide settings
+  
+  // Relations
+  members       Membership[]
+  deals         Deal[]
+  clients       Client[]
+  exports       Export[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("organizations")
 }
 
 model Membership {
   id             String   @id @default(cuid())
-  role           String   // owner | admin | member | viewer
-
+  role           String   // owner | admin | broker | analyst | viewer
+  
+  // Permissions (granular control)
+  canCreateDeals    Boolean @default(true)
+  canDeleteDeals    Boolean @default(false)
+  canExport         Boolean @default(true)
+  canManageClients  Boolean @default(false)
+  canManageTeam     Boolean @default(false)
+  canManageBilling  Boolean @default(false)
+  
   userId         String
   organizationId String
-
+  
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
+  
+  invitedBy      String?      // userId who invited this member
+  invitedAt      DateTime?
+  acceptedAt     DateTime?
+  
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   @@unique([userId, organizationId])
+  @@index([organizationId])
   @@map("memberships")
 }
+
+// =============================================================================
+// CLIENT MANAGEMENT (for Brokers/Consultants)
+// =============================================================================
+
+model Client {
+  id            String   @id @default(cuid())
+  
+  // Basic Info
+  name          String
+  email         String?
+  phone         String?
+  company       String?
+  
+  // Classification
+  type          String   @default("buyer") // buyer | seller | investor | other
+  status        String   @default("active") // active | inactive | closed
+  
+  // Financial Profile (for pre-qualification)
+  budget        Decimal?  @db.Decimal(15, 2)  // Max purchase price they can afford
+  cashAvailable Decimal?  @db.Decimal(15, 2)  // Down payment available
+  creditScore   Int?
+  preQualified  Boolean   @default(false)
+  
+  // Preferences
+  industries    String[]  // Industries they're interested in
+  locations     String[]  // Geographic preferences
+  notes         String?   @db.Text
+  
+  // Relations
+  userId        String    // Broker/user who manages this client
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  
+  deals         Deal[]    // Deals assigned to this client
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([organizationId])
+  @@map("clients")
+}
+
+// =============================================================================
+// DEAL MANAGEMENT
+// =============================================================================
 
 model Deal {
   id              String   @id @default(cuid())
   name            String
-
+  
+  // Status & Classification
+  status          String   @default("active") // active | under_review | closed_won | closed_lost | archived
+  stage           String   @default("analysis") // lead | analysis | due_diligence | negotiation | closing | closed
+  priority        String   @default("medium") // low | medium | high
+  
+  // Business Information
+  businessType    String?  // restaurant | retail | manufacturing | services | healthcare | technology | real_estate | other
+  industry        String?  // More specific industry
+  businessName    String?  // Actual business name (if known)
+  location        String?
+  yearEstablished Int?
+  employees       Int?
+  
+  // Financial Snapshot (quick reference, details in Analysis)
+  askingPrice     Decimal?  @db.Decimal(15, 2)
+  annualRevenue   Decimal?  @db.Decimal(15, 2)
+  annualSDE       Decimal?  @db.Decimal(15, 2)
+  annualEBITDA    Decimal?  @db.Decimal(15, 2)
+  
+  // Deal Terms
+  downPayment     Decimal?  @db.Decimal(15, 2)
+  sellerFinancing Decimal?  @db.Decimal(15, 2)
+  
+  // Listing Info (if from a listing)
+  listingUrl      String?
+  listingSource   String?  // bizbuysell | bizquest | loopnet | direct | referral | other
+  listingId       String?
+  
+  // Notes & Tags
+  notes           String?   @db.Text
+  tags            String[]
+  
+  // Ownership & Access
+  visibility      String    @default("private") // private | organization | shared
+  
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   organizationId  String
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
+  
+  clientId        String?   // If deal is for a specific client
+  client          Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  
+  // Relations
   analyses        Analysis[]
-
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  scenarios       Scenario[]
+  documents       Document[]
+  exports         Export[]
+  activities      Activity[]
+  
+  // Timestamps
+  closedAt        DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([userId])
   @@index([organizationId])
+  @@index([clientId])
+  @@index([status])
+  @@index([businessType])
   @@map("deals")
 }
+
+// =============================================================================
+// ANALYSIS & CALCULATIONS
+// =============================================================================
 
 model Analysis {
   id        String   @id @default(cuid())
   dealId    String
-  type      String
-  name      String
-  inputs    Json
-  outputs   Json
+  
+  // Analysis Type
+  type      String   // dscr | acquisition | valuation | cre_acquisition | business_loan | loan_capacity
+  name      String   // User-friendly name
+  version   Int      @default(1) // For tracking revisions
+  
+  // Data Storage (flexible JSON for different calculator types)
+  inputs    Json     // All input values
+  outputs   Json     // Calculated results
+  metadata  Json?    // Additional context (industry benchmarks used, etc.)
+  
+  // Status
+  status    String   @default("draft") // draft | complete | archived
+  isLatest  Boolean  @default(true)    // Is this the latest version for this type?
+  
+  // Relations
+  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  scenarios Scenario[]
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  deal Deal @relation(fields: [dealId], references: [id])
+  @@index([dealId])
+  @@index([type])
+  @@map("analyses")
+}
+
+model Scenario {
+  id          String   @id @default(cuid())
+  
+  // Scenario Info
+  name        String   // "Base Case", "Best Case", "Conservative", etc.
+  description String?
+  type        String   @default("custom") // base | best | worst | custom
+  
+  // Modified Values
+  inputs      Json     // Modified input values
+  outputs     Json     // Recalculated outputs
+  
+  // Comparison
+  comparedTo  String?  // ID of scenario this is compared against
+  
+  // Relations
+  analysisId  String?
+  analysis    Analysis? @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  
+  dealId      String?
+  deal        Deal?     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([analysisId])
+  @@index([dealId])
+  @@map("scenarios")
+}
+
+// =============================================================================
+// DOCUMENT MANAGEMENT
+// =============================================================================
+
+model Document {
+  id          String   @id @default(cuid())
+  
+  // File Info
+  name        String
+  type        String   // financial_statement | tax_return | listing | contract | other
+  mimeType    String
+  size        Int      // bytes
+  url         String   // Storage URL (S3, etc.)
+  
+  // Metadata
+  description String?
+  year        Int?     // For financial docs: which year
+  
+  // Relations
+  dealId      String
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  
+  uploadedBy  String   // userId
+  
+  createdAt   DateTime @default(now())
+
+  @@index([dealId])
+  @@map("documents")
+}
+
+// =============================================================================
+// EXPORTS & REPORTS
+// =============================================================================
+
+model Export {
+  id          String   @id @default(cuid())
+  
+  // Export Info
+  format      String   // pdf | xlsx | csv
+  type        String   // deal_summary | full_analysis | comparison | client_report
+  name        String   // Generated filename
+  
+  // Configuration
+  config      Json?    // What was included in the export
+  
+  // Branding
+  branded     Boolean  @default(false) // Uses org branding?
+  
+  // Result
+  status      String   @default("pending") // pending | processing | complete | failed
+  url         String?  // Download URL
+  error       String?  // Error message if failed
+  expiresAt   DateTime? // When download link expires
+  
+  // Relations
+  dealId      String?
+  deal        Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([dealId])
+  @@map("exports")
+}
+
+// =============================================================================
+// ACTIVITY & AUDIT LOG
+// =============================================================================
+
+model Activity {
+  id          String   @id @default(cuid())
+  
+  // Activity Info
+  action      String   // created | updated | deleted | exported | shared | viewed
+  resource    String   // deal | analysis | scenario | document | client
+  resourceId  String   // ID of the affected resource
+  
+  // Details
+  description String?
+  metadata    Json?    // Additional context
+  
+  // Actor
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Context
+  dealId      String?
+  deal        Deal?    @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  
+  ipAddress   String?
+  userAgent   String?
+  
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([dealId])
+  @@index([resource, resourceId])
+  @@map("activities")
+}
+
+// =============================================================================
+// USAGE TRACKING & METERING (for subscription limits)
+// =============================================================================
+
+model UsageRecord {
+  id          String   @id @default(cuid())
+  
+  // What's being tracked
+  resource    String   // deals | analyses | exports | api_calls
+  
+  // Counts
+  count       Int      @default(0)
+  
+  // Period
+  period      String   // monthly | yearly
+  periodStart DateTime
+  periodEnd   DateTime
+  
+  // Who
+  userId      String?
+  organizationId String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([resource, period, periodStart, userId])
+  @@unique([resource, period, periodStart, organizationId])
+  @@index([userId])
+  @@index([organizationId])
+  @@map("usage_records")
+}
+
+// =============================================================================
+// FEATURE FLAGS & ENTITLEMENTS
+// =============================================================================
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  
+  name        String   @unique // feature key
+  description String?
+  
+  // Default state
+  enabled     Boolean  @default(false)
+  
+  // Plan requirements
+  minPlan     String?  // Minimum plan required: free | core | pro | team | enterprise
+  
+  // Targeting
+  allowedUsers String[] // Specific user IDs
+  allowedOrgs  String[] // Specific org IDs
+  
+  // Rollout
+  rolloutPercentage Int @default(0) // 0-100 for gradual rollout
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("feature_flags")
+}
+
+// =============================================================================
+// LEAD CAPTURE (from public calculators)
+// =============================================================================
+
+model Lead {
+  id          String   @id @default(cuid())
+  
+  // Contact Info
+  email       String
+  name        String?
+  phone       String?
+  company     String?
+  
+  // Source
+  source      String   // calculator_dscr | calculator_acquisition | pricing_page | etc.
+  sourceUrl   String?
+  
+  // Calculator Data (what they calculated)
+  calculatorType  String?
+  calculatorData  Json?
+  
+  // Interest
+  interestedIn    String[] // financing | software | both
+  loanAmount      Decimal? @db.Decimal(15, 2)
+  
+  // Status
+  status      String   @default("new") // new | contacted | qualified | converted | lost
+  notes       String?  @db.Text
+  
+  // Attribution
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  
+  // Conversion
+  convertedToUserId String?
+  convertedAt       DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([source])
+  @@map("leads")
+}
+
+// =============================================================================
+// INDUSTRY BENCHMARKS (for valuation)
+// =============================================================================
+
+model IndustryBenchmark {
+  id          String   @id @default(cuid())
+  
+  // Industry
+  industry    String   // restaurant | retail | manufacturing | etc.
+  subIndustry String?  // More specific: fast_food | fine_dining | etc.
+  
+  // Multiples
+  sdeMultipleLow    Decimal @db.Decimal(4, 2)
+  sdeMultipleMid    Decimal @db.Decimal(4, 2)
+  sdeMultipleHigh   Decimal @db.Decimal(4, 2)
+  
+  ebitdaMultipleLow  Decimal @db.Decimal(4, 2)
+  ebitdaMultipleMid  Decimal @db.Decimal(4, 2)
+  ebitdaMultipleHigh Decimal @db.Decimal(4, 2)
+  
+  revenueMultipleLow  Decimal @db.Decimal(4, 2)
+  revenueMultipleMid  Decimal @db.Decimal(4, 2)
+  revenueMultipleHigh Decimal @db.Decimal(4, 2)
+  
+  // Context
+  sizeRange   String?  // small | medium | large (revenue ranges)
+  region      String?  // Geographic region
+  source      String?  // Where this data came from
+  year        Int      // Year this data applies to
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([industry, subIndustry, sizeRange, region, year])
+  @@index([industry])
+  @@map("industry_benchmarks")
 }
