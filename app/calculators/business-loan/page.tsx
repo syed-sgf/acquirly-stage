@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, Calendar, TrendingDown, Save, Download } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, Calendar, Save, Download } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 
@@ -22,13 +22,70 @@ const formatCurrencyDetailed = (value: number): string => {
 };
 
 const parseCurrencyInput = (value: string): number => {
-  return parseFloat(value.replace(/[^0-9.-]/g, '')) || 0;
+  const cleaned = value.replace(/[^0-9.-]/g, '');
+  return parseFloat(cleaned) || 0;
 };
 
-const formatInputValue = (value: string): string => {
-  const num = parseCurrencyInput(value);
-  if (isNaN(num) || num === 0) return value.replace(/[^0-9]/g, '');
-  return num.toLocaleString('en-US');
+const formatNumberWithCommas = (value: number): string => {
+  if (isNaN(value) || value === 0) return '0';
+  return value.toLocaleString('en-US');
+};
+
+const handleCurrencyChange = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: React.Dispatch<React.SetStateAction<string>>
+) => {
+  const rawValue = e.target.value;
+  
+  if (rawValue === '' || rawValue === '$') {
+    setter('0');
+    return;
+  }
+  
+  const numericValue = rawValue.replace(/[^0-9]/g, '');
+  const number = parseInt(numericValue, 10);
+  
+  if (!isNaN(number)) {
+    setter(formatNumberWithCommas(number));
+  }
+};
+
+const handlePercentChange = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: React.Dispatch<React.SetStateAction<string>>
+) => {
+  const rawValue = e.target.value;
+  
+  if (rawValue === '') {
+    setter('0');
+    return;
+  }
+  
+  const cleaned = rawValue.replace(/[^0-9.]/g, '');
+  const parts = cleaned.split('.');
+  if (parts.length > 2) return;
+  if (parts[1] && parts[1].length > 2) return;
+  
+  setter(cleaned);
+};
+
+const handleYearChange = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setter: React.Dispatch<React.SetStateAction<string>>
+) => {
+  const rawValue = e.target.value;
+  
+  if (rawValue === '') {
+    setter('0');
+    return;
+  }
+  
+  const numericValue = rawValue.replace(/[^0-9]/g, '');
+  const number = parseInt(numericValue, 10);
+  
+  if (!isNaN(number) && number <= 30) {
+    setter(number.toString());
+  }
 };
 
 export default function BusinessLoanCalculatorPage() {
@@ -37,31 +94,19 @@ export default function BusinessLoanCalculatorPage() {
   const [loanTerm, setLoanTerm] = useState<string>('10');
   const [showFullSchedule, setShowFullSchedule] = useState<boolean>(false);
 
-  const handleCurrencyInput = (value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    setter(formatInputValue(value));
-  };
-
-  // Calculate loan details
   const loanDetails = useMemo(() => {
     const principal = parseCurrencyInput(loanAmount);
     const rate = parseFloat(interestRate) || 0;
     const years = parseInt(loanTerm) || 0;
 
-    if (!principal || !rate || !years) {
-      return null;
-    }
+    if (!principal || !rate || !years) return null;
 
     const monthlyRate = (rate / 100) / 12;
     const numPayments = years * 12;
-    
-    // Monthly payment calculation
-    const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
-                          (Math.pow(1 + monthlyRate, numPayments) - 1);
-    
+    const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
     const totalPayments = monthlyPayment * numPayments;
     const totalInterest = totalPayments - principal;
 
-    // Generate amortization schedule
     const schedule: AmortizationRow[] = [];
     let balance = principal;
     
@@ -69,23 +114,14 @@ export default function BusinessLoanCalculatorPage() {
       const interestPayment = balance * monthlyRate;
       const principalPayment = monthlyPayment - interestPayment;
       balance = Math.max(0, balance - principalPayment);
-      
-      schedule.push({
-        month,
-        payment: monthlyPayment,
-        principal: principalPayment,
-        interest: interestPayment,
-        balance,
-      });
+      schedule.push({ month, payment: monthlyPayment, principal: principalPayment, interest: interestPayment, balance });
     }
 
-    // Calculate yearly summaries
     const yearlySummary = [];
     for (let year = 1; year <= years; year++) {
       const startMonth = (year - 1) * 12;
       const endMonth = year * 12;
       const yearRows = schedule.slice(startMonth, endMonth);
-      
       yearlySummary.push({
         year,
         totalPrincipal: yearRows.reduce((sum, row) => sum + row.principal, 0),
@@ -94,60 +130,26 @@ export default function BusinessLoanCalculatorPage() {
       });
     }
 
-    return {
-      monthlyPayment,
-      totalPayments,
-      totalInterest,
-      schedule,
-      yearlySummary,
-      principal,
-      rate,
-      years,
-    };
+    return { monthlyPayment, totalPayments, totalInterest, schedule, yearlySummary, principal, rate, years };
   }, [loanAmount, interestRate, loanTerm]);
 
   const handleSaveLoan = () => {
-    if (!loanDetails) {
-      alert('Please enter loan details first');
-      return;
-    }
-
+    if (!loanDetails) return;
     const loanData = {
       type: 'business-loan',
-      inputs: {
-        loanAmount: loanDetails.principal,
-        interestRate: loanDetails.rate,
-        loanTerm: loanDetails.years,
-      },
-      outputs: {
-        monthlyPayment: loanDetails.monthlyPayment,
-        totalPayments: loanDetails.totalPayments,
-        totalInterest: loanDetails.totalInterest,
-      },
+      inputs: { loanAmount: loanDetails.principal, interestRate: loanDetails.rate, loanTerm: loanDetails.years },
+      outputs: { monthlyPayment: loanDetails.monthlyPayment, totalPayments: loanDetails.totalPayments, totalInterest: loanDetails.totalInterest },
       timestamp: new Date().toISOString(),
     };
-
     localStorage.setItem('pendingLoanAnalysis', JSON.stringify(loanData));
     window.location.href = '/api/auth/signin?callbackUrl=/app/deals/new';
   };
 
   const exportToCSV = () => {
     if (!loanDetails) return;
-
     const headers = ['Month', 'Payment', 'Principal', 'Interest', 'Balance'];
-    const rows = loanDetails.schedule.map(row => [
-      row.month,
-      row.payment.toFixed(2),
-      row.principal.toFixed(2),
-      row.interest.toFixed(2),
-      row.balance.toFixed(2),
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-
+    const rows = loanDetails.schedule.map(row => [row.month, row.payment.toFixed(2), row.principal.toFixed(2), row.interest.toFixed(2), row.balance.toFixed(2)]);
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -165,16 +167,13 @@ export default function BusinessLoanCalculatorPage() {
           <div className="bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-            
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 Free Calculator
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Business Loan Calculator</h1>
-              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">
-                Calculate payments, total interest, and view full amortization schedules
-              </p>
+              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">Calculate payments, total interest, and view full amortization schedules</p>
             </div>
           </div>
         </div>
@@ -197,7 +196,7 @@ export default function BusinessLoanCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="loanAmount" className="text-sm font-semibold text-gray-700">Loan Amount</label>
-                  <Tooltip content="Total principal amount of the loan" />
+                  <Tooltip content="The total principal amount you're borrowing. For business acquisitions, this typically includes the bank loan portion plus any seller financing. SBA 7(a) loans can go up to $5 million." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
@@ -205,8 +204,7 @@ export default function BusinessLoanCalculatorPage() {
                     id="loanAmount"
                     type="text"
                     value={loanAmount}
-                    onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)}
-                    placeholder="0"
+                    onChange={(e) => handleCurrencyChange(e, setLoanAmount)}
                     className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                   />
                 </div>
@@ -214,15 +212,14 @@ export default function BusinessLoanCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="interestRate" className="text-sm font-semibold text-gray-700">Interest Rate</label>
-                  <Tooltip content="Annual interest rate (APR)" />
+                  <Tooltip content="Annual Percentage Rate (APR) on the loan. SBA 7(a) rates are typically Prime + 2.25% to 2.75%. Conventional business loans may range from 7% to 12% depending on creditworthiness and collateral." />
                 </div>
                 <div className="relative">
                   <input
                     id="interestRate"
                     type="text"
                     value={interestRate}
-                    onChange={(e) => setInterestRate(e.target.value)}
-                    placeholder="0.00"
+                    onChange={(e) => handlePercentChange(e, setInterestRate)}
                     className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
@@ -231,15 +228,14 @@ export default function BusinessLoanCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="loanTerm" className="text-sm font-semibold text-gray-700">Loan Term</label>
-                  <Tooltip content="Loan amortization period in years" />
+                  <Tooltip content="The amortization period in years. SBA 7(a) business acquisition loans typically have 10-year terms. Equipment loans may be 5-7 years. Real estate loans can extend to 25 years. Longer terms = lower payments but more total interest." />
                 </div>
                 <div className="relative">
                   <input
                     id="loanTerm"
                     type="text"
                     value={loanTerm}
-                    onChange={(e) => setLoanTerm(e.target.value)}
-                    placeholder="10"
+                    onChange={(e) => handleYearChange(e, setLoanTerm)}
                     className="w-full pr-16 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">years</span>
@@ -263,31 +259,38 @@ export default function BusinessLoanCalculatorPage() {
               {loanDetails ? (
                 <div className="space-y-4">
                   <div className="bg-sgf-green-50 rounded-xl p-6 text-center border border-sgf-green-200">
-                    <span className="text-4xl font-bold font-mono text-sgf-green-600">
-                      {formatCurrencyDetailed(loanDetails.monthlyPayment)}
-                    </span>
-                    <div className="text-sm font-semibold text-sgf-green-700 mt-1">Monthly Payment</div>
+                    <span className="text-4xl font-bold font-mono text-sgf-green-600">{formatCurrencyDetailed(loanDetails.monthlyPayment)}</span>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className="text-sm font-semibold text-sgf-green-700">Monthly Payment</span>
+                      <Tooltip content="Your fixed monthly payment amount including both principal and interest. This payment stays the same throughout the loan term (assuming fixed rate)." />
+                    </div>
                   </div>
-                  
                   <div className="space-y-3 pt-4">
                     <div className="flex justify-between py-2 border-b border-dashed border-gray-200">
-                      <span className="text-sm text-gray-600">Loan Amount</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Loan Amount</span>
+                        <Tooltip content="The original principal amount borrowed." />
+                      </div>
                       <span className="font-mono font-semibold">{formatCurrency(loanDetails.principal)}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-dashed border-gray-200">
-                      <span className="text-sm text-gray-600">Total Interest</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Total Interest</span>
+                        <Tooltip content="The total amount of interest you'll pay over the life of the loan. This is the 'cost' of borrowing money. Lower rates and shorter terms reduce total interest." />
+                      </div>
                       <span className="font-mono font-semibold text-sgf-gold-600">{formatCurrency(loanDetails.totalInterest)}</span>
                     </div>
                     <div className="flex justify-between py-2 bg-gray-50 rounded-lg px-3">
-                      <span className="text-sm font-semibold text-gray-900">Total Payments</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">Total Payments</span>
+                        <Tooltip content="The total amount you'll pay back over the life of the loan (principal + all interest). This is your total out-of-pocket cost for the financing." />
+                      </div>
                       <span className="font-mono font-bold text-sgf-green-600">{formatCurrency(loanDetails.totalPayments)}</span>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-8">
-                  Enter loan details to see payment summary
-                </div>
+                <div className="text-center text-gray-500 py-8">Enter loan details to see payment summary</div>
               )}
             </div>
           </div>
@@ -303,27 +306,15 @@ export default function BusinessLoanCalculatorPage() {
               </div>
             </div>
             <div className="p-6 space-y-4">
-              <button 
-                onClick={handleSaveLoan}
-                disabled={!loanDetails}
-                className="w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 disabled:from-gray-300 disabled:to-gray-400 text-white py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-              >
-                <Save className="w-5 h-5" />
-                Save This Analysis
+              <button onClick={handleSaveLoan} disabled={!loanDetails} className="w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 disabled:from-gray-300 disabled:to-gray-400 text-white py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                <Save className="w-5 h-5" />Save This Analysis
               </button>
-              <p className="text-xs text-center text-gray-500">
-                Create a free account to save unlimited calculations
-              </p>
-              
+              <p className="text-xs text-center text-gray-500">Create a free account to save unlimited calculations</p>
               <div className="border-t border-gray-200 pt-4">
-                <button 
-                  onClick={exportToCSV}
-                  disabled={!loanDetails}
-                  className="w-full bg-white border-2 border-sgf-gold-500 text-sgf-gold-600 hover:bg-sgf-gold-50 disabled:border-gray-300 disabled:text-gray-400 py-3 px-6 rounded-lg font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Export Amortization (CSV)
+                <button onClick={exportToCSV} disabled={!loanDetails} className="w-full bg-white border-2 border-sgf-gold-500 text-sgf-gold-600 hover:bg-sgf-gold-50 disabled:border-gray-300 disabled:text-gray-400 py-3 px-6 rounded-lg font-semibold transition-all flex items-center justify-center gap-2">
+                  <Download className="w-5 h-5" />Export Amortization (CSV)
                 </button>
+                <p className="text-xs text-center text-gray-500 mt-2">Download full month-by-month schedule</p>
               </div>
             </div>
           </div>
@@ -337,16 +328,15 @@ export default function BusinessLoanCalculatorPage() {
                 <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
                   <Calendar className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-gray-900">Amortization Schedule</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-900">Amortization Schedule</span>
+                  <Tooltip content="Shows how each payment is split between principal (paying down your loan balance) and interest (the cost of borrowing). Early payments are mostly interest; later payments are mostly principal." />
+                </div>
               </div>
-              <button
-                onClick={() => setShowFullSchedule(!showFullSchedule)}
-                className="text-sm font-semibold text-sgf-green-600 hover:text-sgf-green-700"
-              >
+              <button onClick={() => setShowFullSchedule(!showFullSchedule)} className="text-sm font-semibold text-sgf-green-600 hover:text-sgf-green-700">
                 {showFullSchedule ? 'Show Yearly Summary' : 'Show Full Schedule'}
               </button>
             </div>
-            
             <div className="overflow-x-auto">
               {showFullSchedule ? (
                 <table className="w-full">
@@ -404,7 +394,6 @@ export default function BusinessLoanCalculatorPage() {
         <div className="mt-12 bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-4">
@@ -412,19 +401,14 @@ export default function BusinessLoanCalculatorPage() {
                 Ready to Finance?
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
-              <p className="text-sgf-green-100 max-w-lg">
-                Connect with Starting Gate Financial for competitive business acquisition loans, 
-                SBA 7(a) financing, and commercial real estate solutions.
-              </p>
+              <p className="text-sgf-green-100 max-w-lg">Connect with Starting Gate Financial for competitive business acquisition loans, SBA 7(a) financing, and commercial real estate solutions.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
-                <FileText className="w-5 h-5" />
-                Apply for Financing
+                <FileText className="w-5 h-5" />Apply for Financing
               </a>
               <a href="https://startinggatefinancial.com/contact" className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
-                <MessageSquare className="w-5 h-5" />
-                Schedule Call
+                <MessageSquare className="w-5 h-5" />Schedule Call
               </a>
             </div>
           </div>
