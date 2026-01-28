@@ -1,18 +1,117 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { DollarSign, Scale, BarChart3, FileText, MessageSquare, Save, TrendingUp, Building2, Factory, ShoppingBag, Utensils, Stethoscope, Laptop, Wrench } from 'lucide-react';
+import { 
+  DollarSign, 
+  Scale, 
+  BarChart3, 
+  FileText, 
+  MessageSquare, 
+  Save, 
+  TrendingUp, 
+  Building2, 
+  Factory, 
+  ShoppingBag, 
+  Utensils, 
+  Stethoscope, 
+  Laptop, 
+  Wrench,
+  Leaf,
+  Sparkles,
+  Car,
+  Truck,
+  Home,
+  SlidersHorizontal,
+  Info
+} from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 
 const industryMultiples = {
-  restaurant: { sde: { low: 1.5, mid: 2.5, high: 3.5 }, ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, icon: Utensils, label: 'Restaurant / Food Service', description: 'Restaurants, cafes, food trucks, catering' },
-  retail: { sde: { low: 1.5, mid: 2.0, high: 3.0 }, ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, icon: ShoppingBag, label: 'Retail', description: 'Retail stores, e-commerce, wholesale distribution' },
-  manufacturing: { sde: { low: 2.5, mid: 3.5, high: 5.0 }, ebitda: { low: 4.0, mid: 5.0, high: 7.0 }, icon: Factory, label: 'Manufacturing', description: 'Production, fabrication, assembly operations' },
-  services: { sde: { low: 2.0, mid: 3.0, high: 4.0 }, ebitda: { low: 3.5, mid: 4.5, high: 6.0 }, icon: Wrench, label: 'Professional Services', description: 'Consulting, agencies, B2B services' },
-  healthcare: { sde: { low: 2.5, mid: 4.0, high: 6.0 }, ebitda: { low: 5.0, mid: 7.0, high: 10.0 }, icon: Stethoscope, label: 'Healthcare', description: 'Medical practices, dental, veterinary, home health' },
-  technology: { sde: { low: 3.0, mid: 4.5, high: 7.0 }, ebitda: { low: 5.0, mid: 8.0, high: 12.0 }, icon: Laptop, label: 'Technology / SaaS', description: 'Software, IT services, SaaS, tech-enabled businesses' },
-  construction: { sde: { low: 1.5, mid: 2.5, high: 3.5 }, ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, icon: Building2, label: 'Construction / Trades', description: 'Contractors, HVAC, plumbing, electrical, trades' },
+  restaurant: { 
+    sde: { low: 1.5, mid: 2.5, high: 3.5 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: Utensils, 
+    label: 'Restaurant / Food Service', 
+    description: 'Restaurants, cafes, food trucks, catering, QSR' 
+  },
+  retail: { 
+    sde: { low: 1.5, mid: 2.0, high: 3.0 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: ShoppingBag, 
+    label: 'Retail', 
+    description: 'Retail stores, e-commerce, wholesale distribution' 
+  },
+  manufacturing: { 
+    sde: { low: 2.5, mid: 3.5, high: 5.0 }, 
+    ebitda: { low: 4.0, mid: 5.0, high: 7.0 }, 
+    icon: Factory, 
+    label: 'Manufacturing', 
+    description: 'Production, fabrication, assembly operations' 
+  },
+  services: { 
+    sde: { low: 2.0, mid: 3.0, high: 4.0 }, 
+    ebitda: { low: 3.5, mid: 4.5, high: 6.0 }, 
+    icon: Wrench, 
+    label: 'Professional Services', 
+    description: 'Consulting, agencies, B2B services, staffing' 
+  },
+  healthcare: { 
+    sde: { low: 2.5, mid: 4.0, high: 6.0 }, 
+    ebitda: { low: 5.0, mid: 7.0, high: 10.0 }, 
+    icon: Stethoscope, 
+    label: 'Healthcare', 
+    description: 'Medical practices, dental, veterinary, home health' 
+  },
+  technology: { 
+    sde: { low: 3.0, mid: 4.5, high: 7.0 }, 
+    ebitda: { low: 5.0, mid: 8.0, high: 12.0 }, 
+    icon: Laptop, 
+    label: 'Technology / SaaS', 
+    description: 'Software, IT services, SaaS, MSP, tech-enabled' 
+  },
+  construction: { 
+    sde: { low: 1.5, mid: 2.5, high: 3.5 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: Building2, 
+    label: 'Construction / Trades', 
+    description: 'General contractors, specialty trades, builders' 
+  },
+  lawncare: { 
+    sde: { low: 2.0, mid: 2.5, high: 3.0 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: Leaf, 
+    label: 'Lawn Care / Landscaping', 
+    description: 'Lawn maintenance, landscaping, irrigation, tree service' 
+  },
+  janitorial: { 
+    sde: { low: 2.0, mid: 2.5, high: 3.5 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.5 }, 
+    icon: Sparkles, 
+    label: 'Janitorial / Cleaning', 
+    description: 'Commercial cleaning, janitorial, residential cleaning' 
+  },
+  autorepair: { 
+    sde: { low: 1.5, mid: 2.5, high: 3.5 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: Car, 
+    label: 'Auto Repair / Services', 
+    description: 'Auto repair, tire shops, oil change, body shops, detailing' 
+  },
+  logistics: { 
+    sde: { low: 2.0, mid: 3.0, high: 4.0 }, 
+    ebitda: { low: 3.5, mid: 4.5, high: 6.0 }, 
+    icon: Truck, 
+    label: 'Logistics / Transportation', 
+    description: 'Trucking, freight, delivery, moving, courier services' 
+  },
+  homeservices: { 
+    sde: { low: 2.0, mid: 2.5, high: 3.5 }, 
+    ebitda: { low: 3.0, mid: 4.0, high: 5.0 }, 
+    icon: Home, 
+    label: 'Home Services', 
+    description: 'HVAC, plumbing, electrical, pest control, roofing, garage doors' 
+  },
 };
 
 type IndustryType = keyof typeof industryMultiples;
@@ -27,6 +126,13 @@ interface ValuationInputs {
   realEstate: string;
   growthRate: string;
   discountRate: string;
+  // New adjustment factors
+  businessAge: 'under3' | '3to10' | 'over10';
+  revenueType: 'project' | 'mixed' | 'recurring';
+  contractQuality: 'monthToMonth' | 'annual' | 'multiYear';
+  ownerDependency: 'high' | 'medium' | 'low';
+  locationMarket: 'rural' | 'suburban' | 'urban';
+  equipmentCondition: 'poor' | 'fair' | 'good' | 'excellent';
 }
 
 const defaultInputs: ValuationInputs = {
@@ -39,6 +145,48 @@ const defaultInputs: ValuationInputs = {
   realEstate: '0',
   growthRate: '3',
   discountRate: '15',
+  businessAge: '3to10',
+  revenueType: 'mixed',
+  contractQuality: 'annual',
+  ownerDependency: 'medium',
+  locationMarket: 'suburban',
+  equipmentCondition: 'good',
+};
+
+// Adjustment factor values
+const adjustmentFactors = {
+  businessAge: {
+    under3: { value: -0.15, label: 'Under 3 Years', description: 'Higher risk, unproven track record' },
+    '3to10': { value: 0, label: '3-10 Years', description: 'Established business, standard multiple' },
+    over10: { value: 0.10, label: '10+ Years', description: 'Long track record, stability premium' },
+  },
+  revenueType: {
+    project: { value: -0.10, label: 'Project-Based', description: 'One-time projects, unpredictable revenue' },
+    mixed: { value: 0, label: 'Mixed', description: 'Combination of recurring and project revenue' },
+    recurring: { value: 0.15, label: 'Recurring/Contracts', description: 'Predictable, subscription-like revenue' },
+  },
+  contractQuality: {
+    monthToMonth: { value: -0.10, label: 'Month-to-Month', description: 'Customers can leave anytime' },
+    annual: { value: 0, label: 'Annual Contracts', description: 'Standard annual agreements' },
+    multiYear: { value: 0.10, label: 'Multi-Year Contracts', description: 'Locked in revenue for 2+ years' },
+  },
+  ownerDependency: {
+    high: { value: -0.15, label: 'High (Owner-Operated)', description: 'Business relies heavily on owner' },
+    medium: { value: 0, label: 'Medium', description: 'Some key employees, owner involved' },
+    low: { value: 0.10, label: 'Low (Managed)', description: 'Management team in place, owner passive' },
+  },
+  locationMarket: {
+    rural: { value: -0.05, label: 'Rural', description: 'Smaller market, limited buyer pool' },
+    suburban: { value: 0, label: 'Suburban', description: 'Standard market conditions' },
+    urban: { value: 0.05, label: 'Urban/Metro', description: 'Larger market, more buyers, premium' },
+  },
+};
+
+const equipmentConditionMultiplier = {
+  poor: { value: 0.40, label: 'Poor', description: 'Needs significant repair/replacement' },
+  fair: { value: 0.60, label: 'Fair', description: 'Functional but showing age' },
+  good: { value: 0.80, label: 'Good', description: 'Well maintained, some wear' },
+  excellent: { value: 0.95, label: 'Excellent', description: 'Like new or recently updated' },
 };
 
 const formatCurrency = (value: number): string => {
@@ -89,8 +237,13 @@ const handlePercentChangeUtil = (
 
 export default function ValuationCalculatorPage() {
   const [inputs, setInputs] = useState<ValuationInputs>(defaultInputs);
+  const [showAdjustments, setShowAdjustments] = useState<boolean>(true);
 
   const handleInputChange = (field: keyof ValuationInputs, value: string) => {
+    setInputs(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSelectChange = (field: keyof ValuationInputs, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -112,15 +265,43 @@ export default function ValuationCalculatorPage() {
 
     const multiples = industryMultiples[inputs.industry];
 
-    const sdeLow = annualSDE * multiples.sde.low;
-    const sdeMid = annualSDE * multiples.sde.mid;
-    const sdeHigh = annualSDE * multiples.sde.high;
+    // Calculate total adjustment factor
+    const ageAdj = adjustmentFactors.businessAge[inputs.businessAge].value;
+    const revenueAdj = adjustmentFactors.revenueType[inputs.revenueType].value;
+    const contractAdj = adjustmentFactors.contractQuality[inputs.contractQuality].value;
+    const ownerAdj = adjustmentFactors.ownerDependency[inputs.ownerDependency].value;
+    const locationAdj = adjustmentFactors.locationMarket[inputs.locationMarket].value;
+    
+    const totalAdjustment = ageAdj + revenueAdj + contractAdj + ownerAdj + locationAdj;
+    const adjustmentMultiplier = 1 + totalAdjustment;
 
-    const ebitdaLow = annualEBITDA * multiples.ebitda.low;
-    const ebitdaMid = annualEBITDA * multiples.ebitda.mid;
-    const ebitdaHigh = annualEBITDA * multiples.ebitda.high;
+    // Adjusted multiples
+    const adjustedSdeMultiple = {
+      low: multiples.sde.low * adjustmentMultiplier,
+      mid: multiples.sde.mid * adjustmentMultiplier,
+      high: multiples.sde.high * adjustmentMultiplier,
+    };
 
-    const assetBasedValue = assetValue + inventory + realEstate;
+    const adjustedEbitdaMultiple = {
+      low: multiples.ebitda.low * adjustmentMultiplier,
+      mid: multiples.ebitda.mid * adjustmentMultiplier,
+      high: multiples.ebitda.high * adjustmentMultiplier,
+    };
+
+    // SDE Valuations (adjusted)
+    const sdeLow = annualSDE * adjustedSdeMultiple.low;
+    const sdeMid = annualSDE * adjustedSdeMultiple.mid;
+    const sdeHigh = annualSDE * adjustedSdeMultiple.high;
+
+    // EBITDA Valuations (adjusted)
+    const ebitdaLow = annualEBITDA * adjustedEbitdaMultiple.low;
+    const ebitdaMid = annualEBITDA * adjustedEbitdaMultiple.mid;
+    const ebitdaHigh = annualEBITDA * adjustedEbitdaMultiple.high;
+
+    // Asset-Based Value (with equipment condition adjustment)
+    const equipmentMultiplier = equipmentConditionMultiplier[inputs.equipmentCondition].value;
+    const adjustedAssetValue = assetValue * equipmentMultiplier;
+    const assetBasedValue = adjustedAssetValue + inventory + realEstate;
 
     // DCF Calculation
     let dcfValue = 0;
@@ -136,16 +317,27 @@ export default function ValuationCalculatorPage() {
     // Revenue multiple (rough benchmark)
     const revenueMultiple = annualRevenue * 0.5;
 
+    // Calculate averages and ranges
     const allMidValues = [sdeMid, ebitdaMid, dcfValue].filter(v => v > 0);
     const averageValuation = allMidValues.length > 0 ? allMidValues.reduce((a, b) => a + b, 0) / allMidValues.length : 0;
 
     const lowValuation = Math.min(sdeLow || Infinity, ebitdaLow || Infinity, assetBasedValue || Infinity);
     const highValuation = Math.max(sdeHigh, ebitdaHigh, dcfValue);
 
+    // Individual adjustment details for display
+    const adjustmentDetails = [
+      { label: 'Business Age', factor: adjustmentFactors.businessAge[inputs.businessAge], value: ageAdj },
+      { label: 'Revenue Type', factor: adjustmentFactors.revenueType[inputs.revenueType], value: revenueAdj },
+      { label: 'Contract Quality', factor: adjustmentFactors.contractQuality[inputs.contractQuality], value: contractAdj },
+      { label: 'Owner Dependency', factor: adjustmentFactors.ownerDependency[inputs.ownerDependency], value: ownerAdj },
+      { label: 'Location/Market', factor: adjustmentFactors.locationMarket[inputs.locationMarket], value: locationAdj },
+    ];
+
     return {
-      sde: { low: sdeLow, mid: sdeMid, high: sdeHigh, multiple: multiples.sde },
-      ebitda: { low: ebitdaLow, mid: ebitdaMid, high: ebitdaHigh, multiple: multiples.ebitda },
+      sde: { low: sdeLow, mid: sdeMid, high: sdeHigh, multiple: adjustedSdeMultiple, baseMultiple: multiples.sde },
+      ebitda: { low: ebitdaLow, mid: ebitdaMid, high: ebitdaHigh, multiple: adjustedEbitdaMultiple, baseMultiple: multiples.ebitda },
       assetBased: assetBasedValue,
+      adjustedAssetValue,
       dcf: dcfValue,
       revenueMultiple,
       average: averageValuation,
@@ -153,6 +345,9 @@ export default function ValuationCalculatorPage() {
       annualSDE,
       annualEBITDA,
       annualRevenue,
+      totalAdjustment,
+      adjustmentMultiplier,
+      adjustmentDetails,
     };
   }, [inputs]);
 
@@ -160,12 +355,41 @@ export default function ValuationCalculatorPage() {
     if (!outputs) return;
     const valuationData = {
       type: 'valuation',
-      inputs: { industry: inputs.industry, annualRevenue: parseCurrencyInput(inputs.annualRevenue), annualSDE: parseCurrencyInput(inputs.annualSDE), annualEBITDA: parseCurrencyInput(inputs.annualEBITDA) },
-      outputs: { sdeValuation: outputs.sde.mid, ebitdaValuation: outputs.ebitda.mid, dcfValuation: outputs.dcf, averageValuation: outputs.average },
+      inputs: { 
+        industry: inputs.industry, 
+        annualRevenue: parseCurrencyInput(inputs.annualRevenue), 
+        annualSDE: parseCurrencyInput(inputs.annualSDE), 
+        annualEBITDA: parseCurrencyInput(inputs.annualEBITDA),
+        adjustments: {
+          businessAge: inputs.businessAge,
+          revenueType: inputs.revenueType,
+          contractQuality: inputs.contractQuality,
+          ownerDependency: inputs.ownerDependency,
+          locationMarket: inputs.locationMarket,
+        }
+      },
+      outputs: { 
+        sdeValuation: outputs.sde.mid, 
+        ebitdaValuation: outputs.ebitda.mid, 
+        dcfValuation: outputs.dcf, 
+        averageValuation: outputs.average,
+        totalAdjustment: outputs.totalAdjustment,
+      },
       timestamp: new Date().toISOString(),
     };
     localStorage.setItem('pendingValuationAnalysis', JSON.stringify(valuationData));
     window.location.href = '/api/auth/signin?callbackUrl=/app/deals/new';
+  };
+
+  const formatPercent = (value: number): string => {
+    const sign = value >= 0 ? '+' : '';
+    return `${sign}${(value * 100).toFixed(0)}%`;
+  };
+
+  const getAdjustmentColor = (value: number): string => {
+    if (value > 0) return 'text-sgf-green-600';
+    if (value < 0) return 'text-red-600';
+    return 'text-gray-500';
   };
 
   return (
@@ -180,27 +404,31 @@ export default function ValuationCalculatorPage() {
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-3">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                Free Calculator
+                Enhanced Calculator
               </div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Business Valuation Calculator</h1>
-              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">Multiple valuation methods with industry-specific benchmarks</p>
+              <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">Multiple valuation methods with industry-specific benchmarks and adjustment factors</p>
             </div>
           </div>
         </div>
 
         {/* Industry Selection */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <h2 className="font-semibold text-gray-900">Select Industry</h2>
             <Tooltip content="Different industries trade at different valuation multiples based on growth potential, risk profile, and market conditions. Select the industry that best matches your business." />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {(Object.entries(industryMultiples) as [IndustryType, typeof industryMultiples[IndustryType]][]).map(([key, data]) => {
               const Icon = data.icon;
               const isSelected = inputs.industry === key;
               return (
-                <button key={key} onClick={() => handleIndustryChange(key)} className={`p-4 rounded-xl border-2 transition-all text-center ${isSelected ? 'border-sgf-green-500 bg-sgf-green-50' : 'border-gray-200 hover:border-sgf-green-300'}`}>
-                  <Icon className={`w-6 h-6 mx-auto mb-2 ${isSelected ? 'text-sgf-green-600' : 'text-gray-400'}`} />
+                <button 
+                  key={key} 
+                  onClick={() => handleIndustryChange(key)} 
+                  className={`p-3 rounded-xl border-2 transition-all text-center ${isSelected ? 'border-sgf-green-500 bg-sgf-green-50' : 'border-gray-200 hover:border-sgf-green-300'}`}
+                >
+                  <Icon className={`w-5 h-5 mx-auto mb-1 ${isSelected ? 'text-sgf-green-600' : 'text-gray-400'}`} />
                   <div className={`text-xs font-semibold ${isSelected ? 'text-sgf-green-700' : 'text-gray-600'}`}>{data.label.split(' / ')[0]}</div>
                 </button>
               );
@@ -213,16 +441,16 @@ export default function ValuationCalculatorPage() {
                 <span className="font-semibold">{industryMultiples[inputs.industry].label}</span>
               </div>
               <span className="hidden md:inline text-sgf-green-400">|</span>
-              <span>SDE Multiple: {industryMultiples[inputs.industry].sde.low}x - {industryMultiples[inputs.industry].sde.high}x</span>
+              <span>Base SDE Multiple: {industryMultiples[inputs.industry].sde.low}x - {industryMultiples[inputs.industry].sde.high}x</span>
               <span className="hidden md:inline text-sgf-green-400">|</span>
-              <span>EBITDA Multiple: {industryMultiples[inputs.industry].ebitda.low}x - {industryMultiples[inputs.industry].ebitda.high}x</span>
+              <span>Base EBITDA Multiple: {industryMultiples[inputs.industry].ebitda.low}x - {industryMultiples[inputs.industry].ebitda.high}x</span>
             </div>
             <p className="text-xs text-sgf-green-600 mt-2">{industryMultiples[inputs.industry].description}</p>
           </div>
         </div>
 
         {/* Input Cards */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid lg:grid-cols-3 gap-6 mb-6">
           
           {/* Income Metrics */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -236,7 +464,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual Revenue</label>
-                  <Tooltip content="Total gross revenue (sales) for the trailing 12 months. Used to calculate revenue multiples and assess business scale. Not typically used as primary valuation method for small businesses." />
+                  <Tooltip content="Total gross revenue (sales) for the trailing 12 months. Used to calculate revenue multiples and assess business scale." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -246,7 +474,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual SDE</label>
-                  <Tooltip content="Seller's Discretionary Earnings = Net Profit + Owner Salary + Owner Benefits + One-time Expenses + Non-cash Expenses. This is the PRIMARY valuation metric for businesses under $5M. It represents total benefit to a working owner." />
+                  <Tooltip content="Seller's Discretionary Earnings = Net Profit + Owner Salary + Owner Benefits + One-time Expenses. PRIMARY valuation metric for businesses under $5M." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -256,7 +484,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual EBITDA</label>
-                  <Tooltip content="Earnings Before Interest, Taxes, Depreciation & Amortization. Used for larger businesses ($5M+) where owner is replaced by management. EBITDA = SDE minus a market-rate manager salary." />
+                  <Tooltip content="Earnings Before Interest, Taxes, Depreciation & Amortization. Used for larger businesses ($5M+) with professional management." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -281,7 +509,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">FF&E / Equipment</label>
-                  <Tooltip content="Furniture, Fixtures & Equipment. The fair market value of all business equipment, machinery, vehicles, computers, furniture, etc. Use depreciated value or recent appraisal, not original cost." />
+                  <Tooltip content="Furniture, Fixtures & Equipment at book value. Will be adjusted based on condition below." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -290,8 +518,23 @@ export default function ValuationCalculatorPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
+                  <label className="text-sm font-semibold text-gray-700">Equipment Condition</label>
+                  <Tooltip content="Adjusts equipment value based on actual condition. Buyers rarely pay full book value for older equipment." />
+                </div>
+                <select 
+                  value={inputs.equipmentCondition} 
+                  onChange={(e) => handleSelectChange('equipmentCondition', e.target.value)}
+                  className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white"
+                >
+                  {Object.entries(equipmentConditionMultiplier).map(([key, data]) => (
+                    <option key={key} value={key}>{data.label} ({(data.value * 100).toFixed(0)}% of book)</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Inventory</label>
-                  <Tooltip content="Value of inventory included in the sale at cost (not retail). Inventory is often handled separately from the business price or adjusted at closing based on actual count." />
+                  <Tooltip content="Value of inventory at cost (not retail)." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -301,7 +544,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Real Estate</label>
-                  <Tooltip content="Value of any real estate included in the sale. Often real estate is sold separately or leased back. If included, get a professional appraisal. Leave at $0 if real estate is not part of the deal." />
+                  <Tooltip content="Value of real estate if included in sale. Leave $0 if leased or sold separately." />
                 </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
@@ -323,7 +566,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Growth Rate</label>
-                  <Tooltip content="Expected annual growth in cash flows. Conservative: 0-3%, Moderate: 3-5%, Aggressive: 5-10%. Higher growth = higher DCF valuation. Be realistic - most small businesses grow 0-5% annually." />
+                  <Tooltip content="Expected annual growth in cash flows. Conservative: 0-3%, Moderate: 3-5%, Aggressive: 5-10%." />
                 </div>
                 <div className="relative">
                   <input type="text" value={inputs.growthRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'growthRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
@@ -333,7 +576,7 @@ export default function ValuationCalculatorPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Discount Rate</label>
-                  <Tooltip content="Required rate of return / cost of capital. Higher risk = higher discount rate. Small businesses typically use 15-25%. Lower discount rate = higher DCF valuation. This reflects the risk of the investment." />
+                  <Tooltip content="Required rate of return. Small businesses typically use 15-25%. Higher risk = higher discount rate." />
                 </div>
                 <div className="relative">
                   <input type="text" value={inputs.discountRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'discountRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
@@ -341,10 +584,172 @@ export default function ValuationCalculatorPage() {
                 </div>
               </div>
               <div className="pt-2 border-t border-gray-200">
-                <p className="text-xs text-gray-500">DCF uses a 5-year projection with 2% terminal growth rate. This method is more theoretical and less commonly used for small business valuations than SDE multiples.</p>
+                <p className="text-xs text-gray-500">DCF uses 5-year projection with 2% terminal growth rate.</p>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Valuation Adjustment Factors */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+          <div 
+            className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-sgf-gold-50 to-white cursor-pointer"
+            onClick={() => setShowAdjustments(!showAdjustments)}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-sgf-gold-500 rounded-lg flex items-center justify-center">
+                <SlidersHorizontal className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <span className="font-semibold text-gray-900">Valuation Adjustment Factors</span>
+                <p className="text-xs text-gray-500">Fine-tune the multiple based on business characteristics</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              {outputs && (
+                <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+                  outputs.totalAdjustment > 0 
+                    ? 'bg-sgf-green-100 text-sgf-green-700' 
+                    : outputs.totalAdjustment < 0 
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {formatPercent(outputs.totalAdjustment)} adjustment
+                </span>
+              )}
+              <span className="text-gray-400">{showAdjustments ? '▼' : '▶'}</span>
+            </div>
+          </div>
+          
+          {showAdjustments && (
+            <div className="p-6">
+              <div className="grid md:grid-cols-5 gap-4">
+                {/* Business Age */}
+                <div>
+                  <div className="flex items-center gap-1 mb-2">
+                    <label className="text-xs font-semibold text-gray-700">Business Age</label>
+                    <Tooltip content="Older businesses with proven track records command premium multiples. Newer businesses have more risk." />
+                  </div>
+                  <select 
+                    value={inputs.businessAge} 
+                    onChange={(e) => handleSelectChange('businessAge', e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white text-sm"
+                  >
+                    {Object.entries(adjustmentFactors.businessAge).map(([key, data]) => (
+                      <option key={key} value={key}>{data.label}</option>
+                    ))}
+                  </select>
+                  <p className={`text-xs mt-1 font-semibold ${getAdjustmentColor(adjustmentFactors.businessAge[inputs.businessAge].value)}`}>
+                    {formatPercent(adjustmentFactors.businessAge[inputs.businessAge].value)}
+                  </p>
+                </div>
+
+                {/* Revenue Type */}
+                <div>
+                  <div className="flex items-center gap-1 mb-2">
+                    <label className="text-xs font-semibold text-gray-700">Revenue Type</label>
+                    <Tooltip content="Recurring revenue (contracts, subscriptions) is worth more than one-time project revenue." />
+                  </div>
+                  <select 
+                    value={inputs.revenueType} 
+                    onChange={(e) => handleSelectChange('revenueType', e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white text-sm"
+                  >
+                    {Object.entries(adjustmentFactors.revenueType).map(([key, data]) => (
+                      <option key={key} value={key}>{data.label}</option>
+                    ))}
+                  </select>
+                  <p className={`text-xs mt-1 font-semibold ${getAdjustmentColor(adjustmentFactors.revenueType[inputs.revenueType].value)}`}>
+                    {formatPercent(adjustmentFactors.revenueType[inputs.revenueType].value)}
+                  </p>
+                </div>
+
+                {/* Contract Quality */}
+                <div>
+                  <div className="flex items-center gap-1 mb-2">
+                    <label className="text-xs font-semibold text-gray-700">Contract Quality</label>
+                    <Tooltip content="Multi-year contracts provide revenue certainty and command premium valuations." />
+                  </div>
+                  <select 
+                    value={inputs.contractQuality} 
+                    onChange={(e) => handleSelectChange('contractQuality', e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white text-sm"
+                  >
+                    {Object.entries(adjustmentFactors.contractQuality).map(([key, data]) => (
+                      <option key={key} value={key}>{data.label}</option>
+                    ))}
+                  </select>
+                  <p className={`text-xs mt-1 font-semibold ${getAdjustmentColor(adjustmentFactors.contractQuality[inputs.contractQuality].value)}`}>
+                    {formatPercent(adjustmentFactors.contractQuality[inputs.contractQuality].value)}
+                  </p>
+                </div>
+
+                {/* Owner Dependency */}
+                <div>
+                  <div className="flex items-center gap-1 mb-2">
+                    <label className="text-xs font-semibold text-gray-700">Owner Dependency</label>
+                    <Tooltip content="Businesses that run without the owner are more valuable. High owner dependency = more risk for buyer." />
+                  </div>
+                  <select 
+                    value={inputs.ownerDependency} 
+                    onChange={(e) => handleSelectChange('ownerDependency', e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white text-sm"
+                  >
+                    {Object.entries(adjustmentFactors.ownerDependency).map(([key, data]) => (
+                      <option key={key} value={key}>{data.label}</option>
+                    ))}
+                  </select>
+                  <p className={`text-xs mt-1 font-semibold ${getAdjustmentColor(adjustmentFactors.ownerDependency[inputs.ownerDependency].value)}`}>
+                    {formatPercent(adjustmentFactors.ownerDependency[inputs.ownerDependency].value)}
+                  </p>
+                </div>
+
+                {/* Location/Market */}
+                <div>
+                  <div className="flex items-center gap-1 mb-2">
+                    <label className="text-xs font-semibold text-gray-700">Location/Market</label>
+                    <Tooltip content="Urban markets have more buyers and stronger economies. Rural markets have smaller buyer pools." />
+                  </div>
+                  <select 
+                    value={inputs.locationMarket} 
+                    onChange={(e) => handleSelectChange('locationMarket', e.target.value)}
+                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-sgf-gold-500 focus:outline-none bg-white text-sm"
+                  >
+                    {Object.entries(adjustmentFactors.locationMarket).map(([key, data]) => (
+                      <option key={key} value={key}>{data.label}</option>
+                    ))}
+                  </select>
+                  <p className={`text-xs mt-1 font-semibold ${getAdjustmentColor(adjustmentFactors.locationMarket[inputs.locationMarket].value)}`}>
+                    {formatPercent(adjustmentFactors.locationMarket[inputs.locationMarket].value)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Adjustment Summary */}
+              {outputs && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Info className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm font-semibold text-gray-700">Adjustment Summary</span>
+                  </div>
+                  <div className="grid md:grid-cols-6 gap-4 text-xs">
+                    {outputs.adjustmentDetails.map((adj, idx) => (
+                      <div key={idx} className="text-center">
+                        <div className="text-gray-500">{adj.label}</div>
+                        <div className={`font-bold ${getAdjustmentColor(adj.value)}`}>{formatPercent(adj.value)}</div>
+                      </div>
+                    ))}
+                    <div className="text-center border-l-2 border-gray-300 pl-4">
+                      <div className="text-gray-700 font-semibold">Total</div>
+                      <div className={`font-bold text-lg ${getAdjustmentColor(outputs.totalAdjustment)}`}>
+                        {formatPercent(outputs.totalAdjustment)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Results */}
@@ -356,24 +761,29 @@ export default function ValuationCalculatorPage() {
                 <div>
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <div className="text-sgf-green-100 text-sm">Valuation Range</div>
-                    <Tooltip content="The spread between conservative (low) and aggressive (high) valuations across all methods. Use this to understand the negotiation range." />
+                    <Tooltip content="The spread between conservative (low) and aggressive (high) valuations across all methods." />
                   </div>
                   <div className="text-xl font-bold">{formatCurrency(outputs.range.low)} - {formatCurrency(outputs.range.high)}</div>
                 </div>
                 <div className="border-l border-r border-white/20 px-6">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <div className="text-sgf-green-100 text-sm">Recommended Valuation</div>
-                    <Tooltip content="Average of the mid-point valuations from SDE, EBITDA, and DCF methods. This is a reasonable starting point for negotiations, but final price depends on deal terms, buyer competition, and market conditions." />
+                    <Tooltip content="Average of mid-point valuations from SDE, EBITDA, and DCF methods with adjustments applied." />
                   </div>
                   <div className="text-3xl font-bold">{formatCurrency(outputs.average)}</div>
-                  <div className="text-xs text-sgf-green-100">Average of income methods</div>
+                  <div className="text-xs text-sgf-green-100">
+                    Includes {formatPercent(outputs.totalAdjustment)} adjustment
+                  </div>
                 </div>
                 <div>
                   <div className="flex items-center justify-center gap-2 mb-1">
-                    <div className="text-sgf-green-100 text-sm">Implied SDE Multiple</div>
-                    <Tooltip content="The recommended valuation divided by SDE. Compare this to industry benchmarks to see if the valuation is reasonable. If this is outside the typical range, investigate why." />
+                    <div className="text-sgf-green-100 text-sm">Adjusted SDE Multiple</div>
+                    <Tooltip content="The recommended valuation divided by SDE, reflecting all adjustment factors applied." />
                   </div>
                   <div className="text-xl font-bold">{outputs.annualSDE > 0 ? (outputs.average / outputs.annualSDE).toFixed(2) : '--'}x</div>
+                  <div className="text-xs text-sgf-green-100">
+                    Base: {industryMultiples[inputs.industry].sde.mid}x
+                  </div>
                 </div>
               </div>
             </div>
@@ -386,26 +796,29 @@ export default function ValuationCalculatorPage() {
                 <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-sgf-green-50 to-white">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">SDE Multiple</h3>
-                    <Tooltip content="Most common method for businesses under $5M. Multiplies SDE by an industry-specific factor. This is what most buyers and lenders will use." />
+                    <Tooltip content="Most common method for businesses under $5M. Multiplies SDE by an industry-specific and adjusted factor." />
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Low ({outputs.sde.multiple.low}x)</span>
+                      <span className="text-gray-500">Low ({outputs.sde.multiple.low.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.sde.low)}</span>
                     </div>
                     <div className="flex justify-between font-semibold text-sgf-green-600">
-                      <span>Mid ({outputs.sde.multiple.mid}x)</span>
+                      <span>Mid ({outputs.sde.multiple.mid.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.sde.mid)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">High ({outputs.sde.multiple.high}x)</span>
+                      <span className="text-gray-500">High ({outputs.sde.multiple.high.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.sde.high)}</span>
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-                    Based on {formatCurrency(outputs.annualSDE)} SDE
+                    Based on {formatCurrency(outputs.annualSDE)} SDE<br/>
+                    <span className={getAdjustmentColor(outputs.totalAdjustment)}>
+                      Base {outputs.sde.baseMultiple.mid}x → Adjusted {outputs.sde.multiple.mid.toFixed(2)}x
+                    </span>
                   </div>
                 </div>
               </div>
@@ -415,26 +828,29 @@ export default function ValuationCalculatorPage() {
                 <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-sgf-gold-50 to-white">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">EBITDA Multiple</h3>
-                    <Tooltip content="Used for larger businesses or those with professional management. EBITDA multiples are typically higher than SDE multiples because they assume you'll hire a manager." />
+                    <Tooltip content="Used for larger businesses or those with professional management." />
                   </div>
                 </div>
                 <div className="p-4">
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Low ({outputs.ebitda.multiple.low}x)</span>
+                      <span className="text-gray-500">Low ({outputs.ebitda.multiple.low.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.ebitda.low)}</span>
                     </div>
                     <div className="flex justify-between font-semibold text-sgf-gold-600">
-                      <span>Mid ({outputs.ebitda.multiple.mid}x)</span>
+                      <span>Mid ({outputs.ebitda.multiple.mid.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.ebitda.mid)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">High ({outputs.ebitda.multiple.high}x)</span>
+                      <span className="text-gray-500">High ({outputs.ebitda.multiple.high.toFixed(2)}x)</span>
                       <span className="font-mono">{formatCurrency(outputs.ebitda.high)}</span>
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
-                    Based on {formatCurrency(outputs.annualEBITDA)} EBITDA
+                    Based on {formatCurrency(outputs.annualEBITDA)} EBITDA<br/>
+                    <span className={getAdjustmentColor(outputs.totalAdjustment)}>
+                      Base {outputs.ebitda.baseMultiple.mid}x → Adjusted {outputs.ebitda.multiple.mid.toFixed(2)}x
+                    </span>
                   </div>
                 </div>
               </div>
@@ -444,7 +860,7 @@ export default function ValuationCalculatorPage() {
                 <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-white">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">DCF Method</h3>
-                    <Tooltip content="Discounted Cash Flow analysis projects future cash flows and discounts them to present value. More theoretical - rarely used as primary method for small businesses, but useful as a sanity check." />
+                    <Tooltip content="Discounted Cash Flow analysis projects future cash flows and discounts them to present value." />
                   </div>
                 </div>
                 <div className="p-4 text-center py-6">
@@ -459,12 +875,14 @@ export default function ValuationCalculatorPage() {
                 <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-gray-900">Asset-Based</h3>
-                    <Tooltip content="Sum of tangible assets (equipment + inventory + real estate). This is the 'floor' value - what you could liquidate the business for. Rarely used as primary method unless business is unprofitable." />
+                    <Tooltip content="Sum of tangible assets adjusted for equipment condition. This is the 'floor' value." />
                   </div>
                 </div>
                 <div className="p-4 text-center py-6">
                   <div className="text-3xl font-bold font-mono text-gray-700">{formatCurrency(outputs.assetBased)}</div>
-                  <p className="text-xs text-gray-500 mt-2">Total tangible assets</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Equipment: {formatCurrency(outputs.adjustedAssetValue)} ({equipmentConditionMultiplier[inputs.equipmentCondition].label})
+                  </p>
                   <p className="text-xs text-gray-500">Floor / liquidation value</p>
                 </div>
               </div>
