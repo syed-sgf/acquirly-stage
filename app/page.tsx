@@ -47,6 +47,15 @@ const calculators = [
     badge: null,
   },
   {
+    id: 'cre-acquisition',
+    name: 'CRE Acquisition Analyzer',
+    description: 'Analyze real estate investments with Buy & Hold, Fix & Flip, and BRRRR strategies.',
+    icon: Building2,
+    href: '/calculators/cre-acquisition',
+    color: 'sgf-green',
+    badge: 'Pro Feature',
+  },
+  {
     id: 'cre-loan-sizer',
     name: 'CRE Loan Sizer',
     description: 'Size commercial real estate loans based on NOI, cap rates, and lender requirements.',
