@@ -41,12 +41,7 @@ interface ExportButtonProps {
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
 }
 
 function formatPercent(value: number): string {
@@ -61,15 +56,7 @@ function generatePDFHTML(data: ValuationPDFData): string {
     { key: 'Contract Quality', ...data.adjustments.contractQuality },
     { key: 'Owner Dependency', ...data.adjustments.ownerDependency },
     { key: 'Location/Market', ...data.adjustments.locationMarket },
-  ].map(adj => `
-    <tr>
-      <td>${adj.key}</td>
-      <td>${adj.label}</td>
-      <td class="${adj.value > 0 ? 'positive' : adj.value < 0 ? 'negative' : ''}" style="text-align: right; font-weight: 600;">
-        ${formatPercent(adj.value)}
-      </td>
-    </tr>
-  `).join('');
+  ].map(adj => `<tr><td>${adj.key}</td><td>${adj.label}</td><td class="${adj.value > 0 ? 'positive' : adj.value < 0 ? 'negative' : ''}" style="text-align: right; font-weight: 600;">${formatPercent(adj.value)}</td></tr>`).join('');
 
   return `<!DOCTYPE html>
 <html>
@@ -78,37 +65,114 @@ function generatePDFHTML(data: ValuationPDFData): string {
   <title>Business Valuation Report</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #1f2937; background: white; padding: 40px; width: 816px; }
-    .header { background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white; padding: 30px 35px; margin: -40px -40px 25px -40px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.4;
+      color: #1f2937;
+      background: white;
+      width: 816px;
+    }
+    .header {
+      background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+      color: white;
+      padding: 30px 40px;
+      margin-bottom: 0;
+    }
     .header h1 { font-size: 22pt; font-weight: 700; margin-bottom: 5px; }
     .header .subtitle { font-size: 12pt; opacity: 0.9; }
     .header .brand { font-size: 9pt; opacity: 0.75; margin-top: 8px; }
-    .meta-bar { display: flex; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px 20px; margin-bottom: 25px; }
+    .content { padding: 25px 40px 40px 40px; }
+    .meta-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 25px;
+    }
     .meta-item { text-align: center; flex: 1; }
     .meta-label { font-size: 8pt; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
     .meta-value { font-size: 11pt; font-weight: 600; color: #1e293b; margin-top: 3px; }
-    .summary-box { background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white; padding: 25px 30px; border-radius: 12px; text-align: center; margin-bottom: 25px; }
+    .summary-box {
+      background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+      color: white;
+      padding: 25px 30px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
     .summary-label { font-size: 10pt; opacity: 0.9; }
     .summary-value { font-size: 32pt; font-weight: 700; margin: 8px 0; }
     .summary-range { font-size: 11pt; opacity: 0.9; }
-    .adjustment-badge { display: inline-block; background: #D4AF37; padding: 6px 16px; border-radius: 20px; font-size: 9pt; font-weight: 600; margin-top: 12px; }
+    .adjustment-badge {
+      display: inline-block;
+      background: #D4AF37;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 9pt;
+      font-weight: 600;
+      margin-top: 12px;
+    }
     .section { margin-bottom: 22px; }
-    .section-title { font-size: 13pt; font-weight: 700; color: #2E7D32; border-bottom: 2px solid #2E7D32; padding-bottom: 8px; margin-bottom: 14px; }
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #2E7D32;
+      border-bottom: 2px solid #2E7D32;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
     table { width: 100%; border-collapse: collapse; }
-    th { background: #f1f5f9; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 9pt; text-transform: uppercase; color: #475569; border-bottom: 2px solid #e2e8f0; }
+    th {
+      background: #f1f5f9;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 9pt;
+      text-transform: uppercase;
+      color: #475569;
+      border-bottom: 2px solid #e2e8f0;
+    }
     td { padding: 10px 12px; border-bottom: 1px solid #e5e7eb; }
     .positive { color: #16a34a; }
     .negative { color: #dc2626; }
     .valuation-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
-    .valuation-card { flex: 1; min-width: 45%; background: #fafafa; border: 1px solid #e5e7eb; border-radius: 10px; padding: 15px; }
+    .valuation-card {
+      flex: 1;
+      min-width: 45%;
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 15px;
+    }
     .valuation-card h4 { font-size: 10pt; color: #374151; margin-bottom: 8px; }
     .valuation-card .value { font-size: 20pt; font-weight: 700; color: #2E7D32; margin-bottom: 6px; }
     .valuation-card .details { font-size: 8pt; color: #6b7280; line-height: 1.5; }
     .highlight-row { background: #f0fdf4 !important; }
     .highlight-row td { font-weight: 600; }
-    .disclaimer { background: #fef9e7; border: 1px solid #f7dc6f; border-left: 4px solid #f4d03f; border-radius: 6px; padding: 14px 16px; margin-top: 25px; font-size: 8pt; color: #7d6608; line-height: 1.5; }
+    .disclaimer {
+      background: #fef9e7;
+      border: 1px solid #f7dc6f;
+      border-left: 4px solid #f4d03f;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-top: 25px;
+      font-size: 8pt;
+      color: #7d6608;
+      line-height: 1.5;
+    }
     .disclaimer strong { display: block; margin-bottom: 6px; font-size: 9pt; }
-    .footer { margin-top: 30px; padding-top: 15px; border-top: 2px solid #e5e7eb; display: flex; justify-content: space-between; font-size: 8pt; color: #6b7280; }
+    .footer {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 2px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      font-size: 8pt;
+      color: #6b7280;
+    }
     .footer-brand { font-weight: 600; color: #2E7D32; font-size: 10pt; }
   </style>
 </head>
@@ -118,47 +182,49 @@ function generatePDFHTML(data: ValuationPDFData): string {
     <div class="subtitle">${data.businessName || data.industryLabel + ' Business'}</div>
     <div class="brand">Prepared by ACQUIRELY | Powered by Starting Gate Financial</div>
   </div>
-  <div class="meta-bar">
-    <div class="meta-item"><div class="meta-label">Industry</div><div class="meta-value">${data.industryLabel}</div></div>
-    <div class="meta-item"><div class="meta-label">Report Date</div><div class="meta-value">${data.reportDate}</div></div>
-    <div class="meta-item"><div class="meta-label">Prepared For</div><div class="meta-value">${data.preparedFor || 'Prospective Buyer'}</div></div>
-  </div>
-  <div class="summary-box">
-    <div class="summary-label">Recommended Business Valuation</div>
-    <div class="summary-value">${formatCurrency(data.recommendedValuation)}</div>
-    <div class="summary-range">Range: ${formatCurrency(data.valuationRange.low)} - ${formatCurrency(data.valuationRange.high)}</div>
-    <div class="adjustment-badge">${formatPercent(data.totalAdjustment)} Adjustment Applied</div>
-  </div>
-  <div class="section">
-    <div class="section-title">Financial Summary</div>
-    <table>
-      <tr><td style="width: 60%;"><strong>Annual Revenue</strong></td><td style="text-align: right; font-family: monospace;">${formatCurrency(data.annualRevenue)}</td></tr>
-      <tr><td><strong>Seller's Discretionary Earnings (SDE)</strong></td><td style="text-align: right; font-family: monospace; color: #2E7D32; font-weight: 600;">${formatCurrency(data.annualSDE)}</td></tr>
-      <tr><td><strong>EBITDA</strong></td><td style="text-align: right; font-family: monospace;">${formatCurrency(data.annualEBITDA)}</td></tr>
-      <tr><td><strong>SDE Margin</strong></td><td style="text-align: right; font-family: monospace;">${data.annualRevenue > 0 ? ((data.annualSDE / data.annualRevenue) * 100).toFixed(1) : 0}%</td></tr>
-    </table>
-  </div>
-  <div class="section">
-    <div class="section-title">Valuation Methods</div>
-    <div class="valuation-grid">
-      <div class="valuation-card"><h4>SDE Multiple Method</h4><div class="value">${formatCurrency(data.sdeValuation.mid)}</div><div class="details">Multiple: ${data.sdeValuation.multiple.mid.toFixed(2)}x | Range: ${formatCurrency(data.sdeValuation.low)} - ${formatCurrency(data.sdeValuation.high)}</div></div>
-      <div class="valuation-card"><h4>EBITDA Multiple Method</h4><div class="value">${formatCurrency(data.ebitdaValuation.mid)}</div><div class="details">Multiple: ${data.ebitdaValuation.multiple.mid.toFixed(2)}x | Range: ${formatCurrency(data.ebitdaValuation.low)} - ${formatCurrency(data.ebitdaValuation.high)}</div></div>
-      <div class="valuation-card"><h4>DCF Analysis</h4><div class="value">${formatCurrency(data.dcfValuation)}</div><div class="details">Growth: ${data.growthRate}% | Discount: ${data.discountRate}%</div></div>
-      <div class="valuation-card"><h4>Asset-Based</h4><div class="value">${formatCurrency(data.assetBasedValuation)}</div><div class="details">Equipment (${data.equipmentCondition.label}): ${formatCurrency(data.adjustedAssetValue)}</div></div>
+  <div class="content">
+    <div class="meta-bar">
+      <div class="meta-item"><div class="meta-label">Industry</div><div class="meta-value">${data.industryLabel}</div></div>
+      <div class="meta-item"><div class="meta-label">Report Date</div><div class="meta-value">${data.reportDate}</div></div>
+      <div class="meta-item"><div class="meta-label">Prepared For</div><div class="meta-value">${data.preparedFor || 'Prospective Buyer'}</div></div>
     </div>
+    <div class="summary-box">
+      <div class="summary-label">Recommended Business Valuation</div>
+      <div class="summary-value">${formatCurrency(data.recommendedValuation)}</div>
+      <div class="summary-range">Range: ${formatCurrency(data.valuationRange.low)} - ${formatCurrency(data.valuationRange.high)}</div>
+      <div class="adjustment-badge">${formatPercent(data.totalAdjustment)} Adjustment Applied</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Financial Summary</div>
+      <table>
+        <tr><td style="width:60%"><strong>Annual Revenue</strong></td><td style="text-align:right;font-family:monospace">${formatCurrency(data.annualRevenue)}</td></tr>
+        <tr><td><strong>Seller's Discretionary Earnings (SDE)</strong></td><td style="text-align:right;font-family:monospace;color:#2E7D32;font-weight:600">${formatCurrency(data.annualSDE)}</td></tr>
+        <tr><td><strong>EBITDA</strong></td><td style="text-align:right;font-family:monospace">${formatCurrency(data.annualEBITDA)}</td></tr>
+        <tr><td><strong>SDE Margin</strong></td><td style="text-align:right;font-family:monospace">${data.annualRevenue > 0 ? ((data.annualSDE / data.annualRevenue) * 100).toFixed(1) : 0}%</td></tr>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">Valuation Methods</div>
+      <div class="valuation-grid">
+        <div class="valuation-card"><h4>SDE Multiple Method</h4><div class="value">${formatCurrency(data.sdeValuation.mid)}</div><div class="details">Multiple: ${data.sdeValuation.multiple.mid.toFixed(2)}x | Range: ${formatCurrency(data.sdeValuation.low)} - ${formatCurrency(data.sdeValuation.high)}</div></div>
+        <div class="valuation-card"><h4>EBITDA Multiple Method</h4><div class="value">${formatCurrency(data.ebitdaValuation.mid)}</div><div class="details">Multiple: ${data.ebitdaValuation.multiple.mid.toFixed(2)}x | Range: ${formatCurrency(data.ebitdaValuation.low)} - ${formatCurrency(data.ebitdaValuation.high)}</div></div>
+        <div class="valuation-card"><h4>DCF Analysis</h4><div class="value">${formatCurrency(data.dcfValuation)}</div><div class="details">Growth: ${data.growthRate}% | Discount: ${data.discountRate}%</div></div>
+        <div class="valuation-card"><h4>Asset-Based</h4><div class="value">${formatCurrency(data.assetBasedValuation)}</div><div class="details">Equipment (${data.equipmentCondition.label}): ${formatCurrency(data.adjustedAssetValue)}</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Adjustment Factors</div>
+      <table>
+        <thead><tr><th>Factor</th><th>Selection</th><th style="text-align:right">Adjustment</th></tr></thead>
+        <tbody>
+          ${adjustmentRows}
+          <tr class="highlight-row"><td><strong>Total Adjustment</strong></td><td></td><td style="text-align:right;font-size:14pt" class="${data.totalAdjustment >= 0 ? 'positive' : 'negative'}"><strong>${formatPercent(data.totalAdjustment)}</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="disclaimer"><strong>Important Disclaimer</strong>This valuation report is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual business value may vary based on market conditions, buyer pool, deal structure, due diligence findings, and negotiation. Consult qualified professionals before making acquisition decisions.</div>
+    <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
   </div>
-  <div class="section">
-    <div class="section-title">Adjustment Factors</div>
-    <table>
-      <thead><tr><th>Factor</th><th>Selection</th><th style="text-align: right;">Adjustment</th></tr></thead>
-      <tbody>
-        ${adjustmentRows}
-        <tr class="highlight-row"><td><strong>Total Adjustment</strong></td><td></td><td style="text-align: right; font-size: 14pt;" class="${data.totalAdjustment >= 0 ? 'positive' : 'negative'}"><strong>${formatPercent(data.totalAdjustment)}</strong></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="disclaimer"><strong>Important Disclaimer</strong>This valuation report is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual business value may vary based on market conditions, buyer pool, deal structure, due diligence findings, and negotiation. Consult qualified professionals before making acquisition decisions.</div>
-  <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align: right;">startinggatefinancial.com<br>Richardson, TX</div></div>
 </body>
 </html>`;
 }
