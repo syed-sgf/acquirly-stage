@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import ValuationExportButton from '@/components/calculators/ValuationExportButton';
 
 const industryMultiples = {
   restaurant: { 
@@ -126,7 +127,6 @@ interface ValuationInputs {
   realEstate: string;
   growthRate: string;
   discountRate: string;
-  // New adjustment factors
   businessAge: 'under3' | '3to10' | 'over10';
   revenueType: 'project' | 'mixed' | 'recurring';
   contractQuality: 'monthToMonth' | 'annual' | 'multiYear';
@@ -153,7 +153,6 @@ const defaultInputs: ValuationInputs = {
   equipmentCondition: 'good',
 };
 
-// Adjustment factor values
 const adjustmentFactors = {
   businessAge: {
     under3: { value: -0.15, label: 'Under 3 Years', description: 'Higher risk, unproven track record' },
@@ -265,7 +264,6 @@ export default function ValuationCalculatorPage() {
 
     const multiples = industryMultiples[inputs.industry];
 
-    // Calculate total adjustment factor
     const ageAdj = adjustmentFactors.businessAge[inputs.businessAge].value;
     const revenueAdj = adjustmentFactors.revenueType[inputs.revenueType].value;
     const contractAdj = adjustmentFactors.contractQuality[inputs.contractQuality].value;
@@ -275,7 +273,6 @@ export default function ValuationCalculatorPage() {
     const totalAdjustment = ageAdj + revenueAdj + contractAdj + ownerAdj + locationAdj;
     const adjustmentMultiplier = 1 + totalAdjustment;
 
-    // Adjusted multiples
     const adjustedSdeMultiple = {
       low: multiples.sde.low * adjustmentMultiplier,
       mid: multiples.sde.mid * adjustmentMultiplier,
@@ -288,22 +285,18 @@ export default function ValuationCalculatorPage() {
       high: multiples.ebitda.high * adjustmentMultiplier,
     };
 
-    // SDE Valuations (adjusted)
     const sdeLow = annualSDE * adjustedSdeMultiple.low;
     const sdeMid = annualSDE * adjustedSdeMultiple.mid;
     const sdeHigh = annualSDE * adjustedSdeMultiple.high;
 
-    // EBITDA Valuations (adjusted)
     const ebitdaLow = annualEBITDA * adjustedEbitdaMultiple.low;
     const ebitdaMid = annualEBITDA * adjustedEbitdaMultiple.mid;
     const ebitdaHigh = annualEBITDA * adjustedEbitdaMultiple.high;
 
-    // Asset-Based Value (with equipment condition adjustment)
     const equipmentMultiplier = equipmentConditionMultiplier[inputs.equipmentCondition].value;
     const adjustedAssetValue = assetValue * equipmentMultiplier;
     const assetBasedValue = adjustedAssetValue + inventory + realEstate;
 
-    // DCF Calculation
     let dcfValue = 0;
     let projectedCashFlow = annualSDE;
     for (let year = 1; year <= 5; year++) {
@@ -314,17 +307,14 @@ export default function ValuationCalculatorPage() {
     const terminalValue = (projectedCashFlow * (1 + terminalGrowth / 100)) / ((discountRate / 100) - (terminalGrowth / 100));
     dcfValue += terminalValue / Math.pow(1 + discountRate / 100, 5);
 
-    // Revenue multiple (rough benchmark)
     const revenueMultiple = annualRevenue * 0.5;
 
-    // Calculate averages and ranges
     const allMidValues = [sdeMid, ebitdaMid, dcfValue].filter(v => v > 0);
     const averageValuation = allMidValues.length > 0 ? allMidValues.reduce((a, b) => a + b, 0) / allMidValues.length : 0;
 
     const lowValuation = Math.min(sdeLow || Infinity, ebitdaLow || Infinity, assetBasedValue || Infinity);
     const highValuation = Math.max(sdeHigh, ebitdaHigh, dcfValue);
 
-    // Individual adjustment details for display
     const adjustmentDetails = [
       { label: 'Business Age', factor: adjustmentFactors.businessAge[inputs.businessAge], value: ageAdj },
       { label: 'Revenue Type', factor: adjustmentFactors.revenueType[inputs.revenueType], value: revenueAdj },
@@ -391,6 +381,37 @@ export default function ValuationCalculatorPage() {
     if (value < 0) return 'text-red-600';
     return 'text-gray-500';
   };
+
+  // Prepare PDF export data
+  const pdfExportData = outputs ? {
+    industry: inputs.industry,
+    industryLabel: industryMultiples[inputs.industry].label,
+    reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    annualRevenue: outputs.annualRevenue,
+    annualSDE: outputs.annualSDE,
+    annualEBITDA: outputs.annualEBITDA,
+    assetValue: parseCurrencyInput(inputs.assetValue),
+    adjustedAssetValue: outputs.adjustedAssetValue,
+    inventory: parseCurrencyInput(inputs.inventory),
+    realEstate: parseCurrencyInput(inputs.realEstate),
+    growthRate: parseFloat(inputs.growthRate) || 0,
+    discountRate: parseFloat(inputs.discountRate) || 15,
+    adjustments: {
+      businessAge: { label: adjustmentFactors.businessAge[inputs.businessAge].label, value: adjustmentFactors.businessAge[inputs.businessAge].value },
+      revenueType: { label: adjustmentFactors.revenueType[inputs.revenueType].label, value: adjustmentFactors.revenueType[inputs.revenueType].value },
+      contractQuality: { label: adjustmentFactors.contractQuality[inputs.contractQuality].label, value: adjustmentFactors.contractQuality[inputs.contractQuality].value },
+      ownerDependency: { label: adjustmentFactors.ownerDependency[inputs.ownerDependency].label, value: adjustmentFactors.ownerDependency[inputs.ownerDependency].value },
+      locationMarket: { label: adjustmentFactors.locationMarket[inputs.locationMarket].label, value: adjustmentFactors.locationMarket[inputs.locationMarket].value },
+    },
+    totalAdjustment: outputs.totalAdjustment,
+    equipmentCondition: { label: equipmentConditionMultiplier[inputs.equipmentCondition].label, multiplier: equipmentConditionMultiplier[inputs.equipmentCondition].value },
+    sdeValuation: outputs.sde,
+    ebitdaValuation: outputs.ebitda,
+    dcfValuation: outputs.dcf,
+    assetBasedValuation: outputs.assetBased,
+    recommendedValuation: outputs.average,
+    valuationRange: outputs.range,
+  } : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
@@ -881,23 +902,26 @@ export default function ValuationCalculatorPage() {
                 <div className="p-4 text-center py-6">
                   <div className="text-3xl font-bold font-mono text-gray-700">{formatCurrency(outputs.assetBased)}</div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Equipment: {formatCurrency(outputs.adjustedAssetValue)} ({equipmentConditionMultiplier[inputs.equipmentCondition].label})
+                    Equipment ({equipmentConditionMultiplier[inputs.equipmentCondition].label}): {formatCurrency(outputs.adjustedAssetValue)}
                   </p>
                   <p className="text-xs text-gray-500">Floor / liquidation value</p>
                 </div>
               </div>
             </div>
 
-            {/* Save CTA */}
+            {/* Save & Export CTA */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900">Save This Valuation</h3>
-                  <p className="text-sm text-gray-600">Create a free account to save, compare, and export professional reports</p>
+                  <h3 className="font-semibold text-gray-900">Save or Export This Valuation</h3>
+                  <p className="text-sm text-gray-600">Download a professional PDF report or save to your account</p>
                 </div>
-                <button onClick={handleSaveValuation} className="inline-flex items-center gap-2 bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white px-6 py-3 rounded-lg font-bold shadow-lg">
-                  <Save className="w-5 h-5" />Save Valuation
-                </button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <ValuationExportButton data={pdfExportData} />
+                  <button onClick={handleSaveValuation} className="inline-flex items-center gap-2 bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white px-6 py-3 rounded-lg font-bold shadow-lg">
+                    <Save className="w-5 h-5" />Save Analysis
+                  </button>
+                </div>
               </div>
             </div>
           </>
