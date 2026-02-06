@@ -97,15 +97,13 @@ function PDFExportSection({ analysis, dealName }: { analysis: any; dealName: str
   // Prepare PDF data in the format the export button expects
   const pdfData = {
     businessName: dealName,
-    preparedFor: undefined, // User can fill this in the modal
+    preparedFor: undefined,
     reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    // Inputs
     annualSDE: inputs.revenue - inputs.expenses,
     annualCapex: inputs.capex || 0,
     loanAmount: inputs.loanAmount,
-    interestRate: inputs.interestRate * 100, // Convert to percentage
+    interestRate: inputs.interestRate * 100,
     loanTerm: inputs.loanTerm,
-    // Calculated outputs
     lendableCashFlow: outputs.netCashFlow,
     monthlyPayment: outputs.annualDebtService / 12,
     annualDebtService: outputs.annualDebtService,
