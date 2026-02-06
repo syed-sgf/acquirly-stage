@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { formatCurrency, formatPercent } from '@/lib/format';
+import DSCRExportButton from '@/components/calculators/DSCRExportButton';
 
 export default async function DealDSCRPage({ 
   params 
@@ -37,16 +38,21 @@ export default async function DealDSCRPage({
 
   return (
     <div className="container mx-auto py-8">
-      {/* Header */}
-      <div className="mb-6">
-        <Link 
-          href={`/app/deals/${dealId}`}
-          className="text-emerald-600 hover:text-emerald-700 mb-2 inline-block"
-        >
-          ← Back to Deal
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-900">{deal.name}</h1>
-        <p className="text-gray-600">Debt Service Coverage Ratio Analysis</p>
+      {/* Header with Export Button */}
+      <div className="mb-6 flex justify-between items-start">
+        <div>
+          <Link 
+            href={`/app/deals/${dealId}`}
+            className="text-emerald-600 hover:text-emerald-700 mb-2 inline-block"
+          >
+            ← Back to Deal
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">{deal.name}</h1>
+          <p className="text-gray-600">Debt Service Coverage Ratio Analysis</p>
+        </div>
+        
+        {/* PDF Export Button - Only show if analysis exists */}
+        {dscrAnalysis && <PDFExportSection analysis={dscrAnalysis} dealName={deal.name} />}
       </div>
 
       {dscrAnalysis ? (
@@ -56,6 +62,60 @@ export default async function DealDSCRPage({
       )}
     </div>
   );
+}
+
+// New component to handle PDF export button
+function PDFExportSection({ analysis, dealName }: { analysis: any; dealName: string }) {
+  const inputs = analysis.inputs as any;
+  const outputs = analysis.outputs as any;
+
+  // Determine DSCR status for PDF
+  const getDSCRStatus = (dscr: number) => {
+    if (dscr >= 1.25) {
+      return { 
+        status: 'green' as const, 
+        label: 'Bankable - Strong Coverage', 
+        description: 'This DSCR meets or exceeds most lender requirements (1.25x minimum). Strong cash flow coverage for debt service.'
+      };
+    }
+    if (dscr >= 1.15) {
+      return { 
+        status: 'amber' as const, 
+        label: 'Marginal - Requires Review', 
+        description: 'This DSCR is below typical lender requirements. Consider increasing down payment or reducing loan amount.'
+      };
+    }
+    return { 
+      status: 'red' as const, 
+      label: 'Does Not Qualify', 
+      description: 'Insufficient cash flow to cover debt service. This deal may not qualify for traditional financing without restructuring.'
+    };
+  };
+
+  const dscrStatus = getDSCRStatus(outputs.dscr);
+
+  // Prepare PDF data in the format the export button expects
+  const pdfData = {
+    businessName: dealName,
+    preparedFor: undefined, // User can fill this in the modal
+    reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    // Inputs
+    annualSDE: inputs.revenue - inputs.expenses,
+    annualCapex: inputs.capex || 0,
+    loanAmount: inputs.loanAmount,
+    interestRate: inputs.interestRate * 100, // Convert to percentage
+    loanTerm: inputs.loanTerm,
+    // Calculated outputs
+    lendableCashFlow: outputs.netCashFlow,
+    monthlyPayment: outputs.annualDebtService / 12,
+    annualDebtService: outputs.annualDebtService,
+    dscr: outputs.dscr,
+    dscrStatus: dscrStatus.status,
+    dscrLabel: dscrStatus.label,
+    dscrDescription: dscrStatus.description,
+  };
+
+  return <DSCRExportButton data={pdfData} />;
 }
 
 function DSCRResults({ analysis }: { analysis: any }) {
