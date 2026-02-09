@@ -6,6 +6,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import DSCRLegend from '@/components/core/DSCRLegend';
 import FlowIndicator from '@/components/core/FlowIndicator';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import DSCRExportButton from '@/components/calculators/DSCRExportButton';
 
 interface DSCRResult {
   value: number;
@@ -142,6 +143,23 @@ export default function CoreCalculatorPage() {
       default: return 'bg-gray-50 text-gray-700 border border-gray-200';
     }
   };
+
+  // Prepare PDF data when DSCR is calculated
+  const pdfData = dscrResult ? {
+    reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    annualSDE: parseCurrencyInput(sde),
+    annualCapex: parseCurrencyInput(capex),
+    loanAmount: parseCurrencyInput(loanAmount),
+    interestRate: parseFloat(interestRate) || 0,
+    loanTerm: parseInt(loanTerm) || 0,
+    lendableCashFlow: lendableCF,
+    monthlyPayment: annualDebtService / 12,
+    annualDebtService: annualDebtService,
+    dscr: dscrResult.value,
+    dscrStatus: dscrResult.colorClass,
+    dscrLabel: dscrResult.status,
+    dscrDescription: dscrResult.statusDescription,
+  } : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
@@ -339,8 +357,14 @@ export default function CoreCalculatorPage() {
                     </div>
                     <p className="mt-4 text-sm text-gray-500">{dscrResult.statusDescription}</p>
                     
-                    {/* Save Analysis CTA */}
-                    <div className="mt-6 pt-6 border-t border-gray-200">
+                    {/* Action Buttons */}
+                    <div className="mt-6 pt-6 border-t border-gray-200 space-y-3">
+                      {/* PDF Export Button */}
+                      <div className="w-full">
+                        <DSCRExportButton data={pdfData} />
+                      </div>
+                      
+                      {/* Save Analysis Button */}
                       <button 
                         onClick={handleSaveDSCR}
                         className="block w-full bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 hover:from-sgf-green-700 hover:to-sgf-green-800 text-white text-center py-3 px-6 rounded-lg font-bold shadow-lg hover:shadow-xl transition-all group"
@@ -350,7 +374,7 @@ export default function CoreCalculatorPage() {
                           Save This Analysis
                         </div>
                       </button>
-                      <p className="mt-2 text-xs text-center text-gray-500">
+                      <p className="text-xs text-center text-gray-500">
                         Create a free account to save unlimited calculations
                       </p>
                     </div>
