@@ -23,10 +23,12 @@ import {
 } from 'lucide-react';
 import { useAcquisitionCalculator } from '@/lib/hooks/use-acquisition-calculator';
 import type { AcquisitionInputs, CalculatedMetrics } from '@/lib/calculations/acquisition-analysis';
+import AcquisitionExportButton from '@/components/calculators/AcquisitionExportButton';
 
 export default function AcquisitionAnalyzerPage() {
   const params = useParams();
   const dealId = params.dealId as string;
+  const [dealName, setDealName] = useState<string>('');
   const [activeTab, setActiveTab] = useState('inputs');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,10 +57,18 @@ export default function AcquisitionAnalyzerPage() {
     onSave: handleSave
   });
 
-  // Load existing analysis on mount
+  // Load existing analysis and deal info on mount
   useEffect(() => {
-    const loadExistingAnalysis = async () => {
+    const loadData = async () => {
       try {
+        // Fetch deal info
+        const dealResponse = await fetch(`/api/deals/${dealId}`);
+        if (dealResponse.ok) {
+          const dealData = await dealResponse.json();
+          setDealName(dealData.name || '');
+        }
+
+        // Fetch existing analysis
         const response = await fetch(`/api/deals/${dealId}/analyses/acquisition`);
         if (response.ok) {
           const data = await response.json();
@@ -72,7 +82,7 @@ export default function AcquisitionAnalyzerPage() {
         setIsLoading(false);
       }
     };
-    loadExistingAnalysis();
+    loadData();
   }, [dealId]);
 
   // Format helpers
@@ -108,6 +118,43 @@ export default function AcquisitionAnalyzerPage() {
     { id: 'valuation', name: 'Valuation', icon: Building2 }
   ];
 
+  // Prepare PDF data
+  const pdfData = outputs ? {
+    businessName: dealName,
+    reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    // Business Info
+    askingPrice: inputs.purchasePrice,
+    annualRevenue: inputs.annualRevenue,
+    annualSDE: inputs.annualSDE,
+    // Deal Structure
+    downPayment: inputs.downPayment,
+    downPaymentPercent: (inputs.downPayment / inputs.purchasePrice) * 100,
+    loanAmount: inputs.purchasePrice - inputs.downPayment,
+    interestRate: inputs.bankLoanRate,
+    loanTerm: 10, // Default 10 years, adjust if you have this in inputs
+    // Calculated Results
+    monthlyPayment: outputs.annualDebtService / 12,
+    annualDebtService: outputs.annualDebtService,
+    dscr: outputs.dscr,
+    dscrStatus: outputs.dscrRating,
+    // Returns
+    annualCashFlow: outputs.annualPreTaxCashFlow,
+    cashOnCashReturn: outputs.cashOnCashReturn,
+    roi: outputs.cashOnCashReturn, // Using CoC as ROI
+    paybackPeriod: outputs.paybackPeriodYears,
+    // Multiples
+    sdeMultiple: inputs.purchasePrice / inputs.annualSDE,
+    revenueMultiple: inputs.purchasePrice / inputs.annualRevenue,
+    // 5-Year Projections (map from equity schedule)
+    projections: outputs.equitySchedule?.slice(0, 6).map(year => ({
+      year: year.year,
+      revenue: inputs.annualRevenue * Math.pow(1.05, year.year), // 5% growth assumption
+      cashFlow: outputs.annualPreTaxCashFlow * Math.pow(1.05, year.year),
+      equity: year.ownerEquity,
+      cumulativeCashFlow: outputs.annualPreTaxCashFlow * year.year,
+    })),
+  } : null;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-sgf-green-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -137,8 +184,12 @@ export default function AcquisitionAnalyzerPage() {
               </p>
             </div>
             
-            {/* Save Status */}
-            <div className="hidden md:flex items-center gap-2">
+            {/* Actions */}
+            <div className="hidden md:flex items-center gap-3">
+              {/* PDF Export Button */}
+              {outputs && <AcquisitionExportButton data={pdfData} />}
+              
+              {/* Save Status */}
               {saveStatus === 'saving' && (
                 <div className="flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-lg">
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -244,7 +295,7 @@ export default function AcquisitionAnalyzerPage() {
 }
 
 // ============================================================================
-// TAB COMPONENTS
+// TAB COMPONENTS (keeping all the existing tab components unchanged)
 // ============================================================================
 
 interface InputsTabProps {

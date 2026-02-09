@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Calculator, DollarSign, Percent, Clock, RefreshCw, TrendingUp } from 'lucide-react';
+import BusinessLoanExportButton from '@/components/calculators/BusinessLoanExportButton';
 
 interface BusinessLoanAnalysis {
   id: string;
@@ -46,12 +47,21 @@ export default function DealBusinessLoanPage() {
   const params = useParams();
   const dealId = params.dealId as string;
   const [analysis, setAnalysis] = useState<BusinessLoanAnalysis | null>(null);
+  const [dealName, setDealName] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAnalysis = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch deal info
+        const dealResponse = await fetch(`/api/deals/${dealId}`);
+        if (dealResponse.ok) {
+          const dealData = await dealResponse.json();
+          setDealName(dealData.name || '');
+        }
+
+        // Fetch analyses
         const response = await fetch(`/api/deals/${dealId}/analyses`);
         if (!response.ok) throw new Error('Failed to fetch analyses');
         const analyses = await response.json();
@@ -67,7 +77,7 @@ export default function DealBusinessLoanPage() {
         setLoading(false);
       }
     };
-    fetchAnalysis();
+    fetchData();
   }, [dealId]);
 
   if (loading) {
@@ -119,6 +129,19 @@ export default function DealBusinessLoanPage() {
 
   const { inputs, outputs } = analysis;
 
+  // Prepare PDF data
+  const pdfData = {
+    businessName: dealName,
+    reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    loanAmount: inputs.loanAmount,
+    interestRate: inputs.interestRate,
+    loanTerm: inputs.loanTerm,
+    loanType: 'Business Acquisition Loan', // Default loan type
+    monthlyPayment: outputs.monthlyPayment,
+    totalPayments: outputs.totalPayments,
+    totalInterest: outputs.totalInterest,
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
@@ -132,10 +155,16 @@ export default function DealBusinessLoanPage() {
             Business Loan Analysis
           </h1>
         </div>
-        <Link href="/business-loan" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium">
-          <RefreshCw className="w-4 h-4" />
-          New Calculation
-        </Link>
+        
+        <div className="flex items-center gap-3">
+          {/* PDF Export Button */}
+          <BusinessLoanExportButton data={pdfData} />
+          
+          <Link href="/business-loan" className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition font-medium">
+            <RefreshCw className="w-4 h-4" />
+            New Calculation
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
