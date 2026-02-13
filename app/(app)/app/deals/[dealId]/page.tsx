@@ -162,7 +162,7 @@ export default async function DealPage({
               title="CRE Loan Sizer"
               description="Commercial loan capacity"
               count={analysesByType['cre-loan']?.length || 0}
-              href={`/app/deals/${dealId}/cre-loan`}
+              href={`/app/deals/${dealId}/cre-loan-sizer`}
               icon={<Landmark className="w-6 h-6" />}
               color="gray"
               comingSoon
