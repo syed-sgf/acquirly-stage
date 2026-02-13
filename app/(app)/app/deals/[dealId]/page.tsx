@@ -142,8 +142,8 @@ export default async function DealPage({
               count={analysesByType['valuation']?.length || 0}
               href={`/app/deals/${dealId}/valuation`}
               icon={<Diamond className="w-6 h-6" />}
-              color="gray"
-              comingSoon
+              color="green"
+
             />
 
             {/* CRE Acquisition Analyzer Card */}
@@ -164,8 +164,8 @@ export default async function DealPage({
               count={analysesByType['cre-loan']?.length || 0}
               href={`/app/deals/${dealId}/cre-loan-sizer`}
               icon={<Landmark className="w-6 h-6" />}
-              color="gray"
-              comingSoon
+              color="green"
+
             />
           </div>
         </div>
