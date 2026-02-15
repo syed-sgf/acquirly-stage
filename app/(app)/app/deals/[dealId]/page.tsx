@@ -167,6 +167,16 @@ export default async function DealPage({
               color="green"
 
             />
+
+            {/* Commercial Property Analyzer Card */}
+            <AnalysisCard
+              title="Commercial Property"
+              description="Office, Retail, Industrial, NNN"
+              count={analysesByType['commercial-property']?.length || 0}
+              href={`/app/deals/${dealId}/commercial-property`}
+              icon={<Building2 className="w-6 h-6" />}
+              color="gold"
+            />
           </div>
         </div>
 
