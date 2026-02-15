@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 
 // Admin emails - add yours here
 const ADMIN_EMAILS = [
-  'your-email@gmail.com',
+  'syed@startinggatefinancial.com',
   'admin@startinggatefinancial.com',
   'syed@acquirely.com',
 ];
