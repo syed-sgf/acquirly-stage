@@ -235,7 +235,7 @@ export default function CREAcquisitionDealPage() {
     }
 
     return { gpi, vacLoss, egi, totalExp, mgmtExp, expRatio, noi, dp, loan, monthly, ads, capRate, grm, dscr, acf, mcf, totalCash, coc, ber, pp, arv, rehab, ...strategyResults };
-  }, [inputs, strategy]);
+  }, [inputs, strategy]) as any;
 
   const handleSave = async () => {
     if (!outputs || !dealId) return;
