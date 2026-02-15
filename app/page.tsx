@@ -64,6 +64,15 @@ const calculators = [
     color: 'sgf-green',
     badge: 'New',
   },
+  {
+    id: 'commercial-property',
+    name: 'Commercial Property Analyzer',
+    description: 'Analyze office, retail, industrial, and NNN properties with cap rates, NOI, tenant analysis, and equity build schedules.',
+    icon: Building2,
+    href: '/calculators/commercial-property',
+    color: 'sgf-gold',
+    badge: 'New',
+  }
 ];
 
 export default function CalculatorsIndexPage() {
