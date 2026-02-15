@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     // =========================================================
     const gate = await gateDealCreation(session.user.id);
     if (!gate.allowed) {
-      return gateResponse('deals', gate.currentCount, gate.limit, gate.plan, gate.upgradeRequired!);
+      return gateResponse(gate);
     }
     // =========================================================
 
