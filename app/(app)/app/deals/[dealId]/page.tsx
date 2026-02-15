@@ -153,8 +153,8 @@ export default async function DealPage({
               count={analysesByType['cre-acquisition']?.length || 0}
               href={`/app/deals/${dealId}/cre-acquisition`}
               icon={<Building2 className="w-6 h-6" />}
-              color="gray"
-              comingSoon
+              color="green"
+
             />
 
             {/* CRE Loan Sizer Card */}
