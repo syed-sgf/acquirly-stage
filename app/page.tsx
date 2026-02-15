@@ -101,7 +101,7 @@ export default function CalculatorsIndexPage() {
         </div>
 
         {/* Calculator Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 [&>*:last-child:nth-child(3n+1)]:lg:col-start-2">
           {calculators.map((calc) => {
             const Icon = calc.icon;
             const isGreen = calc.color === 'sgf-green';
