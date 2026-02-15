@@ -55,28 +55,39 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Email required' }, { status: 400 });
   }
 
-  // Find user by email
-  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-  if (!user) {
-    return NextResponse.json({ error: `No account found for ${email}. User must sign up first.` }, { status: 404 });
-  }
-
   // Calculate expiry
   const pilotExpiresAt = expiryDays && expiryDays > 0
     ? new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000)
     : null;
 
-  const updated = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      pilotUser: true,
-      plan: 'pro', // Elevate plan to pro
-      pilotGrantedBy: session?.user?.email || 'admin',
-      pilotGrantedAt: new Date(),
-      pilotExpiresAt,
-      pilotNotes: notes || null,
-    },
-  });
+  const pilotData = {
+    pilotUser: true,
+    plan: 'pro',
+    pilotGrantedBy: session?.user?.email || 'admin',
+    pilotGrantedAt: new Date(),
+    pilotExpiresAt,
+    pilotNotes: notes || null,
+  };
 
-  return NextResponse.json({ success: true, user: updated });
+  // Find user by email - create pre-registration if not found
+  const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+  
+  if (user) {
+    // User exists - update them
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: pilotData,
+    });
+    return NextResponse.json({ success: true, status: 'activated', user: updated });
+  } else {
+    // Pre-register: create a placeholder user record
+    // When they sign up with this email, NextAuth will update the existing record
+    const preRegistered = await prisma.user.create({
+      data: {
+        email: email.toLowerCase(),
+        ...pilotData,
+      },
+    });
+    return NextResponse.json({ success: true, status: 'pre-registered', message: `Pilot access pre-registered for ${email}. Will activate when they sign up.`, user: preRegistered });
+  }
 }
