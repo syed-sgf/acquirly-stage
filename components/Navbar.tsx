@@ -12,7 +12,7 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm">
-          <Link href="/calculators" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+          <Link href="/product" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
             Product
           </Link>
           <Link href="/pricing" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
