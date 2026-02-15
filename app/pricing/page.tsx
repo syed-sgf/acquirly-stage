@@ -169,7 +169,7 @@ export default function PricingPage() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-sgf-green-600 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-sgf-green-700 transition-colors"
           >
-            Apply for Financing →
+            Apply for Financing &rarr;
           </a>
         </div>
       </div>
