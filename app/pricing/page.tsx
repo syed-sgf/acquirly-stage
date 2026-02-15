@@ -165,6 +165,7 @@ export default function PricingPage() {
           </p>
           
 
+          <a
             href="https://startinggatefinancial.com"
             target="_blank"
             rel="noopener noreferrer"
