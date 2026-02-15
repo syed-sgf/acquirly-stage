@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Download, Loader2, FileText } from 'lucide-react';
 
-export interface CREAcquisitionPDFData {
+export interface REIInvestorProPDFData {
   propertyName?: string;
   propertyAddress?: string;
   preparedFor?: string;
@@ -58,7 +58,7 @@ export interface CREAcquisitionPDFData {
 }
 
 interface ExportButtonProps {
-  data: CREAcquisitionPDFData | null;
+  data: REIInvestorProPDFData | null;
   disabled?: boolean;
 }
 
@@ -74,7 +74,7 @@ const strategyLabel = (s: string) => {
   return s;
 };
 
-function generatePDFHTML(data: CREAcquisitionPDFData): string {
+function generatePDFHTML(data: REIInvestorProPDFData): string {
   const dscrColor = data.dscr >= 1.25 ? '#16a34a' : data.dscr >= 1.15 ? '#D4AF37' : '#dc2626';
 
   const equityRows = data.equitySchedule?.map(row => `
@@ -145,7 +145,7 @@ function generatePDFHTML(data: CREAcquisitionPDFData): string {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>CRE Acquisition Analysis - ${data.propertyName || 'Property'}</title>
+  <title>Real Estate Investor Pro Analysis - ${data.propertyName || 'Property'}</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; font-size: 13px; color: #1a1a1a; background: white; }
@@ -162,7 +162,7 @@ function generatePDFHTML(data: CREAcquisitionPDFData): string {
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <div style="font-size:11px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Starting Gate Financial</div>
-        <div style="font-size:22px;font-weight:bold">CRE Acquisition Analysis</div>
+        <div style="font-size:22px;font-weight:bold">Real Estate Investor Pro Analysis</div>
         <div style="font-size:14px;opacity:0.9;margin-top:4px">${strategyLabel(data.strategy)} Strategy</div>
         ${data.propertyName ? `<div style="font-size:13px;opacity:0.8;margin-top:2px">${data.propertyName}</div>` : ''}
         ${data.propertyAddress ? `<div style="font-size:12px;opacity:0.7">${data.propertyAddress}</div>` : ''}
@@ -262,7 +262,7 @@ function generatePDFHTML(data: CREAcquisitionPDFData): string {
 </html>`;
 }
 
-export default function CREAcquisitionExportButton({ data, disabled }: ExportButtonProps) {
+export default function REIInvestorProExportButton({ data, disabled }: ExportButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [propertyName, setPropertyName] = useState('');
@@ -273,7 +273,7 @@ export default function CREAcquisitionExportButton({ data, disabled }: ExportBut
     if (!data) return;
     setIsGenerating(true);
     try {
-      const pdfData: CREAcquisitionPDFData = {
+      const pdfData: REIInvestorProPDFData = {
         ...data,
         propertyName: propertyName || data.propertyName,
         propertyAddress: propertyAddress || data.propertyAddress,
@@ -312,7 +312,7 @@ export default function CREAcquisitionExportButton({ data, disabled }: ExportBut
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="bg-gradient-to-r from-sgf-green-600 to-sgf-green-700 p-6 rounded-t-2xl text-white">
-              <h2 className="text-xl font-bold">Export CRE Acquisition Report</h2>
+              <h2 className="text-xl font-bold">Export Real Estate Investor Pro Report</h2>
               <p className="text-sgf-green-100 text-sm mt-1">{data ? strategyLabel(data.strategy) : ''} Strategy Analysis</p>
             </div>
             <div className="p-6 space-y-4">

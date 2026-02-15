@@ -5,7 +5,7 @@ export const ANALYSIS_TYPES = {
   BUSINESS_LOAN: "business-loan",
   ACQUISITION: "acquisition",
   VALUATION: "valuation",
-  CRE_ACQUISITION: "cre-acquisition",
+  CRE_ACQUISITION: "rei-pro",
   CRE_LOAN_SIZER: "cre-loan-sizer",
 } as const;
 
@@ -17,7 +17,7 @@ export const DEFAULT_ANALYSIS_NAMES: Record<AnalysisType, string> = {
   "business-loan": "Business Loan Analysis",
   acquisition: "Acquisition Analysis",
   valuation: "Valuation Analysis",
-  "cre-acquisition": "CRE Acquisition Analysis",
+  "rei-pro": "Real Estate Investor Pro Analysis",
   "cre-loan-sizer": "CRE Loan Sizer",
 };
 

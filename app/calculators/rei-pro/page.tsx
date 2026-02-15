@@ -24,7 +24,7 @@ import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 
 type StrategyType = 'buy-hold' | 'fix-flip' | 'brrrr';
 
-interface CREAcquisitionInputs {
+interface REIInvestorProInputs {
   // Property Details
   purchasePrice: string;
   afterRepairValue: string;
@@ -68,7 +68,7 @@ interface CREAcquisitionInputs {
   hardMoneyPoints: string;
 }
 
-const defaultInputs: CREAcquisitionInputs = {
+const defaultInputs: REIInvestorProInputs = {
   purchasePrice: '250,000',
   afterRepairValue: '320,000',
   rehabCosts: '40,000',
@@ -125,8 +125,8 @@ const formatNumberWithCommas = (value: number): string => {
 
 const handleCurrencyChange = (
   value: string,
-  setter: (field: keyof CREAcquisitionInputs, value: string) => void,
-  field: keyof CREAcquisitionInputs
+  setter: (field: keyof REIInvestorProInputs, value: string) => void,
+  field: keyof REIInvestorProInputs
 ) => {
   if (value === '' || value === '$') {
     setter(field, '0');
@@ -141,8 +141,8 @@ const handleCurrencyChange = (
 
 const handlePercentChange = (
   value: string,
-  setter: (field: keyof CREAcquisitionInputs, value: string) => void,
-  field: keyof CREAcquisitionInputs
+  setter: (field: keyof REIInvestorProInputs, value: string) => void,
+  field: keyof REIInvestorProInputs
 ) => {
   if (value === '') {
     setter(field, '0');
@@ -196,12 +196,12 @@ const calculateIRR = (cashFlows: number[], guess: number = 0.1): number => {
   return rate * 100;
 };
 
-export default function CREAcquisitionAnalyzerPage() {
-  const [inputs, setInputs] = useState<CREAcquisitionInputs>(defaultInputs);
+export default function REIInvestorProAnalyzerPage() {
+  const [inputs, setInputs] = useState<REIInvestorProInputs>(defaultInputs);
   const [strategy, setStrategy] = useState<StrategyType>('buy-hold');
   const [activeTab, setActiveTab] = useState<'summary' | 'cashflow' | 'returns' | 'equity'>('summary');
 
-  const handleInputChange = (field: keyof CREAcquisitionInputs, value: string) => {
+  const handleInputChange = (field: keyof REIInvestorProInputs, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -494,7 +494,7 @@ export default function CREAcquisitionAnalyzerPage() {
   const handleSaveAnalysis = () => {
     if (!outputs) return;
     const analysisData = {
-      type: 'cre-acquisition',
+      type: 'rei-pro',
       strategy,
       inputs: { 
         purchasePrice: outputs.purchasePrice, 
@@ -509,7 +509,7 @@ export default function CREAcquisitionAnalyzerPage() {
       },
       timestamp: new Date().toISOString(),
     };
-    localStorage.setItem('pendingCREAcquisitionAnalysis', JSON.stringify(analysisData));
+    localStorage.setItem('pendingREIInvestorProAnalysis', JSON.stringify(analysisData));
     window.location.href = '/api/auth/signin?callbackUrl=/app/deals/new';
   };
 
@@ -539,7 +539,7 @@ export default function CREAcquisitionAnalyzerPage() {
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 Pro Calculator
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-white">CRE Acquisition Analyzer</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">Real Estate Investor Pro</h1>
               <p className="text-sgf-green-100 mt-2 max-w-2xl mx-auto">Comprehensive real estate investment analysis for Buy & Hold, Fix & Flip, and BRRRR strategies</p>
             </div>
           </div>

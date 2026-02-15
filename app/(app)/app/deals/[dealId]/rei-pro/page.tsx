@@ -8,11 +8,11 @@ import {
   FileText, MessageSquare, Save, ArrowLeft, CheckCircle,
   Home, Hammer, RefreshCw, Target
 } from 'lucide-react';
-import CREAcquisitionExportButton from '@/components/calculators/CREAcquisitionExportButton';
+import REIInvestorProExportButton from '@/components/calculators/REIInvestorProExportButton';
 
 type StrategyType = 'buy-hold' | 'fix-flip' | 'brrrr';
 
-interface CREAcquisitionInputs {
+interface REIInvestorProInputs {
   purchasePrice: string; afterRepairValue: string; rehabCosts: string;
   closingCostsBuy: string; closingCostsSell: string;
   monthlyRent: string; otherMonthlyIncome: string; vacancyRate: string;
@@ -24,7 +24,7 @@ interface CREAcquisitionInputs {
   sellingCostsPercent: string; holdMonths: string; hardMoneyRate: string; hardMoneyPoints: string;
 }
 
-const defaultInputs: CREAcquisitionInputs = {
+const defaultInputs: REIInvestorProInputs = {
   purchasePrice: '250,000', afterRepairValue: '320,000', rehabCosts: '40,000',
   closingCostsBuy: '5,000', closingCostsSell: '3,000',
   monthlyRent: '2,200', otherMonthlyIncome: '100', vacancyRate: '5',
@@ -65,28 +65,28 @@ const calcIRR = (cashFlows: number[], guess = 0.1) => {
   return rate * 100;
 };
 
-export default function CREAcquisitionDealPage() {
+export default function REIInvestorProDealPage() {
   const params = useParams();
   const dealId = params?.dealId as string;
-  const [dealName, setDealName] = useState('CRE Acquisition Analysis');
-  const [inputs, setInputs] = useState<CREAcquisitionInputs>(defaultInputs);
+  const [dealName, setDealName] = useState('Real Estate Investor Pro Analysis');
+  const [inputs, setInputs] = useState<REIInvestorProInputs>(defaultInputs);
   const [strategy, setStrategy] = useState<StrategyType>('buy-hold');
   const [activeTab, setActiveTab] = useState<'inputs' | 'results'>('inputs');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [analysisId, setAnalysisId] = useState<string | null>(null);
 
-  const setField = (field: keyof CREAcquisitionInputs, value: string) => {
+  const setField = (field: keyof REIInvestorProInputs, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
     setSaveStatus('idle');
   };
 
-  const handleCurrency = (value: string, field: keyof CREAcquisitionInputs) => {
+  const handleCurrency = (value: string, field: keyof REIInvestorProInputs) => {
     if (value === '' || value === '$') { setField(field, '0'); return; }
     const n = parseInt(value.replace(/[^0-9]/g, ''), 10);
     if (!isNaN(n)) setField(field, formatCommas(n));
   };
 
-  const handlePercent = (value: string, field: keyof CREAcquisitionInputs) => {
+  const handlePercent = (value: string, field: keyof REIInvestorProInputs) => {
     if (value === '') { setField(field, '0'); return; }
     const c = value.replace(/[^0-9.]/g, '');
     const p = c.split('.');
@@ -99,11 +99,11 @@ export default function CREAcquisitionDealPage() {
     const fetchData = async () => {
       try {
         const dealRes = await fetch(`/api/deals/${dealId}`);
-        if (dealRes.ok) { const d = await dealRes.json(); setDealName(d.name || 'CRE Acquisition'); }
+        if (dealRes.ok) { const d = await dealRes.json(); setDealName(d.name || 'Real Estate Investor Pro'); }
         const analysisRes = await fetch(`/api/deals/${dealId}/analyses`);
         if (analysisRes.ok) {
           const analyses = await analysisRes.json();
-          const existing = analyses.find((a: { type: string }) => a.type === 'cre-acquisition');
+          const existing = analyses.find((a: { type: string }) => a.type === 'rei-pro');
           if (existing) {
             setAnalysisId(existing.id);
             if (existing.inputs) setInputs(prev => ({ ...prev, ...existing.inputs }));
@@ -242,7 +242,7 @@ export default function CREAcquisitionDealPage() {
     setSaveStatus('saving');
     try {
       const payload = {
-        type: 'cre-acquisition', strategy,
+        type: 'rei-pro', strategy,
         inputs, outputs: { noi: outputs.noi, capRate: outputs.capRate, dscr: outputs.dscr, coc: outputs.coc, acf: outputs.acf },
       };
       const url = analysisId ? `/api/deals/${dealId}/analyses/${analysisId}` : `/api/deals/${dealId}/analyses`;
@@ -300,7 +300,7 @@ export default function CREAcquisitionDealPage() {
     dscrAfterRefi: outputs.dscrAfterRefi as number,
   } : null;
 
-  const InputField = ({ label, value, field, type = 'currency' }: { label: string; value: string; field: keyof CREAcquisitionInputs; type?: 'currency' | 'percent' | 'number' }) => (
+  const InputField = ({ label, value, field, type = 'currency' }: { label: string; value: string; field: keyof REIInvestorProInputs; type?: 'currency' | 'percent' | 'number' }) => (
     <div>
       <label className="text-xs font-semibold text-gray-600 block mb-1">{label}</label>
       <div className="relative">
@@ -331,14 +331,14 @@ export default function CREAcquisitionDealPage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-2">
-                <Building2 className="w-3 h-3" />CRE Acquisition
+                <Building2 className="w-3 h-3" />Real Estate Investor Pro
               </div>
-              <h1 className="text-2xl font-bold text-white">CRE Acquisition Analyzer</h1>
+              <h1 className="text-2xl font-bold text-white">Real Estate Investor Pro</h1>
               <p className="text-sgf-green-100 text-sm mt-1">{dealName}</p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               {saveStatus === 'saved' && <div className="flex items-center gap-1 text-sgf-green-100 text-sm"><CheckCircle className="w-4 h-4" />Saved</div>}
-              <CREAcquisitionExportButton data={pdfData} />
+              <REIInvestorProExportButton data={pdfData} />
               <button onClick={handleSave} disabled={saveStatus === 'saving' || !outputs} className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-4 py-2 rounded-lg font-semibold text-sm transition-all disabled:opacity-50">
                 <Save className="w-4 h-4" />{saveStatus === 'saving' ? 'Saving...' : 'Save'}
               </button>

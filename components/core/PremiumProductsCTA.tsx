@@ -31,7 +31,7 @@ const products = [
     badge: 'Pro',
   },
   {
-    id: 'cre-acquisition',
+    id: 'rei-pro',
     title: 'CRE Loan Sizer',
     description: 'Commercial real estate analysis with cap rates and NOI.',
     icon: Building2,

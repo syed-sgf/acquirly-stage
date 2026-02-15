@@ -146,12 +146,12 @@ export default async function DealPage({
 
             />
 
-            {/* CRE Acquisition Analyzer Card */}
+            {/* Real Estate Investor Pro Card */}
             <AnalysisCard
-              title="CRE Acquisition"
-              description="Real estate deal analysis"
-              count={analysesByType['cre-acquisition']?.length || 0}
-              href={`/app/deals/${dealId}/cre-acquisition`}
+              title="Real Estate Investor Pro"
+              description="Flippers, Rehabbers & BRRRR"
+              count={analysesByType['rei-pro']?.length || 0}
+              href={`/app/deals/${dealId}/rei-pro`}
               icon={<Building2 className="w-6 h-6" />}
               color="green"
 
