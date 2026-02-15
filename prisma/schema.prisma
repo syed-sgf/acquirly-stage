@@ -34,6 +34,13 @@ model User {
   stripeSubscriptionId String?
   planExpiresAt     DateTime?
   
+  // Pilot Program
+  pilotUser         Boolean   @default(false)
+  pilotGrantedBy    String?   // userId of admin who granted access
+  pilotGrantedAt    DateTime?
+  pilotExpiresAt    DateTime?
+  pilotNotes        String?   // Internal notes about this pilot user
+  
   // Profile
   title         String?   // Job title: Broker, Consultant, etc.
   company       String?   // Company name (if not using org)
