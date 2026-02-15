@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { checkDealLimit, upgradeResponse } from '@/lib/plans/gating';
+import { gateDealCreation, gateResponse } from '@/lib/plans/gating';
 
 export async function GET() {
   try {
@@ -34,9 +34,9 @@ export async function POST(req: Request) {
     // =========================================================
     // GATING: Check deal limit before creating
     // =========================================================
-    const gate = await checkDealLimit(session.user.id);
+    const gate = await gateDealCreation(session.user.id);
     if (!gate.allowed) {
-      return upgradeResponse('deals', gate.currentCount, gate.limit, gate.plan, gate.upgradeRequired!);
+      return gateResponse('deals', gate.currentCount, gate.limit, gate.plan, gate.upgradeRequired!);
     }
     // =========================================================
 
