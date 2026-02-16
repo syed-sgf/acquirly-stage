@@ -1,177 +1,184 @@
-"use client";
-import Link from "next/link";
-import { Check } from "lucide-react";
+'use client';
 
-const tiers = [
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { UpgradeButton } from '@/components/stripe/upgrade-button';
+
+const plans = [
   {
-    name: "Free",
-    price: "$0",
-    period: "forever",
-    description: "Try the core tools with no commitment.",
-    cta: "Start Free",
-    href: "/sign-in",
-    highlight: false,
+    name: 'Free',
+    price: 0,
+    description: 'Get started with basic tools',
     features: [
-      "1 deal workspace",
-      "3 analyses per deal",
-      "DSCR, Business Loan & Acquisition calculators",
-      "Basic results view",
-          ],
-    limitations: [
-      "No PDF export",
-      "No Valuation or RE calculators",
-      "No market intelligence",
+      'Basic DSCR Calculator',
+      'Business Loan Calculator',
+      '3 saved calculations',
+      'Community support',
     ],
+    cta: 'Get Started',
+    plan: null,
   },
   {
-    name: "Core",
-    price: "$79",
-    period: "per month",
-    description: "For brokers and consultants who need professional tools.",
-    cta: "Start Core",
-    href: "/sign-in?plan=core",
-    highlight: true,
-    badge: "Most Popular",
+    name: 'Core',
+    price: 79,
+    description: 'For individual professionals',
     features: [
-      "5 deal workspaces",
-      "Unlimited analyses",
-      "All 7 professional calculators",
-            "Business Valuation calculator",
-      "Real Estate Investor Pro",
-      "Commercial Property Analyzer",
-      "CRE Loan Sizer",
-      "Email support",
+      'All Free features',
+      'Acquisition Analyzer',
+      'Business Valuation',
+      '10 saved deals',
+      'PDF exports',
+      'Email support',
     ],
-    limitations: [],
+    cta: 'Start Core',
+    plan: 'core' as const,
   },
   {
-    name: "Pro",
-    price: "$247",
-    period: "per month",
-    description: "For power users who need unlimited deal flow and market data.",
-    cta: "Start Pro",
-    href: "/sign-in?plan=pro",
-    highlight: false,
+    name: 'Pro',
+    price: 247,
+    description: 'For serious deal makers',
     features: [
-      "Unlimited deal workspaces",
-      "Everything in Core",
-      "Market intelligence & benchmarks",
-      "Buyer Risk & Survivability Score",
-      "3-scenario stress testing",
-      "Priority support",
-      "Early access to new features",
+      'All Core features',
+      'CRE Loan Sizer',
+      'Unlimited deals',
+      'Advanced risk analysis',
+      'Branded PDF reports',
+      'Priority support',
     ],
-    limitations: [],
+    cta: 'Start Pro',
+    plan: 'pro' as const,
+    popular: true,
   },
   {
-    name: "Enterprise",
-    price: "$2,000+",
-    period: "per month",
-    description: "For brokerages and institutions with teams and custom needs.",
-    cta: "Contact Us",
-    href: "mailto:syed@startinggatefinancial.com",
-    highlight: false,
+    name: 'Enterprise',
+    price: 2000,
+    description: 'For teams and brokerages',
     features: [
-      "Everything in Pro",
-      "Team seats & collaboration",
-      "White-label PDF branding",
-      "API access",
-      "Custom integrations",
-      "Dedicated account manager",
-            "SLA & priority support",
+      'All Pro features',
+      'White-label reports',
+      'Team collaboration',
+      'API access',
+      'Custom integrations',
+      'Dedicated support',
     ],
-    limitations: [],
+    cta: 'Contact Sales',
+    plan: 'enterprise' as const,
   },
 ];
 
 export default function PricingPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const handleFreePlan = () => {
+    if (status === 'authenticated') {
+      router.push('/app');
+    } else {
+      router.push('/sign-in');
+    }
+  };
+
   return (
-    <main className="bg-gray-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100 py-16">
-        <div className="mx-auto max-w-4xl px-6 text-center">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Simple, transparent pricing
+            Simple, Transparent Pricing
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Professional deal analysis tools for brokers, consultants, and investors. 
-            Start free, upgrade when you're ready.
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Choose the plan that fits your deal flow. Upgrade or downgrade anytime.
           </p>
         </div>
-      </div>
 
-      {/* Pricing Cards */}
-      <div className="mx-auto max-w-7xl px-6 py-16">
+        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {tiers.map((tier) => (
+          {plans.map((plan) => (
             <div
-              key={tier.name}
-              className={`relative rounded-2xl bg-white shadow-sm border-2 p-6 flex flex-col ${
-                tier.highlight
-                  ? "border-sgf-green-600 shadow-lg"
-                  : "border-gray-200"
-              }`}
+              key={plan.name}
+              className={`
+                relative rounded-2xl p-6 
+                ${plan.popular 
+                  ? 'bg-emerald-600 text-white ring-4 ring-emerald-600 ring-opacity-50' 
+                  : 'bg-white border border-gray-200'
+                }
+              `}
             >
-              {tier.badge && (
+              {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-sgf-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    {tier.badge}
+                  <span className="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    MOST POPULAR
                   </span>
                 </div>
               )}
 
-              <div className="mb-6">
-                <h2 className="text-xl font-bold text-gray-900">{tier.name}</h2>
-                <div className="mt-2 flex items-end gap-1">
-                  <span className="text-3xl font-bold text-gray-900">{tier.price}</span>
-                  <span className="text-sm text-gray-500 mb-1">/{tier.period}</span>
+              <div className="text-center mb-6">
+                <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                  {plan.name}
+                </h3>
+                <p className={`text-sm mt-1 ${plan.popular ? 'text-emerald-100' : 'text-gray-500'}`}>
+                  {plan.description}
+                </p>
+                <div className="mt-4">
+                  <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                    ${plan.price}
+                  </span>
+                  {plan.price > 0 && (
+                    <span className={plan.popular ? 'text-emerald-100' : 'text-gray-500'}>
+                      /month
+                    </span>
+                  )}
                 </div>
-                <p className="mt-2 text-sm text-gray-600">{tier.description}</p>
               </div>
 
-              <Link
-                href={tier.href}
-                className={`w-full text-center py-2.5 px-4 rounded-lg font-semibold text-sm mb-6 transition-colors ${
-                  tier.highlight
-                    ? "bg-sgf-green-600 text-white hover:bg-sgf-green-700"
-                    : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                }`}
-              >
-                {tier.cta}
-              </Link>
-
-              <ul className="space-y-3 flex-1">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm text-gray-700">
-                    <Check className="w-4 h-4 text-sgf-green-600 mt-0.5 shrink-0" />
-                    {feature}
+              <ul className="space-y-3 mb-6">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <svg
+                      className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+                        plan.popular ? 'text-emerald-300' : 'text-emerald-600'
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
+
+              <div className="mt-auto">
+                {!plan.plan ? (
+                  <button
+                    onClick={handleFreePlan}
+                    className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    {plan.cta}
+                  </button>
+                ) : status === 'authenticated' ? (
+                  <UpgradeButton
+                    plan={plan.plan}
+                    className={`w-full ${plan.popular ? 'bg-white text-emerald-600 hover:bg-gray-100' : ''}`}
+                  >
+                    {plan.cta}
+                  </UpgradeButton>
+                ) : (
+                  <button
+                    onClick={() => router.push('/sign-in')}
+                    className={`
+                      w-full py-3 px-4 rounded-lg font-semibold transition-colors
+                      ${plan.popular
+                        ? 'bg-white text-emerald-600 hover:bg-gray-100'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      }
+                    `}
+                  >
+                    Sign In to Subscribe
+                  </button>
+                )}
+              </div>
             </div>
-          ))}
-        </div>
-
-        {/* SGF Financing Note */}
-        <div className="mt-12 bg-sgf-green-50 border border-sgf-green-200 rounded-2xl p-8 text-center">
-          <h3 className="text-lg font-bold text-sgf-green-900 mb-2">
-            Need financing for your deal?
-          </h3>
-          <p className="text-sgf-green-700 text-sm mb-4">
-            Starting Gate Financial offers SBA loans, conventional business loans, and commercial real estate financing.
-          </p>
-          
-
-          <a
-            href="https://startinggatefinancial.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-sgf-green-600 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-sgf-green-700 transition-colors"
-          >
-            Apply for Financing
-          </a>
-        </div>
-      </div>
-    </main>
-  );
-}
