@@ -5,17 +5,19 @@ export const STRIPE_CONFIG = {
     core: { monthly: 'price_1T1BlUFersck1CUU0P9keS92' },
     pro: { monthly: 'price_1T1Bm8Fersck1CUUMOjl2ToK' },
     enterprise: { monthly: 'price_1T1BmbFersck1CUUh79HzO94' },
-  },
+  } as Record<string, { monthly: string }>,
+  
   products: {
     core: 'prod_TzA5f1gtn9ypht',
     pro: 'prod_TzA6Ad3RkgKB0g',
     enterprise: 'prod_TzA65yYa5iXmF7',
   },
+  
   plans: {
     free: {
       name: 'Free',
       price: 0,
-      priceId: null,
+      priceId: null as string | null,
       features: ['Basic DSCR Calculator', 'Business Loan Calculator', '3 saved calculations'],
       limits: { savedDeals: 3, pdfExports: 0, advancedAnalysis: false },
     },
@@ -41,17 +43,18 @@ export const STRIPE_CONFIG = {
       limits: { savedDeals: -1, pdfExports: -1, advancedAnalysis: true, whiteLabel: true, apiAccess: true },
     },
   },
-} as const;
+};
 
 export type PlanType = keyof typeof STRIPE_CONFIG.plans;
 
-export function getPriceId(plan: Exclude<PlanType, 'free'>): string {
-  return STRIPE_CONFIG.prices[plan].monthly;
+export function getPriceId(plan: string): string | null {
+  const prices = STRIPE_CONFIG.prices[plan];
+  return prices?.monthly || null;
 }
 
 export function getPlanFromPriceId(priceId: string): PlanType | null {
   for (const [plan, prices] of Object.entries(STRIPE_CONFIG.prices)) {
-    if (Object.values(prices).includes(priceId)) {
+    if (prices.monthly === priceId) {
       return plan as PlanType;
     }
   }

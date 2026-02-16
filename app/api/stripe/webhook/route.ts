@@ -39,9 +39,11 @@ export async function POST(request: NextRequest) {
         if (!userId) break;
 
         const subscriptionId = session.subscription as string;
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
         const priceId = subscription.items.data[0]?.price.id;
         const plan = getPlanFromPriceId(priceId) || 'core';
+
+        const periodEnd = (subscription as any).current_period_end;
 
         await prisma.user.update({
           where: { id: userId },
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
             stripeSubscriptionId: subscriptionId,
             plan,
             subscriptionStatus: subscription.status,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
           },
         });
         console.log(`✅ User ${userId} subscribed to ${plan}`);
@@ -69,13 +71,14 @@ export async function POST(request: NextRequest) {
 
         const priceId = subscription.items.data[0]?.price.id;
         const plan = getPlanFromPriceId(priceId) || 'free';
+        const periodEnd = (subscription as any).current_period_end;
 
         await prisma.user.update({
           where: { id: user.id },
           data: {
             plan,
             subscriptionStatus: subscription.status,
-            currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+            currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000) : null,
           },
         });
         break;
