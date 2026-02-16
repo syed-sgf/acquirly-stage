@@ -48,8 +48,8 @@ export function UpgradeButton({ plan, className = '', children }: UpgradeButtonP
       disabled={loading}
       className={`
         px-6 py-3 rounded-lg font-semibold
-        bg-emerald-600 text-white
-        hover:bg-emerald-700
+        bg-sgf-green-600 text-white
+        hover:bg-sgf-green-700
         disabled:opacity-50 disabled:cursor-not-allowed
         transition-colors
         ${className}
