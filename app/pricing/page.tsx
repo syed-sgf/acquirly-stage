@@ -81,7 +81,6 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-16 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Simple, Transparent Pricing
@@ -91,18 +90,15 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`
-                relative rounded-2xl p-6 
-                ${plan.popular 
-                  ? 'bg-emerald-600 text-white ring-4 ring-emerald-600 ring-opacity-50' 
+              className={`relative rounded-2xl p-6 ${
+                plan.popular
+                  ? 'bg-emerald-600 text-white ring-4 ring-emerald-600 ring-opacity-50'
                   : 'bg-white border border-gray-200'
-                }
-              `}
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -124,9 +120,7 @@ export default function PricingPage() {
                     ${plan.price}
                   </span>
                   {plan.price > 0 && (
-                    <span className={plan.popular ? 'text-emerald-100' : 'text-gray-500'}>
-                      /month
-                    </span>
+                    <span className={plan.popular ? 'text-emerald-100' : 'text-gray-500'}>/month</span>
                   )}
                 </div>
               </div>
@@ -135,23 +129,19 @@ export default function PricingPage() {
                 {plan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-2">
                     <svg
-                      className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
-                        plan.popular ? 'text-emerald-300' : 'text-emerald-600'
-                      }`}
+                      className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.popular ? 'text-emerald-300' : 'text-emerald-600'}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>
-                      {feature}
-                    </span>
+                    <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>{feature}</span>
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-auto">
+              <div>
                 {!plan.plan ? (
                   <button
                     onClick={handleFreePlan}
@@ -169,16 +159,24 @@ export default function PricingPage() {
                 ) : (
                   <button
                     onClick={() => router.push('/sign-in')}
-                    className={`
-                      w-full py-3 px-4 rounded-lg font-semibold transition-colors
-                      ${plan.popular
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+                      plan.popular
                         ? 'bg-white text-emerald-600 hover:bg-gray-100'
                         : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                      }
-                    `}
+                    }`}
                   >
                     Sign In to Subscribe
                   </button>
                 )}
               </div>
             </div>
+          ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-gray-500">All plans include a 14-day money-back guarantee. Cancel anytime.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
