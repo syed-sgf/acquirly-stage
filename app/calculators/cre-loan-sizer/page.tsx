@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, Save, TrendingUp } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import GatedCalculator from '@/components/core/GatedCalculator';
 
 interface CREInputs {
   propertyValue: string;
@@ -424,6 +425,7 @@ export default function CRELoanSizerPage() {
         </div>
 
         {/* Results */}
+        <GatedCalculator requiredPlan="core" calculatorSlug="cre-loan-sizer">
         {outputs && (
           <>
             {/* Max Loan Summary */}
@@ -596,6 +598,7 @@ export default function CRELoanSizerPage() {
             </div>
           </>
         )}
+        </GatedCalculator>
 
         <PremiumProductsCTA />
 

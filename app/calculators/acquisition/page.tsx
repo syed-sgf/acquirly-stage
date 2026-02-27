@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { DollarSign, Calculator, TrendingUp, BarChart3, FileText, MessageSquare, Save, PieChart, Target, ArrowUpRight, ArrowDownRight, Percent } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import GatedCalculator from '@/components/core/GatedCalculator';
 
 interface AcquisitionInputs {
   purchasePrice: string;
@@ -508,6 +509,7 @@ export default function AcquisitionAnalyzerPage() {
         </div>
 
         {/* Results Section */}
+        <GatedCalculator requiredPlan="core" calculatorSlug="acquisition">
         {outputs && (
           <>
             {/* Key Metrics - Now includes IRR and Total ROI */}
@@ -788,6 +790,7 @@ export default function AcquisitionAnalyzerPage() {
             </div>
           </>
         )}
+        </GatedCalculator>
 
         {/* Premium Products CTA */}
         <PremiumProductsCTA />

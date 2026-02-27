@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import GatedCalculator from '@/components/core/GatedCalculator';
 
 type StrategyType = 'buy-hold' | 'fix-flip' | 'brrrr';
 
@@ -917,6 +918,7 @@ export default function REIInvestorProAnalyzerPage() {
         </div>
 
         {/* Results */}
+        <GatedCalculator requiredPlan="core" calculatorSlug="rei-pro">
         {outputs && (
           <>
             {/* Key Metrics Summary */}
@@ -1264,6 +1266,7 @@ export default function REIInvestorProAnalyzerPage() {
             </div>
           </>
         )}
+        </GatedCalculator>
 
         <PremiumProductsCTA />
 

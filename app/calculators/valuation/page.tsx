@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import GatedCalculator from '@/components/core/GatedCalculator';
 import ValuationExportButton from '@/components/calculators/ValuationExportButton';
 
 const industryMultiples = {
@@ -774,6 +775,7 @@ export default function ValuationCalculatorPage() {
         </div>
 
         {/* Results */}
+        <GatedCalculator requiredPlan="core" calculatorSlug="valuation">
         {outputs && (
           <>
             {/* Summary Card */}
@@ -926,6 +928,7 @@ export default function ValuationCalculatorPage() {
             </div>
           </>
         )}
+        </GatedCalculator>
 
         <PremiumProductsCTA />
 

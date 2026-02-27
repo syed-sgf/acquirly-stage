@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react';
 import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, Save, TrendingUp, Search, Users } from 'lucide-react';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import GatedCalculator from '@/components/core/GatedCalculator';
 import CommercialPropertyExportButton from '@/components/calculators/CommercialPropertyExportButton';
 
 type PropertyType = 'Office' | 'Retail' | 'Industrial' | 'Mixed-Use' | 'Multifamily (5+)' | 'Self-Storage' | 'NNN Lease' | 'Medical Office' | 'Warehouse';
@@ -317,6 +318,7 @@ export default function CommercialPropertyPublicPage() {
 
           {/* Right - Results */}
           <div className="lg:col-span-2 space-y-4">
+            <GatedCalculator requiredPlan="core" calculatorSlug="commercial-property">
             {outputs ? (
               <>
                 {/* Key Metrics Banner */}
@@ -448,6 +450,7 @@ export default function CommercialPropertyPublicPage() {
                 <p className="text-gray-500 text-sm">Fill in the inputs on the left to see your commercial property analysis.</p>
               </div>
             )}
+            </GatedCalculator>
           </div>
         </div>
 
