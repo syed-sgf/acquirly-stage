@@ -115,7 +115,7 @@ export default function ProductPage() {
           {calculators.map((calc) => {
             const Icon = calc.icon;
             return (
-              <div key={calc.name} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md hover:border-sgf-green-300 transition-all group">
+              <Link href={calc.href} key={calc.name} className="block bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-md hover:border-sgf-green-300 transition-all group">
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-10 h-10 bg-sgf-green-50 rounded-xl flex items-center justify-center group-hover:bg-sgf-green-500 transition-colors">
                     <Icon className="w-5 h-5 text-sgf-green-600 group-hover:text-white transition-colors" />
@@ -135,10 +135,10 @@ export default function ProductPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={calc.href} className="flex items-center gap-1 text-sm font-semibold text-sgf-green-600 hover:text-sgf-green-700 group-hover:gap-2 transition-all">
+                <span className="flex items-center gap-1 text-sm font-semibold text-sgf-green-600 group-hover:text-sgf-green-700 group-hover:gap-2 transition-all">
                   Open Calculator <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
+                </span>
+              </Link>
             );
           })}
         </div>
