@@ -180,7 +180,7 @@ function generatePDFHTML(data: ValuationPDFData): string {
   <div class="header">
     <h1>Business Valuation Report</h1>
     <div class="subtitle">${data.businessName || data.industryLabel + ' Business'}</div>
-    <div class="brand">Prepared by ACQUIRELY | Powered by Starting Gate Financial</div>
+    <div class="brand">Prepared by Acqyrly | Powered by Starting Gate Financial</div>
   </div>
   <div class="content">
     <div class="meta-bar">
@@ -223,7 +223,7 @@ function generatePDFHTML(data: ValuationPDFData): string {
       </table>
     </div>
     <div class="disclaimer"><strong>Important Disclaimer</strong>This valuation report is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual business value may vary based on market conditions, buyer pool, deal structure, due diligence findings, and negotiation. Consult qualified professionals before making acquisition decisions.</div>
-    <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

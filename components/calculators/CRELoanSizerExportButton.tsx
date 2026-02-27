@@ -196,7 +196,7 @@ function generatePDFHTML(data: CRELoanSizerPDFData): string {
   <div class="header">
     <h1>CRE Loan Sizing Analysis</h1>
     <div class="subtitle">${data.propertyName || data.propertyType + ' Property'}</div>
-    <div class="brand">Prepared by ACQUIRELY | Powered by Starting Gate Financial</div>
+    <div class="brand">Prepared by Acqyrly | Powered by Starting Gate Financial</div>
   </div>
   <div class="content">
     <div class="meta-bar">
@@ -270,7 +270,7 @@ function generatePDFHTML(data: CRELoanSizerPDFData): string {
     </div>
 
     <div class="disclaimer"><strong>Important Disclaimer</strong>This loan sizing analysis is for informational purposes only and should not be considered a loan commitment or guarantee of financing. Actual loan terms, rates, and sizing are subject to lender underwriting, property appraisal, credit review, and current market conditions. Consult with a qualified commercial lender before making any financing decisions.</div>
-    <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

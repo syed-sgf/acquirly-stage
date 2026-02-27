@@ -14,7 +14,7 @@ function SignInContent() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-sgf-green-600 to-sgf-gold-500" />
-            <span className="text-xl font-bold text-gray-900">Acquirely</span>
+            <span className="text-xl font-bold text-gray-900">Acqyrly</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
           <p className="text-gray-500 text-sm">Sign in to access your deal workspaces and analysis tools.</p>

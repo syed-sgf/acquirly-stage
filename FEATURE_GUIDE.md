@@ -1,8 +1,8 @@
-# 🚀 Acquirely Enhanced - Complete Feature Guide
+# 🚀 Acqyrly Enhanced - Complete Feature Guide
 
 ## Overview
 
-Acquirely has been transformed from a basic calculator into a **professional-grade acquisition analysis platform** with comprehensive financial metrics, interactive tooltips, and industry benchmarks.
+Acqyrly has been transformed from a basic calculator into a **professional-grade acquisition analysis platform** with comprehensive financial metrics, interactive tooltips, and industry benchmarks.
 
 ---
 
@@ -443,7 +443,7 @@ npm start
 
 ## 🎉 Summary
 
-Acquirely is now a **complete acquisition analysis platform** with:
+Acqyrly is now a **complete acquisition analysis platform** with:
 
 ✅ 10+ financial metrics  
 ✅ Interactive field guide  
@@ -456,4 +456,4 @@ Perfect for buyers, brokers, and anyone serious about acquisitions!
 
 ---
 
-© 2025 Acquirely by Starting Gate Financial
+© 2025 Acqyrly by Starting Gate Financial

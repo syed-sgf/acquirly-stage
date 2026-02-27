@@ -1,5 +1,5 @@
 /**
- * Formatting utilities for ACQUIRELY
+ * Formatting utilities for Acqyrly
  * Consistent number, currency, and date formatting
  */
 

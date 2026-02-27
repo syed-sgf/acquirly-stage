@@ -6,8 +6,8 @@ import Footer from "@/components/Footer";
 import { Providers } from "./providers";
 
 export const metadata = {
-  title: "Acquirely | Starting Gate Financial",
-  description: "Acquirely by Starting Gate Financial provides the tools and insights you need to make informed decisions and accelerate your acquisition process. Start your journey today.",
+  title: "Acqyrly | Starting Gate Financial",
+  description: "Acqyrly by Starting Gate Financial provides the tools and insights you need to make informed decisions and accelerate your acquisition process. Start your journey today.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

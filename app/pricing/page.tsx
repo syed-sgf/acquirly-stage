@@ -90,7 +90,7 @@ export default function PricingPage() {
                 <span className="text-white font-bold text-lg">SGF</span>
               </div>
               <div>
-                <span className="text-white font-bold text-xl">ACQUIRELY</span>
+                <span className="text-white font-bold text-xl">Acqyrly</span>
                 <span className="text-sgf-gold-400 text-sm block">by Starting Gate Financial</span>
               </div>
             </Link>

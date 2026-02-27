@@ -204,7 +204,7 @@ function generatePDFHTML(data: DSCRPDFData): string {
   <div class="header">
     <h1>DSCR Analysis Report</h1>
     <div class="subtitle">${data.businessName || 'Debt Service Coverage Analysis'}</div>
-    <div class="brand">Prepared by ACQUIRELY | Powered by Starting Gate Financial</div>
+    <div class="brand">Prepared by Acqyrly | Powered by Starting Gate Financial</div>
   </div>
   <div class="content">
     <div class="meta-bar">
@@ -273,7 +273,7 @@ function generatePDFHTML(data: DSCRPDFData): string {
     </div>
 
     <div class="disclaimer"><strong>Important Disclaimer</strong>This DSCR analysis is for informational purposes only and should not be considered a loan commitment or guarantee of financing. Actual loan terms, rates, and approval are subject to lender underwriting, credit review, and current market conditions. Consult with a qualified lender or financial advisor before making any financing decisions.</div>
-    <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

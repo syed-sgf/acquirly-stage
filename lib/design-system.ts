@@ -1,11 +1,11 @@
 /**
- * ACQUIRELY Design System
+ * Acqyrly Design System
  * Based on Starting Gate Financial branding
  * Created: January 2025
  */
 
 export const BRAND = {
-  name: 'Acquirely',
+  name: 'Acqyrly',
   tagline: 'by Starting Gate Financial',
   company: 'Starting Gate Financial',
   location: 'Richardson, TX',

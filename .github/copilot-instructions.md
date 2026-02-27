@@ -1,4 +1,4 @@
-# Copilot / AI Agent Instructions for Acquirely (stage)
+# Copilot / AI Agent Instructions for Acqyrly (stage)
 
 Purpose: Give AI coding agents the minimal, actionable context to be productive in this repo.
 

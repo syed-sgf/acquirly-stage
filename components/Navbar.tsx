@@ -5,9 +5,9 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
-        <Link href="/" className="flex items-center gap-2" aria-label="Acquirely home">
+        <Link href="/" className="flex items-center gap-2" aria-label="Acqyrly home">
           <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-sgf-green-600 to-sgf-gold-500" />
-          <span className="text-lg font-bold text-gray-900">Acquirely</span>
+          <span className="text-lg font-bold text-gray-900">Acqyrly</span>
           <span className="ml-2 rounded bg-sgf-gold-500/15 px-2 py-0.5 text-xs font-medium text-sgf-gold-600">by Starting Gate Financial</span>
         </Link>
 

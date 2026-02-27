@@ -206,7 +206,7 @@ function generatePDFHTML(data: AcquisitionPDFData): string {
   <div class="header">
     <h1>Business Acquisition Analysis</h1>
     <div class="subtitle">${data.businessName || 'Deal Analysis Report'}</div>
-    <div class="brand">Prepared by ACQUIRELY | Powered by Starting Gate Financial</div>
+    <div class="brand">Prepared by Acqyrly | Powered by Starting Gate Financial</div>
   </div>
   <div class="content">
     <div class="meta-bar">
@@ -284,7 +284,7 @@ function generatePDFHTML(data: AcquisitionPDFData): string {
     ` : ''}
 
     <div class="disclaimer"><strong>Important Disclaimer</strong>This acquisition analysis is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual results may vary based on market conditions, operational performance, due diligence findings, and other factors. Consult qualified professionals before making any acquisition decisions.</div>
-    <div class="footer"><div><div class="footer-brand">ACQUIRELY</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div>by Starting Gate Financial</div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

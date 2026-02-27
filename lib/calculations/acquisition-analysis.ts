@@ -1,4 +1,4 @@
-// ACQUIRELY - Business Acquisition Analysis Engine
+// Acqyrly - Business Acquisition Analysis Engine
 // Complete calculation library matching Technical Specification
 
 // ============================================

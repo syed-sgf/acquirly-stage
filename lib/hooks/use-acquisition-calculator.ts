@@ -1,4 +1,4 @@
-// ACQUIRELY - Acquisition Calculator React Hook
+// Acqyrly - Acquisition Calculator React Hook
 // Manages state, calculations, and autosave
 
 'use client';

@@ -1,6 +1,6 @@
 // lib/plans/limits.ts
 // =============================================================================
-// ACQUIRELY - Plan Limits & Feature Gating
+// Acqyrly - Plan Limits & Feature Gating
 // =============================================================================
 
 export type Plan = 'free' | 'core' | 'pro' | 'enterprise' | 'pilot';

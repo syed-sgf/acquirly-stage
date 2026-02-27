@@ -156,7 +156,7 @@ export default function CalculatorsIndexPage() {
         {/* Why Use Our Calculators */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            Why Use ACQUIRELY Calculators?
+            Why Use Acqyrly Calculators?
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
