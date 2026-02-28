@@ -25,7 +25,7 @@ const calculators = [
     name: "Acquisition Analyzer",
     description: "Comprehensive deal analysis with ROI projections, equity build-up, and scenario modeling.",
     features: ["10-year equity schedule", "Cash-on-cash returns", "Scenario modeling"],
-    href: "/calculators/acquisition", free: true,
+    href: "/calculators/acquisition", free: false, badge: "Pro",
   },
   {
     icon: Calculator, color: "sgf-gold",
@@ -120,7 +120,9 @@ export default function ProductPage() {
                   <div className="w-10 h-10 bg-sgf-green-50 rounded-xl flex items-center justify-center group-hover:bg-sgf-green-500 transition-colors">
                     <Icon className="w-5 h-5 text-sgf-green-600 group-hover:text-white transition-colors" />
                   </div>
-                  {calc.free ? (
+                  {calc.badge === 'Pro' ? (
+                    <span className="text-xs font-bold bg-sgf-gold-500 text-white px-2 py-1 rounded-full">Pro</span>
+                  ) : calc.free ? (
                     <span className="text-xs font-bold bg-sgf-green-100 text-sgf-green-700 px-2 py-1 rounded-full">Free</span>
                   ) : (
                     <span className="text-xs font-bold bg-sgf-gold-100 text-sgf-gold-700 px-2 py-1 rounded-full">Core+</span>

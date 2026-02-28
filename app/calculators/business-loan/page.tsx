@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, Calendar, Save, Download } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 interface AmortizationRow {
   month: number;
@@ -21,83 +22,17 @@ const formatCurrencyDetailed = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.-]/g, '');
-  return parseFloat(cleaned) || 0;
-};
-
-const formatNumberWithCommas = (value: number): string => {
-  if (isNaN(value) || value === 0) return '0';
-  return value.toLocaleString('en-US');
-};
-
-const handleCurrencyChange = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: React.Dispatch<React.SetStateAction<string>>
-) => {
-  const rawValue = e.target.value;
-  
-  if (rawValue === '' || rawValue === '$') {
-    setter('0');
-    return;
-  }
-  
-  const numericValue = rawValue.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  
-  if (!isNaN(number)) {
-    setter(formatNumberWithCommas(number));
-  }
-};
-
-const handlePercentChange = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: React.Dispatch<React.SetStateAction<string>>
-) => {
-  const rawValue = e.target.value;
-  
-  if (rawValue === '') {
-    setter('0');
-    return;
-  }
-  
-  const cleaned = rawValue.replace(/[^0-9.]/g, '');
-  const parts = cleaned.split('.');
-  if (parts.length > 2) return;
-  if (parts[1] && parts[1].length > 2) return;
-  
-  setter(cleaned);
-};
-
-const handleYearChange = (
-  e: React.ChangeEvent<HTMLInputElement>,
-  setter: React.Dispatch<React.SetStateAction<string>>
-) => {
-  const rawValue = e.target.value;
-  
-  if (rawValue === '') {
-    setter('0');
-    return;
-  }
-  
-  const numericValue = rawValue.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  
-  if (!isNaN(number) && number <= 30) {
-    setter(number.toString());
-  }
-};
 
 export default function BusinessLoanCalculatorPage() {
-  const [loanAmount, setLoanAmount] = useState<string>('500,000');
-  const [interestRate, setInterestRate] = useState<string>('7.5');
-  const [loanTerm, setLoanTerm] = useState<string>('10');
+  const [loanAmount, setLoanAmount] = useState<number>(500000);
+  const [interestRate, setInterestRate] = useState<number>(7.5);
+  const [loanTerm, setLoanTerm] = useState<number>(10);
   const [showFullSchedule, setShowFullSchedule] = useState<boolean>(false);
 
   const loanDetails = useMemo(() => {
-    const principal = parseCurrencyInput(loanAmount);
-    const rate = parseFloat(interestRate) || 0;
-    const years = parseInt(loanTerm) || 0;
+    const principal = loanAmount;
+    const rate = interestRate;
+    const years = loanTerm;
 
     if (!principal || !rate || !years) return null;
 
@@ -198,48 +133,21 @@ export default function BusinessLoanCalculatorPage() {
                   <label htmlFor="loanAmount" className="text-sm font-semibold text-gray-700">Loan Amount</label>
                   <Tooltip content="The total principal amount you're borrowing. For business acquisitions, this typically includes the bank loan portion plus any seller financing. SBA 7(a) loans can go up to $5 million." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input
-                    id="loanAmount"
-                    type="text"
-                    value={loanAmount}
-                    onChange={(e) => handleCurrencyChange(e, setLoanAmount)}
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
-                  />
-                </div>
+                <CurrencyInput id="loanAmount" prefix="$" value={loanAmount} onChange={setLoanAmount} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="interestRate" className="text-sm font-semibold text-gray-700">Interest Rate</label>
                   <Tooltip content="Annual Percentage Rate (APR) on the loan. SBA 7(a) rates are typically Prime + 2.25% to 2.75%. Conventional business loans may range from 7% to 12% depending on creditworthiness and collateral." />
                 </div>
-                <div className="relative">
-                  <input
-                    id="interestRate"
-                    type="text"
-                    value={interestRate}
-                    onChange={(e) => handlePercentChange(e, setInterestRate)}
-                    className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
-                </div>
+                <CurrencyInput id="interestRate" suffix="%" decimals={2} value={interestRate} onChange={setInterestRate} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="loanTerm" className="text-sm font-semibold text-gray-700">Loan Term</label>
                   <Tooltip content="The amortization period in years. SBA 7(a) business acquisition loans typically have 10-year terms. Equipment loans may be 5-7 years. Real estate loans can extend to 25 years. Longer terms = lower payments but more total interest." />
                 </div>
-                <div className="relative">
-                  <input
-                    id="loanTerm"
-                    type="text"
-                    value={loanTerm}
-                    onChange={(e) => handleYearChange(e, setLoanTerm)}
-                    className="w-full pr-16 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">years</span>
-                </div>
+                <CurrencyInput id="loanTerm" suffix="years" value={loanTerm} onChange={setLoanTerm} />
               </div>
             </div>
           </div>

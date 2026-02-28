@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 import { DollarSign, Calculator, BarChart3, FileText, MessageSquare, AlertCircle, CheckCircle, AlertTriangle, Phone, Save } from 'lucide-react';
 import Tooltip from '@/components/ui/Tooltip';
 import DSCRLegend from '@/components/core/DSCRLegend';
@@ -23,16 +24,6 @@ const formatCurrencyDetailed = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  return parseFloat(value.replace(/[^0-9.-]/g, '')) || 0;
-};
-
-const formatInputValue = (value: string): string => {
-  const num = parseCurrencyInput(value);
-  if (isNaN(num) || num === 0) return value.replace(/[^0-9]/g, '');
-  return num.toLocaleString('en-US');
-};
-
 const calculateMonthlyPayment = (principal: number, annualRate: number, years: number): number => {
   if (!principal || !annualRate || !years) return 0;
   const monthlyRate = (annualRate / 100) / 12;
@@ -52,24 +43,19 @@ const getDSCRResult = (dscr: number): DSCRResult => {
 };
 
 export default function CoreCalculatorPage() {
-  const [sde, setSde] = useState<string>('');
-  const [capex, setCapex] = useState<string>('');
-  const [loanAmount, setLoanAmount] = useState<string>('');
-  const [interestRate, setInterestRate] = useState<string>('');
-  const [loanTerm, setLoanTerm] = useState<string>('');
+  const [sde, setSde] = useState<number>(0);
+  const [capex, setCapex] = useState<number>(0);
+  const [loanAmount, setLoanAmount] = useState<number>(0);
+  const [interestRate, setInterestRate] = useState<number>(0);
+  const [loanTerm, setLoanTerm] = useState<number>(0);
   const [lendableCF, setLendableCF] = useState<number>(0);
   const [annualDebtService, setAnnualDebtService] = useState<number>(0);
   const [dscrResult, setDscrResult] = useState<DSCRResult | null>(null);
 
   const calculateDSCR = useCallback(() => {
-    const sdeValue = parseCurrencyInput(sde);
-    const capexValue = parseCurrencyInput(capex);
-    const loanAmountValue = parseCurrencyInput(loanAmount);
-    const interestRateValue = parseFloat(interestRate) || 0;
-    const loanTermValue = parseInt(loanTerm) || 0;
-    const lcf = sdeValue - capexValue;
+    const lcf = sde - capex;
     setLendableCF(lcf);
-    const monthlyPayment = calculateMonthlyPayment(loanAmountValue, interestRateValue, loanTermValue);
+    const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanTerm);
     const ads = monthlyPayment * 12;
     setAnnualDebtService(ads);
     if (lcf > 0 && ads > 0) {
@@ -89,11 +75,11 @@ export default function CoreCalculatorPage() {
     const dscrData = {
       dscr: dscrResult.value,
       inputs: {
-        revenue: parseCurrencyInput(sde),
-        expenses: parseCurrencyInput(capex),
-        loanAmount: parseCurrencyInput(loanAmount),
-        interestRate: parseFloat(interestRate) || 0,
-        loanTerm: parseInt(loanTerm) || 0,
+        revenue: sde,
+        expenses: capex,
+        loanAmount: loanAmount,
+        interestRate: interestRate,
+        loanTerm: loanTerm,
       },
       outputs: {
         netCashFlow: lendableCF,
@@ -112,10 +98,6 @@ export default function CoreCalculatorPage() {
   };
 
   useEffect(() => { calculateDSCR(); }, [calculateDSCR]);
-
-  const handleCurrencyInput = (value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
-    setter(formatInputValue(value));
-  };
 
   const getStatusIcon = (colorClass: string) => {
     switch (colorClass) {
@@ -147,11 +129,11 @@ export default function CoreCalculatorPage() {
   // Prepare PDF data when DSCR is calculated
   const pdfData = dscrResult ? {
     reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-    annualSDE: parseCurrencyInput(sde),
-    annualCapex: parseCurrencyInput(capex),
-    loanAmount: parseCurrencyInput(loanAmount),
-    interestRate: parseFloat(interestRate) || 0,
-    loanTerm: parseInt(loanTerm) || 0,
+    annualSDE: sde,
+    annualCapex: capex,
+    loanAmount: loanAmount,
+    interestRate: interestRate,
+    loanTerm: loanTerm,
     lendableCashFlow: lendableCF,
     monthlyPayment: annualDebtService / 12,
     annualDebtService: annualDebtService,
@@ -208,34 +190,14 @@ export default function CoreCalculatorPage() {
                   <label htmlFor="sde" className="text-sm font-semibold text-gray-700">Annual SDE / EBITDA</label>
                   <Tooltip content="Seller's Discretionary Earnings or EBITDA - the cash flow available for debt service" />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input
-                    id="sde"
-                    type="text"
-                    value={sde}
-                    onChange={(e) => handleCurrencyInput(e.target.value, setSde)}
-                    placeholder="0"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
-                  />
-                </div>
+                <CurrencyInput id="sde" prefix="$" value={sde} onChange={setSde} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="capex" className="text-sm font-semibold text-gray-700">Less: Annual CAPEX</label>
                   <Tooltip content="Capital expenditures - equipment replacement, major repairs, etc." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input
-                    id="capex"
-                    type="text"
-                    value={capex}
-                    onChange={(e) => handleCurrencyInput(e.target.value, setCapex)}
-                    placeholder="0"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-green-500 focus:outline-none transition-colors"
-                  />
-                </div>
+                <CurrencyInput id="capex" prefix="$" value={capex} onChange={setCapex} />
               </div>
               <div className="pt-4 border-t-2 border-dashed border-gray-200">
                 <div className="flex items-center justify-between">
@@ -263,48 +225,21 @@ export default function CoreCalculatorPage() {
                   <label htmlFor="loanAmount" className="text-sm font-semibold text-gray-700">Loan Amount</label>
                   <Tooltip content="Total amount of debt (bank loan + seller note)" />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                  <input
-                    id="loanAmount"
-                    type="text"
-                    value={loanAmount}
-                    onChange={(e) => handleCurrencyInput(e.target.value, setLoanAmount)}
-                    placeholder="0"
-                    className="w-full pl-8 pr-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
-                  />
-                </div>
+                <CurrencyInput id="loanAmount" prefix="$" value={loanAmount} onChange={setLoanAmount} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="interestRate" className="text-sm font-semibold text-gray-700">Interest Rate</label>
                   <Tooltip content="Weighted average interest rate across all debt" />
                 </div>
-                <div className="relative">
-                  <input
-                    id="interestRate"
-                    type="text"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full pr-8 pl-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
-                </div>
+                <CurrencyInput id="interestRate" suffix="%" decimals={2} value={interestRate} onChange={setInterestRate} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label htmlFor="loanTerm" className="text-sm font-semibold text-gray-700">Loan Term (Years)</label>
                   <Tooltip content="Amortization period in years" />
                 </div>
-                <input
-                  id="loanTerm"
-                  type="text"
-                  value={loanTerm}
-                  onChange={(e) => setLoanTerm(e.target.value)}
-                  placeholder="10"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg focus:border-sgf-gold-500 focus:outline-none transition-colors"
-                />
+                <CurrencyInput id="loanTerm" suffix="years" value={loanTerm} onChange={setLoanTerm} />
               </div>
               <div className="pt-4 border-t-2 border-dashed border-gray-200">
                 <div className="flex items-center justify-between">

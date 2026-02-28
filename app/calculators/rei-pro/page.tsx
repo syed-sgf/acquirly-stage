@@ -22,88 +22,89 @@ import {
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 import GatedCalculator from '@/components/core/GatedCalculator';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 type StrategyType = 'buy-hold' | 'fix-flip' | 'brrrr';
 
 interface REIInvestorProInputs {
   // Property Details
-  purchasePrice: string;
-  afterRepairValue: string;
-  rehabCosts: string;
-  closingCostsBuy: string;
-  closingCostsSell: string;
-  
+  purchasePrice: number;
+  afterRepairValue: number;
+  rehabCosts: number;
+  closingCostsBuy: number;
+  closingCostsSell: number;
+
   // Rental Income
-  monthlyRent: string;
-  otherMonthlyIncome: string;
-  vacancyRate: string;
-  
+  monthlyRent: number;
+  otherMonthlyIncome: number;
+  vacancyRate: number;
+
   // Operating Expenses
-  propertyTaxes: string;
-  insurance: string;
-  maintenance: string;
-  propertyManagement: string;
-  utilities: string;
-  hoa: string;
-  otherExpenses: string;
-  
+  propertyTaxes: number;
+  insurance: number;
+  maintenance: number;
+  propertyManagement: number;
+  utilities: number;
+  hoa: number;
+  otherExpenses: number;
+
   // Financing - Purchase
-  downPaymentPercent: string;
-  loanInterestRate: string;
-  loanTermYears: string;
-  
+  downPaymentPercent: number;
+  loanInterestRate: number;
+  loanTermYears: number;
+
   // Financing - Refinance (BRRRR)
-  refinanceLTV: string;
-  refinanceRate: string;
-  refinanceTermYears: string;
-  
+  refinanceLTV: number;
+  refinanceRate: number;
+  refinanceTermYears: number;
+
   // Assumptions
-  appreciationRate: string;
-  rentGrowthRate: string;
-  holdPeriodYears: string;
-  sellingCostsPercent: string;
-  
+  appreciationRate: number;
+  rentGrowthRate: number;
+  holdPeriodYears: number;
+  sellingCostsPercent: number;
+
   // Fix & Flip
-  holdMonths: string;
-  hardMoneyRate: string;
-  hardMoneyPoints: string;
+  holdMonths: number;
+  hardMoneyRate: number;
+  hardMoneyPoints: number;
 }
 
 const defaultInputs: REIInvestorProInputs = {
-  purchasePrice: '250,000',
-  afterRepairValue: '320,000',
-  rehabCosts: '40,000',
-  closingCostsBuy: '5,000',
-  closingCostsSell: '3,000',
-  
-  monthlyRent: '2,200',
-  otherMonthlyIncome: '100',
-  vacancyRate: '5',
-  
-  propertyTaxes: '3,000',
-  insurance: '1,200',
-  maintenance: '1,500',
-  propertyManagement: '8',
-  utilities: '0',
-  hoa: '0',
-  otherExpenses: '500',
-  
-  downPaymentPercent: '25',
-  loanInterestRate: '7.5',
-  loanTermYears: '30',
-  
-  refinanceLTV: '75',
-  refinanceRate: '7.0',
-  refinanceTermYears: '30',
-  
-  appreciationRate: '3',
-  rentGrowthRate: '2',
-  holdPeriodYears: '5',
-  sellingCostsPercent: '8',
-  
-  holdMonths: '6',
-  hardMoneyRate: '12',
-  hardMoneyPoints: '2',
+  purchasePrice: 250000,
+  afterRepairValue: 320000,
+  rehabCosts: 40000,
+  closingCostsBuy: 5000,
+  closingCostsSell: 3000,
+
+  monthlyRent: 2200,
+  otherMonthlyIncome: 100,
+  vacancyRate: 5,
+
+  propertyTaxes: 3000,
+  insurance: 1200,
+  maintenance: 1500,
+  propertyManagement: 8,
+  utilities: 0,
+  hoa: 0,
+  otherExpenses: 500,
+
+  downPaymentPercent: 25,
+  loanInterestRate: 7.5,
+  loanTermYears: 30,
+
+  refinanceLTV: 75,
+  refinanceRate: 7.0,
+  refinanceTermYears: 30,
+
+  appreciationRate: 3,
+  rentGrowthRate: 2,
+  holdPeriodYears: 5,
+  sellingCostsPercent: 8,
+
+  holdMonths: 6,
+  hardMoneyRate: 12,
+  hardMoneyPoints: 2,
 };
 
 const formatCurrency = (value: number): string => {
@@ -114,47 +115,6 @@ const formatCurrencyDetailed = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.-]/g, '');
-  return parseFloat(cleaned) || 0;
-};
-
-const formatNumberWithCommas = (value: number): string => {
-  if (isNaN(value) || value === 0) return '0';
-  return value.toLocaleString('en-US');
-};
-
-const handleCurrencyChange = (
-  value: string,
-  setter: (field: keyof REIInvestorProInputs, value: string) => void,
-  field: keyof REIInvestorProInputs
-) => {
-  if (value === '' || value === '$') {
-    setter(field, '0');
-    return;
-  }
-  const numericValue = value.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  if (!isNaN(number)) {
-    setter(field, formatNumberWithCommas(number));
-  }
-};
-
-const handlePercentChange = (
-  value: string,
-  setter: (field: keyof REIInvestorProInputs, value: string) => void,
-  field: keyof REIInvestorProInputs
-) => {
-  if (value === '') {
-    setter(field, '0');
-    return;
-  }
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  const parts = cleaned.split('.');
-  if (parts.length > 2) return;
-  if (parts[1] && parts[1].length > 2) return;
-  setter(field, cleaned);
-};
 
 const calculateMonthlyPayment = (principal: number, annualRate: number, years: number): number => {
   if (!principal || !annualRate || !years) return 0;
@@ -202,45 +162,25 @@ export default function REIInvestorProAnalyzerPage() {
   const [strategy, setStrategy] = useState<StrategyType>('buy-hold');
   const [activeTab, setActiveTab] = useState<'summary' | 'cashflow' | 'returns' | 'equity'>('summary');
 
-  const handleInputChange = (field: keyof REIInvestorProInputs, value: string) => {
+  const handleInputChange = (field: keyof REIInvestorProInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const outputs = useMemo(() => {
-    const purchasePrice = parseCurrencyInput(inputs.purchasePrice);
-    const afterRepairValue = parseCurrencyInput(inputs.afterRepairValue);
-    const rehabCosts = parseCurrencyInput(inputs.rehabCosts);
-    const closingCostsBuy = parseCurrencyInput(inputs.closingCostsBuy);
-    const closingCostsSell = parseCurrencyInput(inputs.closingCostsSell);
-    
-    const monthlyRent = parseCurrencyInput(inputs.monthlyRent);
-    const otherMonthlyIncome = parseCurrencyInput(inputs.otherMonthlyIncome);
-    const vacancyRate = parseFloat(inputs.vacancyRate) || 0;
-    
-    const propertyTaxes = parseCurrencyInput(inputs.propertyTaxes);
-    const insurance = parseCurrencyInput(inputs.insurance);
-    const maintenance = parseCurrencyInput(inputs.maintenance);
-    const propertyManagement = parseFloat(inputs.propertyManagement) || 0;
-    const utilities = parseCurrencyInput(inputs.utilities);
-    const hoa = parseCurrencyInput(inputs.hoa);
-    const otherExpenses = parseCurrencyInput(inputs.otherExpenses);
-    
-    const downPaymentPercent = parseFloat(inputs.downPaymentPercent) || 0;
-    const loanInterestRate = parseFloat(inputs.loanInterestRate) || 0;
-    const loanTermYears = parseInt(inputs.loanTermYears) || 30;
-    
-    const refinanceLTV = parseFloat(inputs.refinanceLTV) || 75;
-    const refinanceRate = parseFloat(inputs.refinanceRate) || 7;
-    const refinanceTermYears = parseInt(inputs.refinanceTermYears) || 30;
-    
-    const appreciationRate = parseFloat(inputs.appreciationRate) || 0;
-    const rentGrowthRate = parseFloat(inputs.rentGrowthRate) || 0;
-    const holdPeriodYears = parseInt(inputs.holdPeriodYears) || 5;
-    const sellingCostsPercent = parseFloat(inputs.sellingCostsPercent) || 8;
-    
-    const holdMonths = parseInt(inputs.holdMonths) || 6;
-    const hardMoneyRate = parseFloat(inputs.hardMoneyRate) || 12;
-    const hardMoneyPoints = parseFloat(inputs.hardMoneyPoints) || 2;
+    const { purchasePrice, afterRepairValue, rehabCosts, closingCostsBuy, closingCostsSell,
+      monthlyRent, otherMonthlyIncome, vacancyRate, propertyTaxes, insurance, maintenance,
+      utilities, hoa, otherExpenses, loanInterestRate, appreciationRate, rentGrowthRate } = inputs;
+    const propertyManagement = inputs.propertyManagement;
+    const downPaymentPercent = inputs.downPaymentPercent;
+    const loanTermYears = inputs.loanTermYears || 30;
+    const refinanceLTV = inputs.refinanceLTV || 75;
+    const refinanceRate = inputs.refinanceRate || 7;
+    const refinanceTermYears = inputs.refinanceTermYears || 30;
+    const holdPeriodYears = inputs.holdPeriodYears || 5;
+    const sellingCostsPercent = inputs.sellingCostsPercent || 8;
+    const holdMonths = inputs.holdMonths || 6;
+    const hardMoneyRate = inputs.hardMoneyRate || 12;
+    const hardMoneyPoints = inputs.hardMoneyPoints || 2;
 
     if (!purchasePrice) return null;
 
@@ -500,7 +440,7 @@ export default function REIInvestorProAnalyzerPage() {
       inputs: { 
         purchasePrice: outputs.purchasePrice, 
         afterRepairValue: outputs.afterRepairValue,
-        monthlyRent: parseCurrencyInput(inputs.monthlyRent),
+        monthlyRent: inputs.monthlyRent,
       },
       outputs: { 
         capRate: outputs.capRate, 
@@ -623,10 +563,7 @@ export default function REIInvestorProAnalyzerPage() {
                   <label className="text-xs font-semibold text-gray-600">Purchase Price</label>
                   <Tooltip content="The price you're paying for the property. For flips/BRRRR, this should be below market value to allow profit margin." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.purchasePrice} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'purchasePrice')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.purchasePrice} onChange={(v) => handleInputChange('purchasePrice', v)} />
               </div>
               
               {(strategy === 'fix-flip' || strategy === 'brrrr') && (
@@ -636,20 +573,14 @@ export default function REIInvestorProAnalyzerPage() {
                       <label className="text-xs font-semibold text-gray-600">After Repair Value (ARV)</label>
                       <Tooltip content="Estimated market value after all renovations are complete. Research comparable sales (comps) in the area. This is critical for determining profit potential." />
                     </div>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                      <input type="text" value={inputs.afterRepairValue} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'afterRepairValue')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    </div>
+                    <CurrencyInput prefix="$" value={inputs.afterRepairValue} onChange={(v) => handleInputChange('afterRepairValue', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Rehab Costs</label>
                       <Tooltip content="Total renovation budget including materials, labor, permits, and 10-15% contingency. Get contractor bids before making offers." />
                     </div>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                      <input type="text" value={inputs.rehabCosts} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'rehabCosts')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    </div>
+                    <CurrencyInput prefix="$" value={inputs.rehabCosts} onChange={(v) => handleInputChange('rehabCosts', v)} />
                   </div>
                 </>
               )}
@@ -659,10 +590,7 @@ export default function REIInvestorProAnalyzerPage() {
                   <label className="text-xs font-semibold text-gray-600">Closing Costs (Buy)</label>
                   <Tooltip content="Costs to purchase: title insurance, escrow fees, inspections, appraisal, loan origination. Typically 2-5% of purchase price." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.closingCostsBuy} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'closingCostsBuy')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.closingCostsBuy} onChange={(v) => handleInputChange('closingCostsBuy', v)} />
               </div>
             </div>
           </div>
@@ -681,30 +609,21 @@ export default function REIInvestorProAnalyzerPage() {
                   <label className="text-xs font-semibold text-gray-600">Monthly Rent</label>
                   <Tooltip content="Expected monthly rent. Research comparable rentals in the area. For BRRRR/Buy-Hold, this should support positive cash flow after all expenses." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.monthlyRent} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'monthlyRent')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.monthlyRent} onChange={(v) => handleInputChange('monthlyRent', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Other Monthly Income</label>
                   <Tooltip content="Additional income: parking, storage, laundry, pet fees, etc." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.otherMonthlyIncome} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'otherMonthlyIncome')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.otherMonthlyIncome} onChange={(v) => handleInputChange('otherMonthlyIncome', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Vacancy Rate</label>
                   <Tooltip content="Expected vacancy percentage. 5-8% is typical. Higher for student housing or less desirable areas. Accounts for turnover time and collection loss." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.vacancyRate} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'vacancyRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.vacancyRate} onChange={(v) => handleInputChange('vacancyRate', v)} />
               </div>
             </div>
           </div>
@@ -723,19 +642,13 @@ export default function REIInvestorProAnalyzerPage() {
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Property Taxes</label>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
-                    <input type="text" value={inputs.propertyTaxes} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'propertyTaxes')} className="w-full pl-5 pr-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                  </div>
+                  <CurrencyInput prefix="$" value={inputs.propertyTaxes} onChange={(v) => handleInputChange('propertyTaxes', v)} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Insurance</label>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
-                    <input type="text" value={inputs.insurance} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'insurance')} className="w-full pl-5 pr-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                  </div>
+                  <CurrencyInput prefix="$" value={inputs.insurance} onChange={(v) => handleInputChange('insurance', v)} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -743,19 +656,13 @@ export default function REIInvestorProAnalyzerPage() {
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Maintenance</label>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
-                    <input type="text" value={inputs.maintenance} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'maintenance')} className="w-full pl-5 pr-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                  </div>
+                  <CurrencyInput prefix="$" value={inputs.maintenance} onChange={(v) => handleInputChange('maintenance', v)} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Mgmt %</label>
                   </div>
-                  <div className="relative">
-                    <input type="text" value={inputs.propertyManagement} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'propertyManagement')} className="w-full pr-5 pl-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
-                  </div>
+                  <CurrencyInput suffix="%" decimals={2} value={inputs.propertyManagement} onChange={(v) => handleInputChange('propertyManagement', v)} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -763,19 +670,13 @@ export default function REIInvestorProAnalyzerPage() {
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">HOA (Monthly)</label>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
-                    <input type="text" value={inputs.hoa} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'hoa')} className="w-full pl-5 pr-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                  </div>
+                  <CurrencyInput prefix="$" value={inputs.hoa} onChange={(v) => handleInputChange('hoa', v)} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Other</label>
                   </div>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
-                    <input type="text" value={inputs.otherExpenses} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'otherExpenses')} className="w-full pl-5 pr-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
-                  </div>
+                  <CurrencyInput prefix="$" value={inputs.otherExpenses} onChange={(v) => handleInputChange('otherExpenses', v)} />
                 </div>
               </div>
             </div>
@@ -797,40 +698,28 @@ export default function REIInvestorProAnalyzerPage() {
                       <label className="text-xs font-semibold text-gray-600">Hard Money Rate</label>
                       <Tooltip content="Annual interest rate on hard money loan. Typically 10-15%. Used for short-term flips." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.hardMoneyRate} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'hardMoneyRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                    </div>
+                    <CurrencyInput suffix="%" decimals={2} value={inputs.hardMoneyRate} onChange={(v) => handleInputChange('hardMoneyRate', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Points</label>
                       <Tooltip content="Upfront loan origination fee. 1-3 points typical. 1 point = 1% of loan amount." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.hardMoneyPoints} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'hardMoneyPoints')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">pts</span>
-                    </div>
+                    <CurrencyInput suffix="pts" decimals={2} value={inputs.hardMoneyPoints} onChange={(v) => handleInputChange('hardMoneyPoints', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Hold Period</label>
                       <Tooltip content="Expected time from purchase to sale. Include rehab time + listing time + closing. Shorter = less holding costs." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.holdMonths} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'holdMonths')} className="w-full pr-12 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">mos</span>
-                    </div>
+                    <CurrencyInput suffix="mos" value={inputs.holdMonths} onChange={(v) => handleInputChange('holdMonths', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Selling Costs</label>
                       <Tooltip content="Total costs to sell: agent commission (5-6%), closing costs, staging, etc. Typically 8-10% of sale price." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.sellingCostsPercent} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'sellingCostsPercent')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                    </div>
+                    <CurrencyInput suffix="%" decimals={2} value={inputs.sellingCostsPercent} onChange={(v) => handleInputChange('sellingCostsPercent', v)} />
                   </div>
                 </>
               ) : (
@@ -840,30 +729,21 @@ export default function REIInvestorProAnalyzerPage() {
                       <label className="text-xs font-semibold text-gray-600">Down Payment</label>
                       <Tooltip content="Percentage of purchase price as down payment. Investment properties typically require 20-25% down." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.downPaymentPercent} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'downPaymentPercent')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                    </div>
+                    <CurrencyInput suffix="%" decimals={2} value={inputs.downPaymentPercent} onChange={(v) => handleInputChange('downPaymentPercent', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Interest Rate</label>
                       <Tooltip content="Annual mortgage interest rate. Investment property rates are typically 0.5-0.75% higher than primary residence rates." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.loanInterestRate} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'loanInterestRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                    </div>
+                    <CurrencyInput suffix="%" decimals={2} value={inputs.loanInterestRate} onChange={(v) => handleInputChange('loanInterestRate', v)} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 mb-1">
                       <label className="text-xs font-semibold text-gray-600">Loan Term</label>
                       <Tooltip content="Mortgage term in years. 30-year is most common for investment properties. 15-year has higher payments but builds equity faster." />
                     </div>
-                    <div className="relative">
-                      <input type="text" value={inputs.loanTermYears} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'loanTermYears')} className="w-full pr-10 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">yrs</span>
-                    </div>
+                    <CurrencyInput suffix="yrs" value={inputs.loanTermYears} onChange={(v) => handleInputChange('loanTermYears', v)} />
                   </div>
                   
                   {strategy === 'brrrr' && (
@@ -876,20 +756,14 @@ export default function REIInvestorProAnalyzerPage() {
                           <label className="text-xs font-semibold text-gray-600">Refi LTV</label>
                           <Tooltip content="Loan-to-Value for refinance based on ARV. 70-75% typical for investment cash-out refi." />
                         </div>
-                        <div className="relative">
-                          <input type="text" value={inputs.refinanceLTV} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'refinanceLTV')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-blue-500 focus:outline-none" />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                        </div>
+                        <CurrencyInput suffix="%" decimals={2} value={inputs.refinanceLTV} onChange={(v) => handleInputChange('refinanceLTV', v)} />
                       </div>
                       <div>
                         <div className="flex items-center gap-1 mb-1">
                           <label className="text-xs font-semibold text-gray-600">Refi Rate</label>
                           <Tooltip content="Interest rate on refinanced loan. May be slightly higher than purchase rate for cash-out refi." />
                         </div>
-                        <div className="relative">
-                          <input type="text" value={inputs.refinanceRate} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'refinanceRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-blue-500 focus:outline-none" />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                        </div>
+                        <CurrencyInput suffix="%" decimals={2} value={inputs.refinanceRate} onChange={(v) => handleInputChange('refinanceRate', v)} />
                       </div>
                     </>
                   )}
@@ -902,11 +776,11 @@ export default function REIInvestorProAnalyzerPage() {
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs font-semibold text-gray-600 mb-1 block">Hold Years</label>
-                          <input type="text" value={inputs.holdPeriodYears} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'holdPeriodYears')} className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
+                          <CurrencyInput value={inputs.holdPeriodYears} onChange={(v) => handleInputChange('holdPeriodYears', v)} />
                         </div>
                         <div>
                           <label className="text-xs font-semibold text-gray-600 mb-1 block">Apprec. %</label>
-                          <input type="text" value={inputs.appreciationRate} onChange={(e) => handlePercentChange(e.target.value, handleInputChange, 'appreciationRate')} className="w-full px-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-xs focus:border-sgf-green-500 focus:outline-none" />
+                          <CurrencyInput suffix="%" decimals={2} value={inputs.appreciationRate} onChange={(v) => handleInputChange('appreciationRate', v)} />
                         </div>
                       </div>
                     </>
@@ -1214,10 +1088,10 @@ export default function REIInvestorProAnalyzerPage() {
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {outputs.equitySchedule.map((row: any) => (
-                          <tr key={row.year} className={`hover:bg-gray-50 ${row.year === parseInt(inputs.holdPeriodYears) ? 'bg-sgf-green-50' : ''}`}>
+                          <tr key={row.year} className={`hover:bg-gray-50 ${row.year === inputs.holdPeriodYears ? 'bg-sgf-green-50' : ''}`}>
                             <td className="px-4 py-3 text-sm font-medium text-gray-900">
                               {row.year === 0 ? 'Start' : `Year ${row.year}`}
-                              {row.year === parseInt(inputs.holdPeriodYears) && <span className="ml-2 text-xs bg-sgf-green-200 text-sgf-green-800 px-2 py-0.5 rounded">Exit</span>}
+                              {row.year === inputs.holdPeriodYears && <span className="ml-2 text-xs bg-sgf-green-200 text-sgf-green-800 px-2 py-0.5 rounded">Exit</span>}
                             </td>
                             <td className="px-4 py-3 text-sm text-right font-mono">{formatCurrency(row.propertyValue)}</td>
                             <td className="px-4 py-3 text-sm text-right font-mono text-red-600">{formatCurrency(row.loanBalance)}</td>

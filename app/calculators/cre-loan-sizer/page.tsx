@@ -5,88 +5,48 @@ import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, 
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 import GatedCalculator from '@/components/core/GatedCalculator';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 interface CREInputs {
-  propertyValue: string;
-  purchasePrice: string;
-  grossPotentialRent: string;
-  otherIncome: string;
-  vacancyRate: string;
-  operatingExpenses: string;
-  propertyTaxes: string;
-  insurance: string;
-  managementFee: string;
-  reserves: string;
-  interestRate: string;
-  amortization: string;
-  loanTerm: string;
-  targetDSCR: string;
-  maxLTV: string;
+  propertyValue: number;
+  purchasePrice: number;
+  grossPotentialRent: number;
+  otherIncome: number;
+  vacancyRate: number;
+  operatingExpenses: number;
+  propertyTaxes: number;
+  insurance: number;
+  managementFee: number;
+  reserves: number;
+  interestRate: number;
+  amortization: number;
+  loanTerm: number;
+  targetDSCR: number;
+  maxLTV: number;
 }
 
 const defaultInputs: CREInputs = {
-  propertyValue: '2,000,000',
-  purchasePrice: '1,900,000',
-  grossPotentialRent: '240,000',
-  otherIncome: '12,000',
-  vacancyRate: '5',
-  operatingExpenses: '48,000',
-  propertyTaxes: '24,000',
-  insurance: '8,000',
-  managementFee: '5',
-  reserves: '3',
-  interestRate: '7.5',
-  amortization: '25',
-  loanTerm: '10',
-  targetDSCR: '1.25',
-  maxLTV: '75',
+  propertyValue: 2000000,
+  purchasePrice: 1900000,
+  grossPotentialRent: 240000,
+  otherIncome: 12000,
+  vacancyRate: 5,
+  operatingExpenses: 48000,
+  propertyTaxes: 24000,
+  insurance: 8000,
+  managementFee: 5,
+  reserves: 3,
+  interestRate: 7.5,
+  amortization: 25,
+  loanTerm: 10,
+  targetDSCR: 1.25,
+  maxLTV: 75,
 };
 
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.-]/g, '');
-  return parseFloat(cleaned) || 0;
-};
-
-const formatNumberWithCommas = (value: number): string => {
-  if (isNaN(value) || value === 0) return '0';
-  return value.toLocaleString('en-US');
-};
-
-const handleCurrencyChange = (
-  value: string,
-  setter: (field: keyof CREInputs, value: string) => void,
-  field: keyof CREInputs
-) => {
-  if (value === '' || value === '$') {
-    setter(field, '0');
-    return;
-  }
-  const numericValue = value.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  if (!isNaN(number)) {
-    setter(field, formatNumberWithCommas(number));
-  }
-};
-
-const handlePercentChangeUtil = (
-  value: string,
-  setter: (field: keyof CREInputs, value: string) => void,
-  field: keyof CREInputs
-) => {
-  if (value === '') {
-    setter(field, '0');
-    return;
-  }
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  const parts = cleaned.split('.');
-  if (parts.length > 2) return;
-  if (parts[1] && parts[1].length > 2) return;
-  setter(field, cleaned);
-};
 
 const calculateMonthlyPayment = (principal: number, annualRate: number, years: number): number => {
   if (!principal || !annualRate || !years) return 0;
@@ -99,25 +59,18 @@ const calculateMonthlyPayment = (principal: number, annualRate: number, years: n
 export default function CRELoanSizerPage() {
   const [inputs, setInputs] = useState<CREInputs>(defaultInputs);
 
-  const handleInputChange = (field: keyof CREInputs, value: string) => {
+  const handleInputChange = (field: keyof CREInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const outputs = useMemo(() => {
-    const propertyValue = parseCurrencyInput(inputs.propertyValue);
-    const purchasePrice = parseCurrencyInput(inputs.purchasePrice);
-    const grossPotentialRent = parseCurrencyInput(inputs.grossPotentialRent);
-    const otherIncome = parseCurrencyInput(inputs.otherIncome);
-    const vacancyRate = parseFloat(inputs.vacancyRate) || 0;
-    const operatingExpenses = parseCurrencyInput(inputs.operatingExpenses);
-    const propertyTaxes = parseCurrencyInput(inputs.propertyTaxes);
-    const insurance = parseCurrencyInput(inputs.insurance);
-    const managementFee = parseFloat(inputs.managementFee) || 0;
-    const reserves = parseFloat(inputs.reserves) || 0;
-    const interestRate = parseFloat(inputs.interestRate) || 0;
-    const amortization = parseInt(inputs.amortization) || 25;
-    const targetDSCR = parseFloat(inputs.targetDSCR) || 1.25;
-    const maxLTV = parseFloat(inputs.maxLTV) || 75;
+    const { propertyValue, purchasePrice, grossPotentialRent, otherIncome, vacancyRate,
+      operatingExpenses, propertyTaxes, insurance, interestRate } = inputs;
+    const managementFee = inputs.managementFee;
+    const reserves = inputs.reserves;
+    const amortization = inputs.amortization || 25;
+    const targetDSCR = inputs.targetDSCR || 1.25;
+    const maxLTV = inputs.maxLTV || 75;
 
     if (!grossPotentialRent || !propertyValue) return null;
 
@@ -247,20 +200,14 @@ export default function CRELoanSizerPage() {
                   <label className="text-xs font-semibold text-gray-600">Property Value</label>
                   <Tooltip content="The appraised or estimated market value of the property. Lenders use this to calculate LTV (Loan-to-Value). Get a professional appraisal for accurate financing." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.propertyValue} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'propertyValue')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.propertyValue} onChange={(v) => handleInputChange('propertyValue', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Purchase Price</label>
                   <Tooltip content="The negotiated purchase price. May differ from appraised value. If purchase price exceeds appraised value, lenders will use the lower value for LTV calculations." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.purchasePrice} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'purchasePrice')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.purchasePrice} onChange={(v) => handleInputChange('purchasePrice', v)} />
               </div>
             </div>
           </div>
@@ -279,30 +226,21 @@ export default function CRELoanSizerPage() {
                   <label className="text-xs font-semibold text-gray-600">Gross Potential Rent</label>
                   <Tooltip content="Total annual rent if 100% occupied at market rates. Include all units at their scheduled or market rent. This is your maximum potential rental income." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.grossPotentialRent} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'grossPotentialRent')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.grossPotentialRent} onChange={(v) => handleInputChange('grossPotentialRent', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Other Income</label>
                   <Tooltip content="Additional income beyond rent: parking fees, laundry, storage, vending, late fees, pet fees, application fees, etc. Be conservative - lenders may discount this." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.otherIncome} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'otherIncome')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.otherIncome} onChange={(v) => handleInputChange('otherIncome', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Vacancy Rate</label>
                   <Tooltip content="Expected vacancy and collection loss percentage. Market standard is 5-10%. Lenders typically require minimum 5% even for fully occupied properties to account for turnover." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.vacancyRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'vacancyRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.vacancyRate} onChange={(v) => handleInputChange('vacancyRate', v)} />
               </div>
             </div>
           </div>
@@ -321,30 +259,21 @@ export default function CRELoanSizerPage() {
                   <label className="text-xs font-semibold text-gray-600">Operating Expenses</label>
                   <Tooltip content="Annual operating costs: utilities, repairs, maintenance, landscaping, cleaning, supplies, advertising, legal, accounting, etc. Does NOT include debt service, depreciation, or income taxes." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.operatingExpenses} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'operatingExpenses')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.operatingExpenses} onChange={(v) => handleInputChange('operatingExpenses', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Property Taxes</label>
                   <Tooltip content="Annual real estate property taxes. Check county assessor records. Note: taxes may increase after purchase based on new assessed value - factor this into projections." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.propertyTaxes} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'propertyTaxes')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.propertyTaxes} onChange={(v) => handleInputChange('propertyTaxes', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Insurance</label>
                   <Tooltip content="Annual property insurance premium. Include hazard, liability, flood (if required), and any other required coverage. Get quotes - costs vary significantly by location and property type." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                  <input type="text" value={inputs.insurance} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'insurance')} className="w-full pl-7 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.insurance} onChange={(v) => handleInputChange('insurance', v)} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -352,20 +281,14 @@ export default function CRELoanSizerPage() {
                     <label className="text-xs font-semibold text-gray-600">Mgmt %</label>
                     <Tooltip content="Property management fee as % of Effective Gross Income. Self-managed: 0%. Professional management: typically 4-10% depending on property size and type." />
                   </div>
-                  <div className="relative">
-                    <input type="text" value={inputs.managementFee} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'managementFee')} className="w-full pr-6 pl-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
-                  </div>
+                  <CurrencyInput suffix="%" decimals={2} value={inputs.managementFee} onChange={(v) => handleInputChange('managementFee', v)} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Reserves</label>
                     <Tooltip content="Capital replacement reserves as % of EGI. Set aside for major repairs: roof, HVAC, parking lot, appliances. Lenders typically require 2-5%. Industry standard is 3%." />
                   </div>
-                  <div className="relative">
-                    <input type="text" value={inputs.reserves} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'reserves')} className="w-full pr-6 pl-2 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
-                  </div>
+                  <CurrencyInput suffix="%" decimals={2} value={inputs.reserves} onChange={(v) => handleInputChange('reserves', v)} />
                 </div>
               </div>
             </div>
@@ -385,40 +308,28 @@ export default function CRELoanSizerPage() {
                   <label className="text-xs font-semibold text-gray-600">Interest Rate</label>
                   <Tooltip content="Expected annual interest rate. Commercial rates vary by property type, borrower strength, and market conditions. Currently ranging 6.5-9% for most commercial properties." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.interestRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'interestRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.interestRate} onChange={(v) => handleInputChange('interestRate', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Amortization</label>
                   <Tooltip content="Loan amortization period in years. Commercial loans typically amortize over 20-30 years (longer = lower payments). Note: loan term may be shorter (e.g., 10-year term with 25-year amortization = balloon payment)." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.amortization} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'amortization')} className="w-full pr-10 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">yrs</span>
-                </div>
+                <CurrencyInput suffix="yrs" value={inputs.amortization} onChange={(v) => handleInputChange('amortization', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Target DSCR</label>
                   <Tooltip content="Debt Service Coverage Ratio required by lender. Most lenders require 1.20-1.35x minimum. Higher DSCR = lower max loan amount but safer deal. SBA 504 requires 1.15x." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.targetDSCR} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'targetDSCR')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">x</span>
-                </div>
+                <CurrencyInput suffix="x" decimals={2} value={inputs.targetDSCR} onChange={(v) => handleInputChange('targetDSCR', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-1 mb-1">
                   <label className="text-xs font-semibold text-gray-600">Max LTV</label>
                   <Tooltip content="Maximum Loan-to-Value ratio. Conventional: 65-75%. SBA 504: up to 90%. Lower LTV = more equity required but better rates. Lenders use lower of purchase price or appraised value." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.maxLTV} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'maxLTV')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.maxLTV} onChange={(v) => handleInputChange('maxLTV', v)} />
               </div>
             </div>
           </div>

@@ -28,6 +28,7 @@ import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 import GatedCalculator from '@/components/core/GatedCalculator';
 import ValuationExportButton from '@/components/calculators/ValuationExportButton';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 const industryMultiples = {
   restaurant: { 
@@ -120,14 +121,14 @@ type IndustryType = keyof typeof industryMultiples;
 
 interface ValuationInputs {
   industry: IndustryType;
-  annualRevenue: string;
-  annualSDE: string;
-  annualEBITDA: string;
-  assetValue: string;
-  inventory: string;
-  realEstate: string;
-  growthRate: string;
-  discountRate: string;
+  annualRevenue: number;
+  annualSDE: number;
+  annualEBITDA: number;
+  assetValue: number;
+  inventory: number;
+  realEstate: number;
+  growthRate: number;
+  discountRate: number;
   businessAge: 'under3' | '3to10' | 'over10';
   revenueType: 'project' | 'mixed' | 'recurring';
   contractQuality: 'monthToMonth' | 'annual' | 'multiYear';
@@ -138,14 +139,14 @@ interface ValuationInputs {
 
 const defaultInputs: ValuationInputs = {
   industry: 'services',
-  annualRevenue: '1,500,000',
-  annualSDE: '300,000',
-  annualEBITDA: '250,000',
-  assetValue: '150,000',
-  inventory: '50,000',
-  realEstate: '0',
-  growthRate: '3',
-  discountRate: '15',
+  annualRevenue: 1500000,
+  annualSDE: 300000,
+  annualEBITDA: 250000,
+  assetValue: 150000,
+  inventory: 50000,
+  realEstate: 0,
+  growthRate: 3,
+  discountRate: 15,
   businessAge: '3to10',
   revenueType: 'mixed',
   contractQuality: 'annual',
@@ -193,53 +194,12 @@ const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.-]/g, '');
-  return parseFloat(cleaned) || 0;
-};
-
-const formatNumberWithCommas = (value: number): string => {
-  if (isNaN(value) || value === 0) return '0';
-  return value.toLocaleString('en-US');
-};
-
-const handleCurrencyChange = (
-  value: string,
-  setter: (field: keyof ValuationInputs, value: string) => void,
-  field: keyof ValuationInputs
-) => {
-  if (value === '' || value === '$') {
-    setter(field, '0');
-    return;
-  }
-  const numericValue = value.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  if (!isNaN(number)) {
-    setter(field, formatNumberWithCommas(number));
-  }
-};
-
-const handlePercentChangeUtil = (
-  value: string,
-  setter: (field: keyof ValuationInputs, value: string) => void,
-  field: keyof ValuationInputs
-) => {
-  if (value === '') {
-    setter(field, '0');
-    return;
-  }
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  const parts = cleaned.split('.');
-  if (parts.length > 2) return;
-  if (parts[1] && parts[1].length > 2) return;
-  setter(field, cleaned);
-};
 
 export default function ValuationCalculatorPage() {
   const [inputs, setInputs] = useState<ValuationInputs>(defaultInputs);
   const [showAdjustments, setShowAdjustments] = useState<boolean>(true);
 
-  const handleInputChange = (field: keyof ValuationInputs, value: string) => {
+  const handleInputChange = (field: keyof ValuationInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
@@ -252,14 +212,8 @@ export default function ValuationCalculatorPage() {
   };
 
   const outputs = useMemo(() => {
-    const annualRevenue = parseCurrencyInput(inputs.annualRevenue);
-    const annualSDE = parseCurrencyInput(inputs.annualSDE);
-    const annualEBITDA = parseCurrencyInput(inputs.annualEBITDA);
-    const assetValue = parseCurrencyInput(inputs.assetValue);
-    const inventory = parseCurrencyInput(inputs.inventory);
-    const realEstate = parseCurrencyInput(inputs.realEstate);
-    const growthRate = parseFloat(inputs.growthRate) || 0;
-    const discountRate = parseFloat(inputs.discountRate) || 15;
+    const { annualRevenue, annualSDE, annualEBITDA, assetValue, inventory, realEstate, growthRate } = inputs;
+    const discountRate = inputs.discountRate || 15;
 
     if (!annualSDE && !annualEBITDA) return null;
 
@@ -346,11 +300,11 @@ export default function ValuationCalculatorPage() {
     if (!outputs) return;
     const valuationData = {
       type: 'valuation',
-      inputs: { 
-        industry: inputs.industry, 
-        annualRevenue: parseCurrencyInput(inputs.annualRevenue), 
-        annualSDE: parseCurrencyInput(inputs.annualSDE), 
-        annualEBITDA: parseCurrencyInput(inputs.annualEBITDA),
+      inputs: {
+        industry: inputs.industry,
+        annualRevenue: inputs.annualRevenue,
+        annualSDE: inputs.annualSDE,
+        annualEBITDA: inputs.annualEBITDA,
         adjustments: {
           businessAge: inputs.businessAge,
           revenueType: inputs.revenueType,
@@ -391,12 +345,12 @@ export default function ValuationCalculatorPage() {
     annualRevenue: outputs.annualRevenue,
     annualSDE: outputs.annualSDE,
     annualEBITDA: outputs.annualEBITDA,
-    assetValue: parseCurrencyInput(inputs.assetValue),
+    assetValue: inputs.assetValue,
     adjustedAssetValue: outputs.adjustedAssetValue,
-    inventory: parseCurrencyInput(inputs.inventory),
-    realEstate: parseCurrencyInput(inputs.realEstate),
-    growthRate: parseFloat(inputs.growthRate) || 0,
-    discountRate: parseFloat(inputs.discountRate) || 15,
+    inventory: inputs.inventory,
+    realEstate: inputs.realEstate,
+    growthRate: inputs.growthRate,
+    discountRate: inputs.discountRate || 15,
     adjustments: {
       businessAge: { label: adjustmentFactors.businessAge[inputs.businessAge].label, value: adjustmentFactors.businessAge[inputs.businessAge].value },
       revenueType: { label: adjustmentFactors.revenueType[inputs.revenueType].label, value: adjustmentFactors.revenueType[inputs.revenueType].value },
@@ -488,30 +442,21 @@ export default function ValuationCalculatorPage() {
                   <label className="text-sm font-semibold text-gray-700">Annual Revenue</label>
                   <Tooltip content="Total gross revenue (sales) for the trailing 12 months. Used to calculate revenue multiples and assess business scale." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualRevenue} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualRevenue')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualRevenue} onChange={(v) => handleInputChange('annualRevenue', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual SDE</label>
                   <Tooltip content="Seller's Discretionary Earnings = Net Profit + Owner Salary + Owner Benefits + One-time Expenses. PRIMARY valuation metric for businesses under $5M." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualSDE} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualSDE')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualSDE} onChange={(v) => handleInputChange('annualSDE', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual EBITDA</label>
                   <Tooltip content="Earnings Before Interest, Taxes, Depreciation & Amortization. Used for larger businesses ($5M+) with professional management." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualEBITDA} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualEBITDA')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualEBITDA} onChange={(v) => handleInputChange('annualEBITDA', v)} />
               </div>
             </div>
           </div>
@@ -533,10 +478,7 @@ export default function ValuationCalculatorPage() {
                   <label className="text-sm font-semibold text-gray-700">FF&E / Equipment</label>
                   <Tooltip content="Furniture, Fixtures & Equipment at book value. Will be adjusted based on condition below." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.assetValue} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'assetValue')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.assetValue} onChange={(v) => handleInputChange('assetValue', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -558,20 +500,14 @@ export default function ValuationCalculatorPage() {
                   <label className="text-sm font-semibold text-gray-700">Inventory</label>
                   <Tooltip content="Value of inventory at cost (not retail)." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.inventory} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'inventory')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.inventory} onChange={(v) => handleInputChange('inventory', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Real Estate</label>
                   <Tooltip content="Value of real estate if included in sale. Leave $0 if leased or sold separately." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.realEstate} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'realEstate')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.realEstate} onChange={(v) => handleInputChange('realEstate', v)} />
               </div>
             </div>
           </div>
@@ -590,20 +526,14 @@ export default function ValuationCalculatorPage() {
                   <label className="text-sm font-semibold text-gray-700">Growth Rate</label>
                   <Tooltip content="Expected annual growth in cash flows. Conservative: 0-3%, Moderate: 3-5%, Aggressive: 5-10%." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.growthRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'growthRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.growthRate} onChange={(v) => handleInputChange('growthRate', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Discount Rate</label>
                   <Tooltip content="Required rate of return. Small businesses typically use 15-25%. Higher risk = higher discount rate." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.discountRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'discountRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.discountRate} onChange={(v) => handleInputChange('discountRate', v)} />
               </div>
               <div className="pt-2 border-t border-gray-200">
                 <p className="text-xs text-gray-500">DCF uses 5-year projection with 2% terminal growth rate.</p>

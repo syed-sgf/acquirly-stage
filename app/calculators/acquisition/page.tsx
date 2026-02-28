@@ -5,86 +5,46 @@ import { DollarSign, Calculator, TrendingUp, BarChart3, FileText, MessageSquare,
 import Tooltip from '@/components/ui/Tooltip';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 import GatedCalculator from '@/components/core/GatedCalculator';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 interface AcquisitionInputs {
-  purchasePrice: string;
-  downPayment: string;
-  sellerFinancing: string;
-  sellerFinancingRate: string;
-  sellerFinancingTerm: string;
-  bankLoanRate: string;
-  bankLoanTerm: string;
-  annualRevenue: string;
-  annualSDE: string;
-  annualCapex: string;
-  revenueGrowthRate: string;
-  sdeMarginChange: string;
-  businessAppreciationRate: string;
-  holdPeriod: string;
+  purchasePrice: number;
+  downPayment: number;
+  sellerFinancing: number;
+  sellerFinancingRate: number;
+  sellerFinancingTerm: number;
+  bankLoanRate: number;
+  bankLoanTerm: number;
+  annualRevenue: number;
+  annualSDE: number;
+  annualCapex: number;
+  revenueGrowthRate: number;
+  sdeMarginChange: number;
+  businessAppreciationRate: number;
+  holdPeriod: number;
 }
 
 const defaultInputs: AcquisitionInputs = {
-  purchasePrice: '1,000,000',
-  downPayment: '200,000',
-  sellerFinancing: '100,000',
-  sellerFinancingRate: '6',
-  sellerFinancingTerm: '5',
-  bankLoanRate: '8',
-  bankLoanTerm: '10',
-  annualRevenue: '1,500,000',
-  annualSDE: '300,000',
-  annualCapex: '25,000',
-  revenueGrowthRate: '3',
-  sdeMarginChange: '0',
-  businessAppreciationRate: '3',
-  holdPeriod: '5',
+  purchasePrice: 1000000,
+  downPayment: 200000,
+  sellerFinancing: 100000,
+  sellerFinancingRate: 6,
+  sellerFinancingTerm: 5,
+  bankLoanRate: 8,
+  bankLoanTerm: 10,
+  annualRevenue: 1500000,
+  annualSDE: 300000,
+  annualCapex: 25000,
+  revenueGrowthRate: 3,
+  sdeMarginChange: 0,
+  businessAppreciationRate: 3,
+  holdPeriod: 5,
 };
 
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
 };
 
-const parseCurrencyInput = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.-]/g, '');
-  return parseFloat(cleaned) || 0;
-};
-
-const formatNumberWithCommas = (value: number): string => {
-  if (isNaN(value) || value === 0) return '0';
-  return value.toLocaleString('en-US');
-};
-
-const handleCurrencyChange = (
-  value: string,
-  setter: (field: keyof AcquisitionInputs, value: string) => void,
-  field: keyof AcquisitionInputs
-) => {
-  if (value === '' || value === '$') {
-    setter(field, '0');
-    return;
-  }
-  const numericValue = value.replace(/[^0-9]/g, '');
-  const number = parseInt(numericValue, 10);
-  if (!isNaN(number)) {
-    setter(field, formatNumberWithCommas(number));
-  }
-};
-
-const handlePercentChangeUtil = (
-  value: string,
-  setter: (field: keyof AcquisitionInputs, value: string) => void,
-  field: keyof AcquisitionInputs
-) => {
-  if (value === '') {
-    setter(field, '0');
-    return;
-  }
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  const parts = cleaned.split('.');
-  if (parts.length > 2) return;
-  if (parts[1] && parts[1].length > 2) return;
-  setter(field, cleaned);
-};
 
 const calculateMonthlyPayment = (principal: number, annualRate: number, years: number): number => {
   if (!principal || !annualRate || !years) return 0;
@@ -127,24 +87,15 @@ export default function AcquisitionAnalyzerPage() {
   const [inputs, setInputs] = useState<AcquisitionInputs>(defaultInputs);
   const [activeTab, setActiveTab] = useState<'summary' | 'equity' | 'scenarios' | 'returns'>('summary');
 
-  const handleInputChange = (field: keyof AcquisitionInputs, value: string) => {
+  const handleInputChange = (field: keyof AcquisitionInputs, value: number) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const outputs = useMemo(() => {
-    const purchasePrice = parseCurrencyInput(inputs.purchasePrice);
-    const downPayment = parseCurrencyInput(inputs.downPayment);
-    const sellerFinancing = parseCurrencyInput(inputs.sellerFinancing);
-    const sellerFinancingRate = parseFloat(inputs.sellerFinancingRate) || 0;
-    const sellerFinancingTerm = parseInt(inputs.sellerFinancingTerm) || 0;
-    const bankLoanRate = parseFloat(inputs.bankLoanRate) || 0;
-    const bankLoanTerm = parseInt(inputs.bankLoanTerm) || 0;
-    const annualRevenue = parseCurrencyInput(inputs.annualRevenue);
-    const annualSDE = parseCurrencyInput(inputs.annualSDE);
-    const annualCapex = parseCurrencyInput(inputs.annualCapex);
-    const revenueGrowthRate = parseFloat(inputs.revenueGrowthRate) || 0;
-    const businessAppreciationRate = parseFloat(inputs.businessAppreciationRate) || 0;
-    const holdPeriod = parseInt(inputs.holdPeriod) || 5;
+    const { purchasePrice, downPayment, sellerFinancing, sellerFinancingRate, sellerFinancingTerm,
+      bankLoanRate, bankLoanTerm, annualRevenue, annualSDE, annualCapex,
+      revenueGrowthRate, businessAppreciationRate } = inputs;
+    const holdPeriod = inputs.holdPeriod || 5;
 
     if (!purchasePrice || !annualSDE) return null;
 
@@ -281,7 +232,7 @@ export default function AcquisitionAnalyzerPage() {
     if (!outputs) return;
     const analysisData = {
       type: 'acquisition',
-      inputs: { ...inputs, purchasePrice: parseCurrencyInput(inputs.purchasePrice), downPayment: parseCurrencyInput(inputs.downPayment) },
+      inputs: { ...inputs },
       outputs: { dscr: outputs.dscr, cashOnCashReturn: outputs.cashOnCashReturn, annualPreTaxCashFlow: outputs.annualPreTaxCashFlow, sdeMultiple: outputs.sdeMultiple, irr: outputs.irr, totalROI: outputs.totalROI },
       timestamp: new Date().toISOString(),
     };
@@ -332,30 +283,21 @@ export default function AcquisitionAnalyzerPage() {
                   <label className="text-sm font-semibold text-gray-700">Purchase Price</label>
                   <Tooltip content="The total agreed-upon price for the business, including all assets, goodwill, and inventory. This is typically based on a multiple of SDE or EBITDA." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.purchasePrice} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'purchasePrice')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.purchasePrice} onChange={(v) => handleInputChange('purchasePrice', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Down Payment</label>
                   <Tooltip content="Cash equity injection required at closing. SBA loans typically require 10-20% down. Higher down payments improve DSCR and reduce monthly payments." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.downPayment} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'downPayment')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.downPayment} onChange={(v) => handleInputChange('downPayment', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Seller Financing</label>
                   <Tooltip content="Portion of purchase price financed by the seller, typically on a promissory note. Often 10-20% of deal value with favorable terms (lower rate, interest-only period, or standby)." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.sellerFinancing} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'sellerFinancing')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.sellerFinancing} onChange={(v) => handleInputChange('sellerFinancing', v)} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -363,20 +305,14 @@ export default function AcquisitionAnalyzerPage() {
                     <label className="text-xs font-semibold text-gray-600">Seller Rate</label>
                     <Tooltip content="Interest rate on seller note. Typically 5-8%, often below bank rates as incentive." />
                   </div>
-                  <div className="relative">
-                    <input type="text" value={inputs.sellerFinancingRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'sellerFinancingRate')} className="w-full pr-7 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
-                  </div>
+                  <CurrencyInput suffix="%" decimals={2} value={inputs.sellerFinancingRate} onChange={(v) => handleInputChange('sellerFinancingRate', v)} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1 mb-1">
                     <label className="text-xs font-semibold text-gray-600">Seller Term</label>
                     <Tooltip content="Repayment period for seller note. Typically 3-7 years, often with balloon payment." />
                   </div>
-                  <div className="relative">
-                    <input type="text" value={inputs.sellerFinancingTerm} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'sellerFinancingTerm')} className="w-full pr-8 pl-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none" />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-sm">yrs</span>
-                  </div>
+                  <CurrencyInput suffix="yrs" value={inputs.sellerFinancingTerm} onChange={(v) => handleInputChange('sellerFinancingTerm', v)} />
                 </div>
               </div>
             </div>
@@ -405,30 +341,21 @@ export default function AcquisitionAnalyzerPage() {
                   <label className="text-sm font-semibold text-gray-700">Interest Rate</label>
                   <Tooltip content="Annual interest rate on bank loan. SBA 7(a) rates are typically Prime + 2.25-2.75% (currently ~10-11%). Conventional loans may be 8-12%." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.bankLoanRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'bankLoanRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.bankLoanRate} onChange={(v) => handleInputChange('bankLoanRate', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Loan Term</label>
                   <Tooltip content="Amortization period in years. SBA 7(a) business acquisition loans are typically 10 years. Longer terms lower payments but increase total interest." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.bankLoanTerm} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'bankLoanTerm')} className="w-full pr-12 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">years</span>
-                </div>
+                <CurrencyInput suffix="years" value={inputs.bankLoanTerm} onChange={(v) => handleInputChange('bankLoanTerm', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Hold Period</label>
                   <Tooltip content="How many years you plan to own the business before selling. Used to calculate IRR and total ROI. Typical hold periods are 5-10 years." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.holdPeriod} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'holdPeriod')} className="w-full pr-12 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">years</span>
-                </div>
+                <CurrencyInput suffix="years" value={inputs.holdPeriod} onChange={(v) => handleInputChange('holdPeriod', v)} />
               </div>
             </div>
           </div>
@@ -447,30 +374,21 @@ export default function AcquisitionAnalyzerPage() {
                   <label className="text-sm font-semibold text-gray-700">Annual Revenue</label>
                   <Tooltip content="Total gross revenue of the business. Used to calculate revenue multiples and assess business scale. Should match trailing 12 months (TTM) or projected." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualRevenue} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualRevenue')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualRevenue} onChange={(v) => handleInputChange('annualRevenue', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual SDE / EBITDA</label>
                   <Tooltip content="Seller's Discretionary Earnings or EBITDA. SDE includes owner salary and perks added back. This is the cash flow available to pay yourself and service debt." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualSDE} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualSDE')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualSDE} onChange={(v) => handleInputChange('annualSDE', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Annual CAPEX</label>
                   <Tooltip content="Capital expenditures required to maintain the business - equipment replacement, vehicle purchases, major repairs. Lenders subtract this from cash flow." />
                 </div>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
-                  <input type="text" value={inputs.annualCapex} onChange={(e) => handleCurrencyChange(e.target.value, handleInputChange, 'annualCapex')} className="w-full pl-8 pr-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-green-500 focus:outline-none" />
-                </div>
+                <CurrencyInput prefix="$" value={inputs.annualCapex} onChange={(v) => handleInputChange('annualCapex', v)} />
               </div>
             </div>
           </div>
@@ -489,20 +407,14 @@ export default function AcquisitionAnalyzerPage() {
                   <label className="text-sm font-semibold text-gray-700">Revenue Growth Rate</label>
                   <Tooltip content="Expected annual revenue/SDE growth rate. Conservative: 0-3%, Moderate: 3-5%, Aggressive: 5-10%. Affects future cash flows and exit valuation." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.revenueGrowthRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'revenueGrowthRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.revenueGrowthRate} onChange={(v) => handleInputChange('revenueGrowthRate', v)} />
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <label className="text-sm font-semibold text-gray-700">Business Appreciation</label>
                   <Tooltip content="Expected annual appreciation in business value. Typically tied to SDE growth and multiple expansion. Used to calculate exit value and equity build-up." />
                 </div>
-                <div className="relative">
-                  <input type="text" value={inputs.businessAppreciationRate} onChange={(e) => handlePercentChangeUtil(e.target.value, handleInputChange, 'businessAppreciationRate')} className="w-full pr-8 pl-4 py-2.5 border-2 border-gray-200 rounded-lg font-mono focus:border-sgf-gold-500 focus:outline-none" />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">%</span>
-                </div>
+                <CurrencyInput suffix="%" decimals={2} value={inputs.businessAppreciationRate} onChange={(v) => handleInputChange('businessAppreciationRate', v)} />
               </div>
             </div>
           </div>

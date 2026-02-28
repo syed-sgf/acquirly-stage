@@ -22,6 +22,7 @@ import {
   Save
 } from 'lucide-react';
 import { useAcquisitionCalculator } from '@/lib/hooks/use-acquisition-calculator';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 import type { AcquisitionInputs, CalculatedMetrics } from '@/lib/calculations/acquisition-analysis';
 import AcquisitionExportButton from '@/components/calculators/AcquisitionExportButton';
 
@@ -321,30 +322,29 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
           <InputField
             label="Purchase Price"
             value={inputs.purchasePrice}
-            onChange={(v) => updateInput('purchasePrice', Number(v))}
+            onChange={(v) => updateInput('purchasePrice', v)}
             prefix="$"
             tooltip="Total acquisition cost including goodwill"
           />
           <InputField
             label="Down Payment"
             value={inputs.downPayment}
-            onChange={(v) => updateInput('downPayment', Number(v))}
+            onChange={(v) => updateInput('downPayment', v)}
             prefix="$"
             tooltip="Cash equity from buyer"
           />
           <InputField
             label="Seller Financing"
             value={inputs.sellerFinancing}
-            onChange={(v) => updateInput('sellerFinancing', Number(v))}
+            onChange={(v) => updateInput('sellerFinancing', v)}
             prefix="$"
             tooltip="Amount financed by seller"
           />
           <InputField
             label="Bank Interest Rate"
             value={inputs.bankLoanRate}
-            onChange={(v) => updateInput('bankLoanRate', Number(v))}
+            onChange={(v) => updateInput('bankLoanRate', v)}
             suffix="%"
-            step="0.1"
             tooltip="Annual interest rate for bank loan"
           />
         </div>
@@ -365,21 +365,21 @@ function InputsTab({ inputs, updateInput }: InputsTabProps) {
           <InputField
             label="Annual Revenue"
             value={inputs.annualRevenue}
-            onChange={(v) => updateInput('annualRevenue', Number(v))}
+            onChange={(v) => updateInput('annualRevenue', v)}
             prefix="$"
             tooltip="Gross annual sales"
           />
           <InputField
             label="Annual SDE"
             value={inputs.annualSDE}
-            onChange={(v) => updateInput('annualSDE', Number(v))}
+            onChange={(v) => updateInput('annualSDE', v)}
             prefix="$"
             tooltip="Seller's Discretionary Earnings"
           />
           <InputField
             label="Annual EBITDA"
             value={inputs.annualEBITDA}
-            onChange={(v) => updateInput('annualEBITDA', Number(v))}
+            onChange={(v) => updateInput('annualEBITDA', v)}
             prefix="$"
             tooltip="Earnings before interest, taxes, depreciation & amortization"
           />
@@ -667,15 +667,14 @@ function ValuationTab({ outputs, formatCurrency }: ValuationTabProps) {
 
 interface InputFieldProps {
   label: string;
-  value: number | string;
-  onChange: (value: string) => void;
+  value: number;
+  onChange: (value: number) => void;
   prefix?: string;
   suffix?: string;
-  step?: string;
   tooltip?: string;
 }
 
-function InputField({ label, value, onChange, prefix, suffix, step, tooltip }: InputFieldProps) {
+function InputField({ label, value, onChange, prefix, suffix, tooltip }: InputFieldProps) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2">
@@ -689,28 +688,13 @@ function InputField({ label, value, onChange, prefix, suffix, step, tooltip }: I
           </div>
         )}
       </div>
-      <div className="relative">
-        {prefix && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">{prefix}</span>
-        )}
-        <input
-          type="number"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          step={step}
-          className={`
-            w-full rounded-lg border border-gray-300 shadow-sm
-            focus:border-sgf-green-500 focus:ring-2 focus:ring-sgf-green-500/20
-            ${prefix ? 'pl-8' : 'pl-4'}
-            ${suffix ? 'pr-12' : 'pr-4'}
-            py-3 text-gray-900 font-medium
-            transition-colors
-          `}
-        />
-        {suffix && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">{suffix}</span>
-        )}
-      </div>
+      <CurrencyInput
+        prefix={prefix}
+        suffix={suffix}
+        decimals={suffix === '%' ? 2 : 0}
+        value={value}
+        onChange={onChange}
+      />
     </div>
   );
 }

@@ -4,29 +4,30 @@ import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, 
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
 import GatedCalculator from '@/components/core/GatedCalculator';
 import CommercialPropertyExportButton from '@/components/calculators/CommercialPropertyExportButton';
+import CurrencyInput from '@/lib/components/CurrencyInput';
 
 type PropertyType = 'Office' | 'Retail' | 'Industrial' | 'Mixed-Use' | 'Multifamily (5+)' | 'Self-Storage' | 'NNN Lease' | 'Medical Office' | 'Warehouse';
 
 interface CPAInputs {
-  purchasePrice: string; squareFootage: string;
-  baseRentPerSqFt: string; camPerSqFt: string; otherIncome: string; vacancyRate: string;
-  tenantPaysCAM: string; tenantPaysTaxes: string; tenantPaysInsurance: string;
-  propertyTaxes: string; insurance: string; maintenance: string;
-  propertyManagement: string; utilities: string; reserves: string;
-  downPaymentPct: string; interestRate: string; amortization: string;
-  appreciationRate: string; holdPeriodYears: string; sellingCostsPct: string;
-  tenantName: string; leaseTerm: string; rentEscalation: string;
+  purchasePrice: number; squareFootage: number;
+  baseRentPerSqFt: number; camPerSqFt: number; otherIncome: number; vacancyRate: number;
+  tenantPaysCAM: number; tenantPaysTaxes: number; tenantPaysInsurance: number;
+  propertyTaxes: number; insurance: number; maintenance: number;
+  propertyManagement: number; utilities: number; reserves: number;
+  downPaymentPct: number; interestRate: number; amortization: number;
+  appreciationRate: number; holdPeriodYears: number; sellingCostsPct: number;
+  tenantName: string; leaseTerm: number; rentEscalation: number;
 }
 
 const defaultInputs: CPAInputs = {
-  purchasePrice: '2,000,000', squareFootage: '10,000',
-  baseRentPerSqFt: '25', camPerSqFt: '5', otherIncome: '0', vacancyRate: '5',
-  tenantPaysCAM: '0', tenantPaysTaxes: '0', tenantPaysInsurance: '0',
-  propertyTaxes: '20,000', insurance: '8,000', maintenance: '15,000',
-  propertyManagement: '4', utilities: '0', reserves: '1',
-  downPaymentPct: '30', interestRate: '7.25', amortization: '25',
-  appreciationRate: '3', holdPeriodYears: '10', sellingCostsPct: '4',
-  tenantName: '', leaseTerm: '10', rentEscalation: '2',
+  purchasePrice: 2000000, squareFootage: 10000,
+  baseRentPerSqFt: 25, camPerSqFt: 5, otherIncome: 0, vacancyRate: 5,
+  tenantPaysCAM: 0, tenantPaysTaxes: 0, tenantPaysInsurance: 0,
+  propertyTaxes: 20000, insurance: 8000, maintenance: 15000,
+  propertyManagement: 4, utilities: 0, reserves: 1,
+  downPaymentPct: 30, interestRate: 7.25, amortization: 25,
+  appreciationRate: 3, holdPeriodYears: 10, sellingCostsPct: 4,
+  tenantName: '', leaseTerm: 10, rentEscalation: 2,
 };
 
 const PROPERTY_TYPES: PropertyType[] = ['Office', 'Retail', 'Industrial', 'Mixed-Use', 'Multifamily (5+)', 'Self-Storage', 'NNN Lease', 'Medical Office', 'Warehouse'];
@@ -44,8 +45,6 @@ const CAP_RATE_BENCHMARKS: Record<string, string> = {
 };
 
 const fmt = (v: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v);
-const parse = (v: string) => parseFloat(v.replace(/[^0-9.-]/g, '')) || 0;
-const fmtCommas = (v: number) => isNaN(v) || v === 0 ? '0' : v.toLocaleString('en-US');
 
 const calcPayment = (principal: number, annualRate: number, years: number) => {
   if (!principal || !annualRate || !years) return 0;
@@ -62,43 +61,19 @@ export default function CommercialPropertyPublicPage() {
 
   const isNNN = propertyType === 'NNN Lease';
 
-  const setField = (field: keyof CPAInputs, value: string) => setInputs(prev => ({ ...prev, [field]: value }));
-
-  const handleCurrency = (value: string, field: keyof CPAInputs) => {
-    if (value === '' || value === '$') { setField(field, '0'); return; }
-    const n = parseInt(value.replace(/[^0-9]/g, ''), 10);
-    if (!isNaN(n)) setField(field, fmtCommas(n));
-  };
-
-  const handleDecimal = (value: string, field: keyof CPAInputs) => {
-    const c = value.replace(/[^0-9.]/g, '');
-    const p = c.split('.');
-    if (p.length > 2 || (p[1] && p[1].length > 2)) return;
-    setField(field, c);
-  };
-
   const outputs = useMemo(() => {
-    const pp = parse(inputs.purchasePrice);
-    const sqft = parse(inputs.squareFootage);
-    const baseRentSF = parse(inputs.baseRentPerSqFt);
-    const camSF = parse(inputs.camPerSqFt);
-    const otherInc = parse(inputs.otherIncome);
-    const vacancy = parseFloat(inputs.vacancyRate) || 0;
-    const tTax = parse(inputs.tenantPaysTaxes);
-    const tIns = parse(inputs.tenantPaysInsurance);
-    const taxes = parse(inputs.propertyTaxes);
-    const ins = parse(inputs.insurance);
-    const maint = parse(inputs.maintenance);
-    const mgmtPct = parseFloat(inputs.propertyManagement) || 0;
-    const utils = parse(inputs.utilities);
-    const resPct = parseFloat(inputs.reserves) || 0;
-    const dpPct = parseFloat(inputs.downPaymentPct) || 30;
-    const rate = parseFloat(inputs.interestRate) || 0;
-    const amort = parseInt(inputs.amortization) || 25;
-    const appRate = parseFloat(inputs.appreciationRate) || 0;
-    const holdYrs = parseInt(inputs.holdPeriodYears) || 10;
-    const sellCostsPct = parseFloat(inputs.sellingCostsPct) || 4;
-    const rentEsc = parseFloat(inputs.rentEscalation) || 0;
+    const { purchasePrice: pp, squareFootage: sqft, baseRentPerSqFt: baseRentSF, camPerSqFt: camSF,
+      otherIncome: otherInc, vacancyRate: vacancy, tenantPaysTaxes: tTax, tenantPaysInsurance: tIns,
+      propertyTaxes: taxes, insurance: ins, maintenance: maint, utilities: utils } = inputs;
+    const mgmtPct = inputs.propertyManagement;
+    const resPct = inputs.reserves;
+    const dpPct = inputs.downPaymentPct || 30;
+    const rate = inputs.interestRate;
+    const amort = inputs.amortization || 25;
+    const appRate = inputs.appreciationRate;
+    const holdYrs = inputs.holdPeriodYears || 10;
+    const sellCostsPct = inputs.sellingCostsPct || 4;
+    const rentEsc = inputs.rentEscalation;
 
     if (!pp || !sqft) return null;
 
@@ -159,8 +134,8 @@ export default function CommercialPropertyPublicPage() {
     reportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     propertyType, isNNN,
     purchasePrice: outputs.pp, squareFootage: outputs.sqft, pricePerSqFt: outputs.pricePerSqFt,
-    baseRent: outputs.annualBaseRent, camRecoveries: outputs.annualCAM, otherIncome: parse(inputs.otherIncome),
-    vacancyRate: parseFloat(inputs.vacancyRate) || 0, effectiveGrossIncome: outputs.egi,
+    baseRent: outputs.annualBaseRent, camRecoveries: outputs.annualCAM, otherIncome: inputs.otherIncome,
+    vacancyRate: inputs.vacancyRate, effectiveGrossIncome: outputs.egi,
     totalExpenses: outputs.landlordExp, expenseRatio: outputs.expRatio,
     noi: outputs.noi, capRate: outputs.capRate, valuationByCapRate: outputs.valuationByCapRate,
     loanAmount: outputs.loanAmt, downPayment: outputs.dp, monthlyPayment: outputs.monthlyPmt,
@@ -168,20 +143,26 @@ export default function CommercialPropertyPublicPage() {
     annualCashFlow: outputs.acf, monthlyCashFlow: outputs.mcf, cashOnCash: outputs.coc, totalCashInvested: outputs.totalCashIn,
     equitySchedule: outputs.schedule,
     tenantName: inputs.tenantName || undefined,
-    rentEscalation: parseFloat(inputs.rentEscalation) || undefined,
+    rentEscalation: inputs.rentEscalation || undefined,
   } : null;
 
-  const IField = ({ label, value, field, type = 'currency', suffix }: { label: string; value: string; field: keyof CPAInputs; type?: 'currency' | 'decimal' | 'text'; suffix?: string }) => (
+  const IField = ({ label, value, field, type = 'currency', suffix }: { label: string; value: number | string; field: keyof CPAInputs; type?: 'currency' | 'decimal' | 'text'; suffix?: string }) => (
     <div>
       <label className="text-xs font-semibold text-gray-600 block mb-1">{label}</label>
-      <div className="relative">
-        {type === 'currency' && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>}
-        <input type="text" value={value}
-          onChange={e => type === 'currency' ? handleCurrency(e.target.value, field) : type === 'text' ? setField(field, e.target.value) : handleDecimal(e.target.value, field)}
-          className={`w-full ${type === 'currency' ? 'pl-7' : 'pl-3'} ${suffix ? 'pr-8' : 'pr-3'} py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none`}
+      {type === 'text' ? (
+        <input type="text" value={value as string}
+          onChange={e => setInputs(prev => ({ ...prev, [field]: e.target.value }))}
+          className="w-full pl-3 pr-3 py-2 border-2 border-gray-200 rounded-lg font-mono text-sm focus:border-sgf-green-500 focus:outline-none"
         />
-        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">{suffix}</span>}
-      </div>
+      ) : (
+        <CurrencyInput
+          prefix={type === 'currency' ? '$' : undefined}
+          suffix={suffix}
+          decimals={2}
+          value={value as number}
+          onChange={(v) => setInputs(prev => ({ ...prev, [field]: v }))}
+        />
+      )}
     </div>
   );
 
