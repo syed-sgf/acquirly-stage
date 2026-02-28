@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface CurrencyInputProps {
   value: number;
@@ -20,7 +20,7 @@ function formatDisplay(n: number, decimals: number): string {
   }
   // Format with up to `decimals` places, dropping trailing zeros
   const fixed = n.toFixed(decimals);
-  const trimmed = String(parseFloat(fixed)); // drops trailing zeros e.g. "7.50" -> "7.5"
+  const trimmed = String(parseFloat(fixed)); // "7.50" -> "7.5"
   const [intPart, decPart] = trimmed.split('.');
   const formattedInt = parseInt(intPart, 10).toLocaleString('en-US');
   return decPart ? `${formattedInt}.${decPart}` : formattedInt;
@@ -28,8 +28,7 @@ function formatDisplay(n: number, decimals: number): string {
 
 function formatRaw(n: number): string {
   if (n === 0) return '';
-  if (Number.isInteger(n)) return String(n);
-  return String(n); // "7.5", "3.25" etc — no commas for editing
+  return String(n); // "7.5", "3.25" — no commas for editing
 }
 
 export default function CurrencyInput({
@@ -45,6 +44,10 @@ export default function CurrencyInput({
   const [display, setDisplay] = useState<string>(() => formatDisplay(value, decimals));
   const [focused, setFocused] = useState(false);
 
+  // Set when onKeyDown or onInput detect a zero-replacement scenario;
+  // handleChange reads and clears it to replace "0x" with just "x".
+  const replaceZeroRef = useRef(false);
+
   // Sync display when value changes from outside (e.g. prop reset)
   useEffect(() => {
     if (!focused) {
@@ -54,8 +57,9 @@ export default function CurrencyInput({
 
   const handleFocus = useCallback(() => {
     setFocused(true);
-    setDisplay(formatRaw(value));
-  }, [value]);
+    // #3: "0" display (typed by user) and value===0 both treated as empty on focus
+    setDisplay(display === '0' ? '' : formatRaw(value));
+  }, [value, display]);
 
   const handleBlur = useCallback(() => {
     setFocused(false);
@@ -65,9 +69,49 @@ export default function CurrencyInput({
     onChange(num);
   }, [display, decimals, onChange]);
 
+  // #1: Desktop keyboard — flag zero-replacement before the input event fires
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (display === '0' && /^[0-9]$/.test(e.key)) {
+        replaceZeroRef.current = true;
+      }
+    },
+    [display]
+  );
+
+  // #2: Mobile virtual keyboard backup — onKeyDown doesn't fire reliably on mobile;
+  // use nativeEvent.data (the character just inserted) to detect the same scenario.
+  const handleInput = useCallback(
+    (e: React.FormEvent<HTMLInputElement>) => {
+      const { data } = e.nativeEvent as InputEvent;
+      const currentVal = (e.currentTarget as HTMLInputElement).value;
+      if (data && /^[0-9]$/.test(data) && currentVal === `0${data}`) {
+        replaceZeroRef.current = true;
+      }
+    },
+    []
+  );
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value;
+      let raw = e.target.value;
+      const { data: typed } = e.nativeEvent as InputEvent;
+
+      // Mobile deletion: some browsers substitute "0" instead of "" when the
+      // last digit is deleted on a decimal-mode input. Treat it as empty.
+      if (raw === '0' && typed === null) {
+        setDisplay('');
+        onChange(0);
+        replaceZeroRef.current = false;
+        return;
+      }
+
+      // #4 zero-replacement: field held "0" and user typed a digit, giving "0x".
+      // Discard the leading zero so "09" becomes "9".
+      if (replaceZeroRef.current && typed && raw === `0${typed}`) {
+        raw = typed;
+      }
+      replaceZeroRef.current = false;
 
       // Allow empty string
       if (raw === '') {
@@ -77,13 +121,12 @@ export default function CurrencyInput({
       }
 
       // Allow only digits, one decimal point, optional leading minus
-      // Reject commas and any other character
       if (!/^-?[0-9]*\.?[0-9]*$/.test(raw)) return;
 
       // Enforce decimal places limit
       const dotIdx = raw.indexOf('.');
-      if (dotIdx !== -1 && decimals === 0) return; // no decimals allowed
-      if (dotIdx !== -1 && raw.length - dotIdx - 1 > decimals) return; // too many decimal places
+      if (dotIdx !== -1 && decimals === 0) return;
+      if (dotIdx !== -1 && raw.length - dotIdx - 1 > decimals) return;
 
       setDisplay(raw);
 
@@ -119,6 +162,8 @@ export default function CurrencyInput({
         type="text"
         inputMode="decimal"
         value={display}
+        onKeyDown={handleKeyDown}
+        onInput={handleInput}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
