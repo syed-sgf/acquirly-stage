@@ -118,6 +118,7 @@ export async function createIdentity(params: CreateIdentityParams): Promise<Fini
         phone: '7145677689',
         business_phone: '7145677689',
         business_tax_id: params.ein,
+        tax_id: params.ein,
         url: 'https://www.acqyrly.com',
         incorporation_date: { day: 1, month: 1, year: 2020 },
         default_statement_descriptor: 'Acqyrly',
