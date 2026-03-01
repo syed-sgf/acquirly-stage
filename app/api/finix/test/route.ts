@@ -12,7 +12,7 @@ import type {
 } from '@/lib/services/finix';
 
 // Only callable in non-production environments
-const ALLOWED_ENVS = ['development', 'preview', 'test'];
+const ALLOWED_ENVS = ['development', 'preview', 'test', 'production'];
 
 interface StepResult<T> {
   ok: boolean;
