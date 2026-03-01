@@ -75,12 +75,14 @@ export async function GET() {
   }
 
   // Step 1.5 — Create bank account (payment instrument) for the identity
+  let bankAccount: { id: string };
   try {
-    const bankAccount = await createBankAccount(identity.id);
+    bankAccount = await createBankAccount(identity.id);
     console.log('Bank account created:', bankAccount.id);
   } catch (err) {
-    // Non-fatal for the test sequence — log but continue
-    console.error('createBankAccount failed:', String(err));
+    summary.steps.createMerchant = { ok: false, error: `createBankAccount failed: ${String(err)}` };
+    summary.failed += 3; // steps 1.5–4 skipped
+    return NextResponse.json({ ...summary, failed: 3, allPassed: false }, { status: 502 });
   }
 
   // Step 2 — Provision merchant under that identity
@@ -94,17 +96,14 @@ export async function GET() {
     return NextResponse.json({ ...summary, failed: 3, allPassed: false }, { status: 502 });
   }
 
-  // Step 3 — Create a $100.00 transfer
-  // `source` is a Finix payment instrument ID. DUMMY_V1 sandbox generates one
-  // automatically when omitted — pass the merchant ID as a self-reference so the
-  // call structure is valid; swap this for a real PI token in integration tests.
+  // Step 3 — Create a $100.00 transfer using the bank account as source
   let transfer: FinixTransfer;
   try {
     transfer = await createTransfer({
       merchant: merchant.id,
       amount: 10000, // $100.00 in cents
       currency: 'USD',
-      source: merchant.id, // placeholder — replace with a real PI in full integration
+      source: bankAccount.id,
       tags: {
         test: 'true',
         deal_type: 'broker_commission',
