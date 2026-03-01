@@ -197,6 +197,7 @@ export interface CreateTransferParams {
   amount: number;
   currency?: string;
   source: string;
+  destination?: string;
   tags?: Record<string, string>;
 }
 
@@ -208,6 +209,7 @@ export async function createTransfer(params: CreateTransferParams): Promise<Fini
       amount: params.amount,
       currency: params.currency ?? 'USD',
       source: params.source,
+      ...(params.destination ? { destination: params.destination } : {}),
       tags: params.tags ?? {},
     }),
   });
