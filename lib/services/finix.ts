@@ -120,13 +120,19 @@ export async function createIdentity(params: CreateIdentityParams): Promise<Fini
 }
 
 export async function createMerchant(identityId: string): Promise<FinixMerchant> {
-  return finixFetch<FinixMerchant>('/merchants', {
-    method: 'POST',
-    body: JSON.stringify({
-      identity: identityId,
-      processor: 'DUMMY_V1',
-    }),
-  });
+  const res = await fetch(
+    `${process.env.FINIX_API_URL}/identities/${identityId}/merchants`,
+    {
+      method: 'POST',
+      headers: finixHeaders(),
+      body: JSON.stringify({ processor: 'DUMMY_V1' }),
+    }
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Finix POST /identities/${identityId}/merchants failed (${res.status}): ${err}`);
+  }
+  return res.json();
 }
 
 export interface CreateTransferParams {
