@@ -85,9 +85,6 @@ export async function GET() {
     return NextResponse.json({ ...summary, failed: 3, allPassed: false }, { status: 502 });
   }
 
-  // Step 1.75 — Create destination bank account for the transfer
-  const destinationAccount = await createBankAccount(identity.id);
-
   // Step 2 — Provision merchant under that identity
   let merchant: FinixMerchant;
   try {
@@ -106,8 +103,7 @@ export async function GET() {
       merchant: merchant.id,
       amount: 10000, // $100.00 in cents
       currency: 'USD',
-      source: bankAccount.id,
-      destination: destinationAccount.id,
+      destination: bankAccount.id,
       tags: {
         test: 'true',
         deal_type: 'broker_commission',
