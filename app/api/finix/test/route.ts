@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import {
   createIdentity,
+  createBankAccount,
   createMerchant,
   createTransfer,
   getTransfer,
@@ -71,6 +72,15 @@ export async function GET() {
     summary.steps.createIdentity = { ok: false, error: String(err) };
     summary.failed += 1;
     return NextResponse.json({ ...summary, failed: 4, allPassed: false }, { status: 502 });
+  }
+
+  // Step 1.5 — Create bank account (payment instrument) for the identity
+  try {
+    const bankAccount = await createBankAccount(identity.id);
+    console.log('Bank account created:', bankAccount.id);
+  } catch (err) {
+    // Non-fatal for the test sequence — log but continue
+    console.error('createBankAccount failed:', String(err));
   }
 
   // Step 2 — Provision merchant under that identity

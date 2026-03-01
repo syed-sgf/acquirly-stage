@@ -150,6 +150,31 @@ export async function createIdentity(params: CreateIdentityParams): Promise<Fini
   });
 }
 
+export async function createBankAccount(identityId: string): Promise<{ id: string }> {
+  const res = await fetch(
+    `${process.env.FINIX_API_URL}/payment_instruments`,
+    {
+      method: 'POST',
+      headers: finixHeaders(),
+      body: JSON.stringify({
+        account_type: 'SAVINGS',
+        account_number: '123123123',
+        bank_code: '021000021',
+        country: 'USA',
+        currency: 'USD',
+        identity: identityId,
+        type: 'BANK_ACCOUNT',
+        name: 'Test Broker',
+      }),
+    }
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Finix createBankAccount failed (${res.status}): ${err}`);
+  }
+  return res.json();
+}
+
 export async function createMerchant(identityId: string): Promise<FinixMerchant> {
   const res = await fetch(
     `${process.env.FINIX_API_URL}/identities/${identityId}/merchants`,
