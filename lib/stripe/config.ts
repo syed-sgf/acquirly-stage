@@ -2,22 +2,22 @@
 export const STRIPE_CONFIG = {
   prices: {
     core: { 
-      monthly: 'price_1TJ1lwEGCpqaqrIu0YpwKShv',
-      annual: 'price_1TJ1mNEGCpqaqrIuJQIKMAPu'
+      monthly: 'price_1TJ2n2EGCpqaqrIu4mnnAlJ3',
+      annual: 'price_1TJ2n2EGCpqaqrIuZGgHjtR4'
     },
     pro: { 
-      monthly: 'price_1TJ1nCEGCpqaqrIuqf9IWvOn',
-      annual: 'price_1TJ1ncEGCpqaqrIuXoA6S7vY'
+      monthly: 'price_1TJ2rgEGCpqaqrIugQ7p8G8A',
+      annual: 'price_1TJ2swEGCpqaqrIuddPlwu5y'
     },
     enterprise: { 
-      monthly: 'price_1TJ1oTEGCpqaqrIuSTz852dj'
+      monthly: 'price_1TJ2vKEGCpqaqrIuPY01bIsN'
     },
   } as Record<string, { monthly: string; annual?: string }>,
   
   products: {
-    core: 'prod_UHavXD4BGPadXw',
-    pro: 'prod_UHayt4lN2ycMBH',
-    enterprise: 'prod_UHb0XYf2rE8DL2',
+    core: 'prod_UHc1YnrfY0BTN1',
+    pro: 'prod_UHc578tXzFlM7t',
+    enterprise: 'prod_UHc578tXzFlM7t',
   },
   
   plans: {
@@ -31,21 +31,21 @@ export const STRIPE_CONFIG = {
     core: {
       name: 'Core',
       price: 79,
-      priceId: 'price_1TJ1lwEGCpqaqrIu0YpwKShv',
+      priceId: 'price_1TJ2n2EGCpqaqrIu4mnnAlJ3',
       features: ['All Free features', 'Acquisition Analyzer', '10 saved deals', 'PDF exports'],
       limits: { savedDeals: 10, pdfExports: 25, advancedAnalysis: false },
     },
     pro: {
       name: 'Pro',
       price: 247,
-      priceId: 'price_1TJ1nCEGCpqaqrIuqf9IWvOn',
+      priceId: 'price_1TJ2rgEGCpqaqrIugQ7p8G8A',
       features: ['All Core features', 'CRE Loan Sizer', 'Unlimited deals', 'Branded PDF reports'],
       limits: { savedDeals: -1, pdfExports: -1, advancedAnalysis: true },
     },
     enterprise: {
       name: 'Enterprise',
       price: 2000,
-      priceId: 'price_1TJ1oTEGCpqaqrIuSTz852dj',
+      priceId: 'price_1TJ2vKEGCpqaqrIuPY01bIsN',
       features: ['All Pro features', 'White-label reports', 'API access', 'Dedicated support'],
       limits: { savedDeals: -1, pdfExports: -1, advancedAnalysis: true, whiteLabel: true, apiAccess: true },
     },
