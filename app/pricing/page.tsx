@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import { UpgradeButton } from '@/components/stripe/upgrade-button';
 const plans = [
   {
     name: 'Free',
-    price: 0,
+    price: { monthly: 0, annual: 0 },
     description: 'Get started with basic tools',
     features: [
       'Basic DSCR Calculator',
@@ -18,10 +19,11 @@ const plans = [
     ],
     cta: 'Get Started',
     plan: null,
+    priceId: { monthly: null, annual: null },
   },
   {
     name: 'Core',
-    price: 79,
+    price: { monthly: 79, annual: 66 },
     description: 'For individual professionals',
     features: [
       'All Free features',
@@ -33,10 +35,14 @@ const plans = [
     ],
     cta: 'Start Core',
     plan: 'core' as const,
+    priceId: {
+      monthly: 'price_1TJ2n2EGCpqaqrIu4mnnAlJ3',
+      annual: 'price_1TJ2n2EGCpqaqrIuZGgHjtR4',
+    },
   },
   {
     name: 'Pro',
-    price: 247,
+    price: { monthly: 247, annual: 208 },
     description: 'For serious deal makers',
     features: [
       'All Core features',
@@ -49,10 +55,14 @@ const plans = [
     cta: 'Start Pro',
     plan: 'pro' as const,
     popular: true,
+    priceId: {
+      monthly: 'price_1TJ2rgEGCpqaqrIugQ7p8G8A',
+      annual: 'price_1TJ2swEGCpqaqrIuddPlwu5y',
+    },
   },
   {
     name: 'Enterprise',
-    price: 2000,
+    price: { monthly: 2000, annual: 1667 },
     description: 'For teams and brokerages',
     features: [
       'All Pro features',
@@ -64,12 +74,17 @@ const plans = [
     ],
     cta: 'Contact Sales',
     plan: 'enterprise' as const,
+    priceId: {
+      monthly: 'price_1TJ2vKEGCpqaqrIuPY01bIsN',
+      annual: 'price_1TJ2vKEGCpqaqrIuPY01bIsN', // update when annual created
+    },
   },
 ];
 
 export default function PricingPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly');
 
   const handleFreePlan = () => {
     if (status === 'authenticated') {
@@ -117,7 +132,7 @@ export default function PricingPage() {
 
       {/* Pricing Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Simple, Transparent Pricing
           </h1>
@@ -126,87 +141,151 @@ export default function PricingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative rounded-2xl p-6 ${
-                plan.popular
-                  ? 'bg-gradient-to-br from-sgf-green-600 to-sgf-green-700 text-white ring-4 ring-sgf-gold-500'
-                  : 'bg-white border border-gray-200'
+        {/* Billing Toggle */}
+        <div className="flex justify-center mb-12">
+          <div className="inline-flex items-center bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
+            <button
+              onClick={() => setBilling('monthly')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                billing === 'monthly'
+                  ? 'bg-sgf-green-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-sgf-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    MOST POPULAR
-                  </span>
-                </div>
-              )}
+              Monthly
+            </button>
+            <button
+              onClick={() => setBilling('annual')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+                billing === 'annual'
+                  ? 'bg-sgf-green-600 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Annual
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                billing === 'annual'
+                  ? 'bg-sgf-gold-400 text-white'
+                  : 'bg-sgf-gold-100 text-sgf-gold-700'
+              }`}>
+                Save 16%
+              </span>
+            </button>
+          </div>
+        </div>
 
-              <div className="text-center mb-6">
-                <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
-                  {plan.name}
-                </h3>
-                <p className={`text-sm mt-1 ${plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}`}>
-                  {plan.description}
-                </p>
-                <div className="mt-4">
-                  <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
-                    ${plan.price}
-                  </span>
-                  {plan.price > 0 && (
-                    <span className={plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}>/month</span>
+        {/* Annual savings banner */}
+        {billing === 'annual' && (
+          <div className="text-center mb-8">
+            <span className="inline-flex items-center gap-2 bg-sgf-green-50 border border-sgf-green-200 text-sgf-green-700 px-4 py-2 rounded-full text-sm font-medium">
+              🎉 You save up to <strong>$468/year</strong> on Pro with annual billing
+            </span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {plans.map((plan) => {
+            const currentPrice = plan.price[billing];
+            const currentPriceId = plan.priceId[billing];
+
+            return (
+              <div
+                key={plan.name}
+                className={`relative rounded-2xl p-6 ${
+                  plan.popular
+                    ? 'bg-gradient-to-br from-sgf-green-600 to-sgf-green-700 text-white ring-4 ring-sgf-gold-500'
+                    : 'bg-white border border-gray-200'
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-sgf-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      MOST POPULAR
+                    </span>
+                  </div>
+                )}
+
+                <div className="text-center mb-6">
+                  <h3 className={`text-xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                    {plan.name}
+                  </h3>
+                  <p className={`text-sm mt-1 ${plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}`}>
+                    {plan.description}
+                  </p>
+                  <div className="mt-4">
+                    <span className={`text-4xl font-bold ${plan.popular ? 'text-white' : 'text-gray-900'}`}>
+                      ${currentPrice}
+                    </span>
+                    {currentPrice > 0 && (
+                      <span className={plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}>/month</span>
+                    )}
+                  </div>
+                  {/* Annual billed note */}
+                  {billing === 'annual' && currentPrice > 0 && (
+                    <p className={`text-xs mt-1 ${plan.popular ? 'text-sgf-green-200' : 'text-gray-400'}`}>
+                      Billed ${currentPrice * 12}/year
+                    </p>
+                  )}
+                  {/* Savings badge */}
+                  {billing === 'annual' && currentPrice > 0 && (
+                    <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                      plan.popular
+                        ? 'bg-sgf-gold-500 text-white'
+                        : 'bg-sgf-green-100 text-sgf-green-700'
+                    }`}>
+                      Save ${(plan.price.monthly - currentPrice) * 12}/yr
+                    </span>
+                  )}
+                </div>
+
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <svg
+                        className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.popular ? 'text-sgf-gold-400' : 'text-sgf-green-500'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div>
+                  {!plan.plan ? (
+                    <button
+                      onClick={handleFreePlan}
+                      className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      {plan.cta}
+                    </button>
+                  ) : status === 'authenticated' ? (
+                    <UpgradeButton
+                      plan={plan.plan}
+                      priceId={currentPriceId ?? undefined}
+                      className={`w-full ${plan.popular ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white' : 'bg-sgf-green-600 hover:bg-sgf-green-700'}`}
+                    >
+                      {plan.cta}
+                    </UpgradeButton>
+                  ) : (
+                    <button
+                      onClick={() => router.push('/sign-in')}
+                      className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
+                        plan.popular
+                          ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
+                          : 'bg-sgf-green-600 text-white hover:bg-sgf-green-700'
+                      }`}
+                    >
+                      Sign In to Subscribe
+                    </button>
                   )}
                 </div>
               </div>
-
-              <ul className="space-y-3 mb-6">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <svg
-                      className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.popular ? 'text-sgf-gold-400' : 'text-sgf-green-500'}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div>
-                {!plan.plan ? (
-                  <button
-                    onClick={handleFreePlan}
-                    className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                  >
-                    {plan.cta}
-                  </button>
-                ) : status === 'authenticated' ? (
-                  <UpgradeButton
-                    plan={plan.plan}
-                    className={`w-full ${plan.popular ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white' : 'bg-sgf-green-600 hover:bg-sgf-green-700'}`}
-                  >
-                    {plan.cta}
-                  </UpgradeButton>
-                ) : (
-                  <button
-                    onClick={() => router.push('/sign-in')}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition-colors ${
-                      plan.popular
-                        ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
-                        : 'bg-sgf-green-600 text-white hover:bg-sgf-green-700'
-                    }`}
-                  >
-                    Sign In to Subscribe
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Trust Section */}
@@ -234,7 +313,6 @@ export default function PricingPage() {
         <div className="mt-16 bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-          
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-3 py-1 rounded-full text-xs font-bold mb-4">
@@ -243,23 +321,23 @@ export default function PricingPage() {
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Connect with Starting Gate Financial for competitive business acquisition loans, 
+                Connect with Starting Gate Financial for competitive business acquisition loans,
                 SBA 7(a) financing, and commercial real estate solutions.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a 
-                href="https://startinggatefinancial.com/apply" 
+              
+                href="https://startinggatefinancial.com/apply"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg"
               >
                 Apply for Financing
               </a>
-              <a 
+              
                 href="https://startinggatefinancial.com/contact"
                 target="_blank"
-                rel="noopener noreferrer" 
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors"
               >
                 Schedule Call
