@@ -76,7 +76,7 @@ const plans = [
     plan: 'enterprise' as const,
     priceId: {
       monthly: 'price_1TJ2vKEGCpqaqrIuPY01bIsN',
-      annual: 'price_1TJ2vKEGCpqaqrIuPY01bIsN', // update when annual created
+      annual: 'price_1TJ2vKEGCpqaqrIuPY01bIsN',
     },
   },
 ];
@@ -96,7 +96,6 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* SGF Branded Header */}
       <div className="bg-gradient-to-r from-sgf-green-600 to-sgf-green-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
@@ -113,15 +112,13 @@ export default function PricingPage() {
               {status === 'authenticated' ? (
                 <Link
                   href="/app"
-                  className="bg-white/10 text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
-                >
+                  className="bg-white/10 text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
                   Dashboard
                 </Link>
               ) : (
                 <Link
                   href="/sign-in"
-                  className="bg-sgf-gold-500 text-white px-4 py-2 rounded-lg hover:bg-sgf-gold-600 transition-colors font-semibold"
-                >
+                  className="bg-sgf-gold-500 text-white px-4 py-2 rounded-lg hover:bg-sgf-gold-600 transition-colors font-semibold">
                   Sign In
                 </Link>
               )}
@@ -130,7 +127,6 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Pricing Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -150,8 +146,7 @@ export default function PricingPage() {
                 billing === 'monthly'
                   ? 'bg-sgf-green-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
+              }`}>
               Monthly
             </button>
             <button
@@ -160,8 +155,7 @@ export default function PricingPage() {
                 billing === 'annual'
                   ? 'bg-sgf-green-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
+              }`}>
               Annual
               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                 billing === 'annual'
@@ -174,7 +168,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Annual savings banner */}
         {billing === 'annual' && (
           <div className="text-center mb-8">
             <span className="inline-flex items-center gap-2 bg-sgf-green-50 border border-sgf-green-200 text-sgf-green-700 px-4 py-2 rounded-full text-sm font-medium">
@@ -195,8 +188,7 @@ export default function PricingPage() {
                   plan.popular
                     ? 'bg-gradient-to-br from-sgf-green-600 to-sgf-green-700 text-white ring-4 ring-sgf-gold-500'
                     : 'bg-white border border-gray-200'
-                }`}
-              >
+                }`}>
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="bg-sgf-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -220,13 +212,11 @@ export default function PricingPage() {
                       <span className={plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}>/month</span>
                     )}
                   </div>
-                  {/* Annual billed note */}
                   {billing === 'annual' && currentPrice > 0 && (
                     <p className={`text-xs mt-1 ${plan.popular ? 'text-sgf-green-200' : 'text-gray-400'}`}>
                       Billed ${currentPrice * 12}/year
                     </p>
                   )}
-                  {/* Savings badge */}
                   {billing === 'annual' && currentPrice > 0 && (
                     <span className={`inline-block mt-2 text-xs font-bold px-2 py-0.5 rounded-full ${
                       plan.popular
@@ -245,8 +235,7 @@ export default function PricingPage() {
                         className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.popular ? 'text-sgf-gold-400' : 'text-sgf-green-500'}`}
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                        viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>{feature}</span>
@@ -258,16 +247,14 @@ export default function PricingPage() {
                   {!plan.plan ? (
                     <button
                       onClick={handleFreePlan}
-                      className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
+                      className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
                       {plan.cta}
                     </button>
                   ) : status === 'authenticated' ? (
                     <UpgradeButton
                       plan={plan.plan}
                       priceId={currentPriceId ?? undefined}
-                      className={`w-full ${plan.popular ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white' : 'bg-sgf-green-600 hover:bg-sgf-green-700'}`}
-                    >
+                      className={`w-full ${plan.popular ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white' : 'bg-sgf-green-600 hover:bg-sgf-green-700'}`}>
                       {plan.cta}
                     </UpgradeButton>
                   ) : (
@@ -277,8 +264,7 @@ export default function PricingPage() {
                         plan.popular
                           ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
                           : 'bg-sgf-green-600 text-white hover:bg-sgf-green-700'
-                      }`}
-                    >
+                      }`}>
                       Sign In to Subscribe
                     </button>
                   )}
@@ -288,7 +274,6 @@ export default function PricingPage() {
           })}
         </div>
 
-        {/* Trust Section */}
         <div className="mt-16 text-center">
           <p className="text-gray-500 mb-6">
             All plans include a 14-day money-back guarantee. Cancel anytime.
@@ -309,7 +294,6 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* SGF CTA */}
         <div className="mt-16 bg-gradient-to-r from-sgf-green-600 via-sgf-green-700 to-sgf-green-800 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -330,16 +314,14 @@ export default function PricingPage() {
                 href="https://startinggatefinancial.com/apply"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg"
-              >
+                className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
                 Apply for Financing
               </a>
               
                 href="https://startinggatefinancial.com/contact"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors"
-              >
+                className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
                 Schedule Call
               </a>
             </div>
