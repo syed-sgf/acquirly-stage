@@ -112,13 +112,15 @@ export default function PricingPage() {
               {status === 'authenticated' ? (
                 <Link
                   href="/app"
-                  className="bg-white/10 text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
+                  className="bg-white/10 text-white px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
+                >
                   Dashboard
                 </Link>
               ) : (
                 <Link
                   href="/sign-in"
-                  className="bg-sgf-gold-500 text-white px-4 py-2 rounded-lg hover:bg-sgf-gold-600 transition-colors font-semibold">
+                  className="bg-sgf-gold-500 text-white px-4 py-2 rounded-lg hover:bg-sgf-gold-600 transition-colors font-semibold"
+                >
                   Sign In
                 </Link>
               )}
@@ -137,7 +139,6 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Billing Toggle */}
         <div className="flex justify-center mb-12">
           <div className="inline-flex items-center bg-white border border-gray-200 rounded-xl p-1 shadow-sm">
             <button
@@ -146,7 +147,8 @@ export default function PricingPage() {
                 billing === 'monthly'
                   ? 'bg-sgf-green-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}>
+              }`}
+            >
               Monthly
             </button>
             <button
@@ -155,7 +157,8 @@ export default function PricingPage() {
                 billing === 'annual'
                   ? 'bg-sgf-green-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
-              }`}>
+              }`}
+            >
               Annual
               <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                 billing === 'annual'
@@ -171,7 +174,7 @@ export default function PricingPage() {
         {billing === 'annual' && (
           <div className="text-center mb-8">
             <span className="inline-flex items-center gap-2 bg-sgf-green-50 border border-sgf-green-200 text-sgf-green-700 px-4 py-2 rounded-full text-sm font-medium">
-              🎉 You save up to <strong>$468/year</strong> on Pro with annual billing
+              You save up to $468/year on Pro with annual billing
             </span>
           </div>
         )}
@@ -188,7 +191,8 @@ export default function PricingPage() {
                   plan.popular
                     ? 'bg-gradient-to-br from-sgf-green-600 to-sgf-green-700 text-white ring-4 ring-sgf-gold-500'
                     : 'bg-white border border-gray-200'
-                }`}>
+                }`}
+              >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="bg-sgf-gold-500 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -209,7 +213,9 @@ export default function PricingPage() {
                       ${currentPrice}
                     </span>
                     {currentPrice > 0 && (
-                      <span className={plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}>/month</span>
+                      <span className={plan.popular ? 'text-sgf-green-100' : 'text-gray-500'}>
+                        /month
+                      </span>
                     )}
                   </div>
                   {billing === 'annual' && currentPrice > 0 && (
@@ -235,10 +241,13 @@ export default function PricingPage() {
                         className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.popular ? 'text-sgf-gold-400' : 'text-sgf-green-500'}`}
                         fill="none"
                         stroke="currentColor"
-                        viewBox="0 0 24 24">
+                        viewBox="0 0 24 24"
+                      >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>{feature}</span>
+                      <span className={`text-sm ${plan.popular ? 'text-white' : 'text-gray-600'}`}>
+                        {feature}
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -247,14 +256,20 @@ export default function PricingPage() {
                   {!plan.plan ? (
                     <button
                       onClick={handleFreePlan}
-                      className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
+                      className="w-full py-3 px-4 rounded-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
                       {plan.cta}
                     </button>
                   ) : status === 'authenticated' ? (
                     <UpgradeButton
                       plan={plan.plan}
                       priceId={currentPriceId ?? undefined}
-                      className={`w-full ${plan.popular ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white' : 'bg-sgf-green-600 hover:bg-sgf-green-700'}`}>
+                      className={`w-full ${
+                        plan.popular
+                          ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
+                          : 'bg-sgf-green-600 hover:bg-sgf-green-700'
+                      }`}
+                    >
                       {plan.cta}
                     </UpgradeButton>
                   ) : (
@@ -264,7 +279,8 @@ export default function PricingPage() {
                         plan.popular
                           ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
                           : 'bg-sgf-green-600 text-white hover:bg-sgf-green-700'
-                      }`}>
+                      }`}
+                    >
                       Sign In to Subscribe
                     </button>
                   )}
@@ -310,20 +326,18 @@ export default function PricingPage() {
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              
-                href="https://startinggatefinancial.com/apply"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">
+              <button
+                onClick={() => window.open('https://startinggatefinancial.com/apply', '_blank')}
+                className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg"
+              >
                 Apply for Financing
-              </a>
-              
-                href="https://startinggatefinancial.com/contact"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors">
+              </button>
+              <button
+                onClick={() => window.open('https://startinggatefinancial.com/contact', '_blank')}
+                className="inline-flex items-center justify-center gap-2 bg-white/10 border-2 border-white/30 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/20 transition-colors"
+              >
                 Schedule Call
-              </a>
+              </button>
             </div>
           </div>
         </div>
