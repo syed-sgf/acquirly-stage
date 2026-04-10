@@ -1,14 +1,14 @@
 'use client';
-
 import { useState } from 'react';
 
 interface UpgradeButtonProps {
   plan: 'core' | 'pro' | 'enterprise';
+  priceId?: string;
   className?: string;
   children?: React.ReactNode;
 }
 
-export function UpgradeButton({ plan, className = '', children }: UpgradeButtonProps) {
+export function UpgradeButton({ plan, priceId, className = '', children }: UpgradeButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const planLabels = {
@@ -19,16 +19,13 @@ export function UpgradeButton({ plan, className = '', children }: UpgradeButtonP
 
   const handleClick = async () => {
     setLoading(true);
-
     try {
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, priceId }),
       });
-
       const data = await response.json();
-
       if (data.url) {
         window.location.href = data.url;
       } else {
