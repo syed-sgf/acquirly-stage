@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useCallback, useEffect } from 'react';
 import CurrencyInput from '@/lib/components/CurrencyInput';
@@ -279,7 +279,7 @@ export default function CoreCalculatorPage() {
                         <span className="font-mono font-semibold text-sgf-green-600">{formatCurrency(lendableCF)}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-dashed border-gray-200">
-                        <span className="text-sm text-gray-600">÷ Total Annual Debt Service</span>
+                        <span className="text-sm text-gray-600">Ã· Total Annual Debt Service</span>
                         <span className="font-mono font-semibold text-sgf-gold-600">{formatCurrency(annualDebtService)}</span>
                       </div>
                       <div className="flex justify-between py-2">
@@ -288,7 +288,7 @@ export default function CoreCalculatorPage() {
                       </div>
                     </div>
                     <div className="mt-4 bg-sgf-green-50 border border-sgf-green-200 rounded-lg px-4 py-3">
-                      <p className="text-xs font-mono text-sgf-green-700">DSCR = Lendable CF ÷ Total Annual Debt Service</p>
+                      <p className="text-xs font-mono text-sgf-green-700">DSCR = Lendable CF Ã· Total Annual Debt Service</p>
                     </div>
                     <p className="mt-4 text-sm text-gray-500">{dscrResult.statusDescription}</p>
                     

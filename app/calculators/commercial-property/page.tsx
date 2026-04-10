@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useMemo } from 'react';
 import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, Save, TrendingUp, Search, Users } from 'lucide-react';
 import PremiumProductsCTA from '@/components/core/PremiumProductsCTA';
@@ -255,7 +255,7 @@ export default function CommercialPropertyPublicPage() {
                 <IField label="Vacancy Rate" value={inputs.vacancyRate} field="vacancyRate" type="decimal" suffix="%" />
                 {isNNN && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-xs font-bold text-blue-700 mb-2">NNN � Tenant Pays (Annual):</p>
+                    <p className="text-xs font-bold text-blue-700 mb-2">NNN — Tenant Pays (Annual):</p>
                     <div className="space-y-2">
                       <IField label="CAM" value={inputs.tenantPaysCAM} field="tenantPaysCAM" />
                       <IField label="Taxes" value={inputs.tenantPaysTaxes} field="tenantPaysTaxes" />

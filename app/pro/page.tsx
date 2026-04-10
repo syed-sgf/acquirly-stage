@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { computePro, type ProInputs, formatPercent } from "@/lib/pro-logic";
 import { fmtUSD, fmtMult, fmtDSCR } from "@/lib/num";
@@ -141,7 +141,7 @@ const analyzeMarket = async () => {
         <ul className="list-none space-y-2 ml-0">
           {data.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="text-green-600 mt-1 flex-shrink-0">•</span>
+              <span className="text-green-600 mt-1 flex-shrink-0">â€¢</span>
               <div className="text-sm text-gray-700 flex-1">
                 {typeof item === 'string' ? item : renderInsight(item)}
               </div>
@@ -1605,7 +1605,7 @@ export default function ProPage() {
               )}
             </div>
             <div className="text-3xl font-bold text-purple-600">
-              {out.leverageRatio?.toFixed(2) ?? "—"}x
+              {out.leverageRatio?.toFixed(2) ?? "â€”"}x
             </div>
             <div className="text-xs text-gray-500 mt-1">Total debt / equity</div>
           </div>
@@ -1740,18 +1740,18 @@ export default function ProPage() {
           <div>
             <h3 className="font-bold text-brand-green-700 mb-2">Our Services</h3>
             <ul className="text-gray-600 space-y-1">
-              <li>• SBA 7(a) Loans</li>
-              <li>• Business Acquisition Financing</li>
-              <li>• Commercial Real Estate Loans</li>
-              <li>• Equipment Financing</li>
-              <li>• Lines of Credit</li>
+              <li>â€¢ SBA 7(a) Loans</li>
+              <li>â€¢ Business Acquisition Financing</li>
+              <li>â€¢ Commercial Real Estate Loans</li>
+              <li>â€¢ Equipment Financing</li>
+              <li>â€¢ Lines of Credit</li>
             </ul>
           </div>
         </div>
 
         <div className="text-center text-xs text-gray-500 border-t pt-4">
           <p className="mb-2">
-            © {new Date().getFullYear()} Acqyrly. All rights reserved.
+            Â© {new Date().getFullYear()} Acqyrly. All rights reserved.
           </p>
           <p className="text-gray-400">
             This calculator provides estimates for informational purposes only. Actual loan terms and approval are subject to underwriting review.

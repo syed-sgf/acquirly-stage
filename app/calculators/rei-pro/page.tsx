@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useMemo } from 'react';
 import { 
@@ -801,7 +801,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cap Rate</div>
-                    <Tooltip content="NOI ÷ Purchase Price. Measures property's unleveraged return. 5-10% typical depending on market." />
+                    <Tooltip content="NOI Ã· Purchase Price. Measures property's unleveraged return. 5-10% typical depending on market." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.capRate, 5, 7)}`}>{outputs.capRate.toFixed(2)}%</div>
                 </div>
@@ -809,7 +809,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cash-on-Cash</div>
-                    <Tooltip content="Annual cash flow ÷ cash invested. Shows return on actual cash. 8-12% is good for rentals." />
+                    <Tooltip content="Annual cash flow Ã· cash invested. Shows return on actual cash. 8-12% is good for rentals." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.cashOnCashReturn, 8, 12)}`}>{outputs.cashOnCashReturn.toFixed(1)}%</div>
                 </div>
@@ -833,7 +833,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">DSCR</div>
-                    <Tooltip content="Debt Service Coverage Ratio. NOI ÷ Annual Debt Service. Lenders want 1.2x+. Higher = safer." />
+                    <Tooltip content="Debt Service Coverage Ratio. NOI Ã· Annual Debt Service. Lenders want 1.2x+. Higher = safer." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.dscr, 1.2, 1.4)}`}>{outputs.dscr.toFixed(2)}x</div>
                 </div>
@@ -841,7 +841,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">GRM</div>
-                    <Tooltip content="Gross Rent Multiplier. Price ÷ Annual Rent. Lower is better. Quick way to compare properties." />
+                    <Tooltip content="Gross Rent Multiplier. Price Ã· Annual Rent. Lower is better. Quick way to compare properties." />
                   </div>
                   <div className="text-2xl font-bold font-mono text-gray-900">{outputs.grossRentMultiplier.toFixed(1)}</div>
                 </div>
@@ -853,7 +853,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className={`rounded-xl p-4 border-2 ${outputs.meetsRule70 ? 'bg-sgf-green-50 border-sgf-green-300' : 'bg-red-50 border-red-300'}`}>
                   <div className="flex items-center gap-1 mb-1">
                     <div className={`text-xs font-medium ${outputs.meetsRule70 ? 'text-sgf-green-700' : 'text-red-700'}`}>70% Rule</div>
-                    <Tooltip content="Max purchase = (ARV × 70%) - Rehab. Conservative rule to ensure profit margin. Passing = good deal." />
+                    <Tooltip content="Max purchase = (ARV Ã— 70%) - Rehab. Conservative rule to ensure profit margin. Passing = good deal." />
                   </div>
                   <div className={`text-xl font-bold ${outputs.meetsRule70 ? 'text-sgf-green-700' : 'text-red-700'}`}>{outputs.meetsRule70 ? '? PASS' : '? FAIL'}</div>
                   <div className="text-xs text-gray-500 mt-1">Max: {formatCurrency(outputs.maxPurchasePrice70)}</div>
@@ -870,7 +870,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">ROI</div>
-                    <Tooltip content="Return on Investment. Profit ÷ Cash Invested. Shows return on your actual cash in the deal." />
+                    <Tooltip content="Return on Investment. Profit Ã· Cash Invested. Shows return on your actual cash in the deal." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.roi, 15, 25)}`}>{outputs.roi.toFixed(1)}%</div>
                 </div>
@@ -916,7 +916,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cash-on-Cash (Post-Refi)</div>
-                    <Tooltip content="Annual cash flow ÷ cash left in deal after refi. Can be very high or infinite if you pulled all cash out." />
+                    <Tooltip content="Annual cash flow Ã· cash left in deal after refi. Can be very high or infinite if you pulled all cash out." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${outputs.infiniteReturn ? 'text-sgf-green-600' : getMetricStatus(outputs.cashOnCashAfterRefi, 10, 20)}`}>
                     {outputs.infiniteReturn ? '8' : `${outputs.cashOnCashAfterRefi.toFixed(1)}%`}

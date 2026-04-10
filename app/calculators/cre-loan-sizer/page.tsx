@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useMemo } from 'react';
 import { DollarSign, Building2, Calculator, BarChart3, FileText, MessageSquare, Save, TrendingUp } from 'lucide-react';
@@ -421,14 +421,14 @@ export default function CRELoanSizerPage() {
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-gray-600">Max by DSCR ({inputs.targetDSCR}x)</span>
-                      <Tooltip content="Maximum loan where NOI ÷ Annual Debt Service = Target DSCR" />
+                      <Tooltip content="Maximum loan where NOI Ã· Annual Debt Service = Target DSCR" />
                     </div>
                     <span className="font-mono">{formatCurrency(outputs.maxLoanByDSCR)}</span>
                   </div>
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-gray-600">Max by LTV ({inputs.maxLTV}%)</span>
-                      <Tooltip content="Maximum loan = Property Value × Max LTV%" />
+                      <Tooltip content="Maximum loan = Property Value Ã— Max LTV%" />
                     </div>
                     <span className="font-mono">{formatCurrency(outputs.maxLoanByLTV)}</span>
                   </div>
@@ -473,21 +473,21 @@ export default function CRELoanSizerPage() {
                   <div className="flex justify-between border-t pt-2">
                     <div className="flex items-center gap-1">
                       <span className="text-gray-600">Cash-on-Cash Return</span>
-                      <Tooltip content="Annual Cash Flow ÷ Down Payment. Shows the return on your actual cash invested. 8-12% is typical for stabilized properties." />
+                      <Tooltip content="Annual Cash Flow Ã· Down Payment. Shows the return on your actual cash invested. 8-12% is typical for stabilized properties." />
                     </div>
                     <span className={`font-mono font-semibold ${getStatusColor(outputs.cashOnCash, 8)}`}>{outputs.cashOnCash.toFixed(1)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-gray-600">Cap Rate</span>
-                      <Tooltip content="NOI ÷ Property Value. Shows the property's unleveraged return. Lower cap rate = higher price relative to income. Market cap rates vary by location and property type." />
+                      <Tooltip content="NOI Ã· Property Value. Shows the property's unleveraged return. Lower cap rate = higher price relative to income. Market cap rates vary by location and property type." />
                     </div>
                     <span className="font-mono font-semibold">{outputs.capRate.toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                       <span className="text-gray-600">Expense Ratio</span>
-                      <Tooltip content="Total Operating Expenses ÷ Effective Gross Income. Shows what percentage of income goes to expenses. Typical range: 35-50% depending on property type." />
+                      <Tooltip content="Total Operating Expenses Ã· Effective Gross Income. Shows what percentage of income goes to expenses. Typical range: 35-50% depending on property type." />
                     </div>
                     <span className="font-mono">{outputs.expenseRatio.toFixed(1)}%</span>
                   </div>

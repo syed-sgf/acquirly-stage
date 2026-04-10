@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { pmtMonthly } from "@/lib/pro-logic";
@@ -16,7 +16,7 @@ export default function Amortization(){
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
       <div className="mb-4 text-sm text-brand-slate-600"><Link href="/pro" className="underline">? Back to Pro</Link></div>
-      <h1 className="text-3xl font-bold">Loan Amortization � Summary</h1>
+      <h1 className="text-3xl font-bold">Loan Amortization — Summary</h1>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <label className="text-sm">Loan amount<input className="mt-1 w-full rounded-lg border px-3 py-2" value={amount} onChange={e=>setAmount(e.target.value)}/></label>
         <label className="text-sm">APR %<input className="mt-1 w-full rounded-lg border px-3 py-2" value={apr} onChange={e=>setApr(e.target.value)}/></label>
