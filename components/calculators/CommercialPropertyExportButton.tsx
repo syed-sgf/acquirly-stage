@@ -181,7 +181,7 @@ function generateHTML(data: CommercialPropertyPDFData): string {
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center">
     <div>
       <div style="font-weight:bold;color:#2E7D32;font-size:13px">Acqyrly</div>
-      <div style="color:#666;font-size:11px">startinggatefinancial.com | Richardson, TX</div>
+      <div style="color:#666;font-size:11px">acqyrly.com | Richardson, TX</div>
     </div>
     <div style="font-size:10px;color:#9ca3af;max-width:380px;text-align:right">
       For informational purposes only. Not financial advice. Consult a qualified advisor before investing.

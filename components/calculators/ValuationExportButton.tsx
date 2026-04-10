@@ -223,7 +223,7 @@ function generatePDFHTML(data: ValuationPDFData): string {
       </table>
     </div>
     <div class="disclaimer"><strong>Important Disclaimer</strong>This valuation report is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual business value may vary based on market conditions, buyer pool, deal structure, due diligence findings, and negotiation. Consult qualified professionals before making acquisition decisions.</div>
-    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">acqyrly.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

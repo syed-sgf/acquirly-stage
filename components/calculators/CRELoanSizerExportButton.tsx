@@ -270,7 +270,7 @@ function generatePDFHTML(data: CRELoanSizerPDFData): string {
     </div>
 
     <div class="disclaimer"><strong>Important Disclaimer</strong>This loan sizing analysis is for informational purposes only and should not be considered a loan commitment or guarantee of financing. Actual loan terms, rates, and sizing are subject to lender underwriting, property appraisal, credit review, and current market conditions. Consult with a qualified commercial lender before making any financing decisions.</div>
-    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">acqyrly.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;

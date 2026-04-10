@@ -284,7 +284,7 @@ function generatePDFHTML(data: AcquisitionPDFData): string {
     ` : ''}
 
     <div class="disclaimer"><strong>Important Disclaimer</strong>This acquisition analysis is for informational purposes only and should not be considered professional financial, legal, or investment advice. Actual results may vary based on market conditions, operational performance, due diligence findings, and other factors. Consult qualified professionals before making any acquisition decisions.</div>
-    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">startinggatefinancial.com<br>Richardson, TX</div></div>
+    <div class="footer"><div><div class="footer-brand">Acqyrly</div><div></div></div><div style="text-align:right">acqyrly.com<br>Richardson, TX</div></div>
   </div>
 </body>
 </html>`;
