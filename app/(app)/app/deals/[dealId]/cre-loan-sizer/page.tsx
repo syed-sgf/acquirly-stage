@@ -631,7 +631,7 @@ export default function CRELoanSizerDealPage() {
               </div>
               <h2 className="text-2xl font-bold mb-3">Finance Your Commercial Property</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Starting Gate Financial offers competitive CRE financing including bridge loans,
+                Acqyrly offers competitive CRE financing including bridge loans,
                 permanent financing, and SBA 504 loans.
               </p>
             </div>

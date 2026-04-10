@@ -212,10 +212,10 @@ export default function CommercialPropertyPublicPage() {
           </div>
           {outputs && (
             <div className="mt-3 flex flex-wrap gap-6 text-xs text-gray-500 border-t pt-3">
-              <span>📊 Market Vacancy: <strong className="text-gray-700">{VACANCY_BENCHMARKS[propertyType]}</strong></span>
-              <span>📈 Market Cap Rates: <strong className="text-gray-700">{CAP_RATE_BENCHMARKS[propertyType]}</strong></span>
+              <span>?? Market Vacancy: <strong className="text-gray-700">{VACANCY_BENCHMARKS[propertyType]}</strong></span>
+              <span>?? Market Cap Rates: <strong className="text-gray-700">{CAP_RATE_BENCHMARKS[propertyType]}</strong></span>
               <span className={`font-semibold ${outputs.capRate >= 5 ? 'text-sgf-green-600' : 'text-yellow-600'}`}>
-                ✓ Your Cap Rate: {outputs.capRate.toFixed(2)}%
+                ? Your Cap Rate: {outputs.capRate.toFixed(2)}%
               </span>
             </div>
           )}
@@ -255,7 +255,7 @@ export default function CommercialPropertyPublicPage() {
                 <IField label="Vacancy Rate" value={inputs.vacancyRate} field="vacancyRate" type="decimal" suffix="%" />
                 {isNNN && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-xs font-bold text-blue-700 mb-2">NNN — Tenant Pays (Annual):</p>
+                    <p className="text-xs font-bold text-blue-700 mb-2">NNN � Tenant Pays (Annual):</p>
                     <div className="space-y-2">
                       <IField label="CAM" value={inputs.tenantPaysCAM} field="tenantPaysCAM" />
                       <IField label="Taxes" value={inputs.tenantPaysTaxes} field="tenantPaysTaxes" />
@@ -441,7 +441,7 @@ export default function CommercialPropertyPublicPage() {
           <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h2 className="text-xl font-bold mb-2">Save This Analysis to a Deal</h2>
-              <p className="text-sgf-green-100 text-sm max-w-lg">Create a free account to save your analysis, track multiple properties, generate PDF reports, and get financing from Starting Gate Financial.</p>
+              <p className="text-sgf-green-100 text-sm max-w-lg">Create a free account to save your analysis, track multiple properties, generate PDF reports, and get financing through Acqyrly.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <a href="/api/auth/signin" className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">

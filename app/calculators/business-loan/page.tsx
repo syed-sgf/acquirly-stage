@@ -309,7 +309,7 @@ export default function BusinessLoanCalculatorPage() {
                 Ready to Finance?
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
-              <p className="text-sgf-green-100 max-w-lg">Connect with Starting Gate Financial for competitive business acquisition loans, SBA 7(a) financing, and commercial real estate solutions.</p>
+              <p className="text-sgf-green-100 max-w-lg">Connect with our financing partners for competitive business acquisition loans, SBA 7(a) financing, and commercial real estate solutions.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center justify-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">

@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Acqyrly Design System
- * Based on Starting Gate Financial branding
+ * Based on Acqyrly brand system
  * Created: January 2025
  */
 
 export const BRAND = {
   name: 'Acqyrly',
-  tagline: 'by Starting Gate Financial',
-  company: 'Starting Gate Financial',
+  tagline: 'Deal Intelligence Platform',
+  company: 'Acqyrly',
   location: 'Richardson, TX',
 } as const;
 

@@ -224,7 +224,7 @@ export default function DealBusinessLoanPage() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="text-xl font-bold mb-1">Need Financing for This Deal?</h3>
-            <p className="opacity-90">Starting Gate Financial can help you secure the best terms.</p>
+            <p className="opacity-90">Acqyrly can help you secure the best terms.</p>
           </div>
           <a href="https://startinggatefinancial.com/apply" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-white text-emerald-700 px-6 py-3 rounded-lg font-bold hover:bg-emerald-50 transition whitespace-nowrap">Apply for Financing</a>
         </div>

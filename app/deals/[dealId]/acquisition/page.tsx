@@ -7,7 +7,7 @@
  * - Real-time calculations
  * - Database persistence with autosave
  * - Multiple analysis tabs
- * - Starting Gate Financial CTAs
+ * - Acqyrly Financing CTAs
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
@@ -193,12 +193,12 @@ export default function AcquisitionAnalyzerPage() {
         )}
       </div>
 
-      {/* Starting Gate Financial CTA */}
+      {/* Acqyrly CTA */}
       <div className="mt-8 bg-gradient-to-r from-[#2E7D32] to-[#1B5E20] rounded-lg p-8 text-white">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl font-bold mb-4">Ready to Finance This Deal?</h2>
           <p className="text-lg mb-6 text-green-100">
-            Starting Gate Financial offers competitive financing solutions for business acquisitions.
+            Acqyrly connects you with competitive financing solutions for business acquisitions.
             Let our team help you structure the best deal possible.
           </p>
           

@@ -59,7 +59,7 @@ export default async function DashboardPage() {
               Dashboard
             </div>
             <h1 className="text-2xl md:text-3xl font-bold text-white">
-              Welcome back, {session.user.name || "there"} 👋
+              Welcome back, {session.user.name || "there"} ??
             </h1>
             <p className="text-sgf-green-100 mt-2 max-w-2xl">
               {dealCount > 0
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
                 href="/app/deals"
                 className="text-sm text-sgf-green-600 hover:text-sgf-green-700 font-semibold transition-colors"
               >
-                View All →
+                View All ?
               </Link>
             </div>
             <div className="divide-y divide-gray-100">

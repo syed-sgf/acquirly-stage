@@ -416,7 +416,7 @@ export default function BusinessLoanCalculatorPage() {
                   onClick={() => setShowFullTable(!showFullTable)}
                   className="text-sgf-green-500 hover:text-sgf-green-600 font-semibold text-sm transition-colors"
                 >
-                  {showFullTable ? '← Show First Year Only' : `View All ${amortization.length} Payments →`}
+                  {showFullTable ? '? Show First Year Only' : `View All ${amortization.length} Payments ?`}
                 </button>
               </div>
             )}
@@ -436,7 +436,7 @@ export default function BusinessLoanCalculatorPage() {
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Connect with Starting Gate Financial for competitive business acquisition loans, 
+                Connect with our financing partners for competitive business acquisition loans, SBA 7(a) financing, and commercial real estate solutions.
                 SBA 7(a) financing, and commercial real estate solutions.
               </p>
             </div>

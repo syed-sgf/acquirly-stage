@@ -225,7 +225,7 @@ function DSCRResults({ analysis }: { analysis: any }) {
       <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
         <h3 className="text-lg font-semibold text-emerald-900 mb-2">Need Financing Help?</h3>
         <p className="text-emerald-800 mb-4">
-          Starting Gate Financial specializes in business acquisition loans with competitive rates.
+          Acqyrly connects you with business acquisition loans at competitive rates.
         </p>
         
         <a

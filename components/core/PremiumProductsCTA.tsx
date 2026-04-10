@@ -117,7 +117,7 @@ export default function PremiumProductsCTA() {
 
       <div className="mt-8 text-center">
         <p className="text-sm text-gray-500 mb-4">
-          All premium tools included with Starting Gate Financial Pro subscription
+          All premium tools included with your Acqyrly Pro subscription
         </p>
 
         <Link

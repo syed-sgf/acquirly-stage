@@ -21,7 +21,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-2" aria-label="Acqyrly home" onClick={close}>
           <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-sgf-green-600 to-sgf-gold-500" />
           <span className="text-lg font-bold text-gray-900">Acqyrly</span>
-          <span className="ml-2 rounded bg-sgf-gold-500/15 px-2 py-0.5 text-xs font-medium text-sgf-gold-600">by Starting Gate Financial</span>
+          <span className="ml-2 rounded bg-sgf-gold-500/15 px-2 py-0.5 text-xs font-medium text-sgf-gold-600"></span>
         </Link>
 
         {/* Desktop nav */}

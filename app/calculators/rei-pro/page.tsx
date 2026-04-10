@@ -801,7 +801,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cap Rate</div>
-                    <Tooltip content="NOI Ã· Purchase Price. Measures property's unleveraged return. 5-10% typical depending on market." />
+                    <Tooltip content="NOI ÷ Purchase Price. Measures property's unleveraged return. 5-10% typical depending on market." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.capRate, 5, 7)}`}>{outputs.capRate.toFixed(2)}%</div>
                 </div>
@@ -809,7 +809,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cash-on-Cash</div>
-                    <Tooltip content="Annual cash flow Ã· cash invested. Shows return on actual cash. 8-12% is good for rentals." />
+                    <Tooltip content="Annual cash flow ÷ cash invested. Shows return on actual cash. 8-12% is good for rentals." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.cashOnCashReturn, 8, 12)}`}>{outputs.cashOnCashReturn.toFixed(1)}%</div>
                 </div>
@@ -833,7 +833,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">DSCR</div>
-                    <Tooltip content="Debt Service Coverage Ratio. NOI Ã· Annual Debt Service. Lenders want 1.2x+. Higher = safer." />
+                    <Tooltip content="Debt Service Coverage Ratio. NOI ÷ Annual Debt Service. Lenders want 1.2x+. Higher = safer." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.dscr, 1.2, 1.4)}`}>{outputs.dscr.toFixed(2)}x</div>
                 </div>
@@ -841,7 +841,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">GRM</div>
-                    <Tooltip content="Gross Rent Multiplier. Price Ã· Annual Rent. Lower is better. Quick way to compare properties." />
+                    <Tooltip content="Gross Rent Multiplier. Price ÷ Annual Rent. Lower is better. Quick way to compare properties." />
                   </div>
                   <div className="text-2xl font-bold font-mono text-gray-900">{outputs.grossRentMultiplier.toFixed(1)}</div>
                 </div>
@@ -853,9 +853,9 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className={`rounded-xl p-4 border-2 ${outputs.meetsRule70 ? 'bg-sgf-green-50 border-sgf-green-300' : 'bg-red-50 border-red-300'}`}>
                   <div className="flex items-center gap-1 mb-1">
                     <div className={`text-xs font-medium ${outputs.meetsRule70 ? 'text-sgf-green-700' : 'text-red-700'}`}>70% Rule</div>
-                    <Tooltip content="Max purchase = (ARV Ã— 70%) - Rehab. Conservative rule to ensure profit margin. Passing = good deal." />
+                    <Tooltip content="Max purchase = (ARV × 70%) - Rehab. Conservative rule to ensure profit margin. Passing = good deal." />
                   </div>
-                  <div className={`text-xl font-bold ${outputs.meetsRule70 ? 'text-sgf-green-700' : 'text-red-700'}`}>{outputs.meetsRule70 ? 'âœ“ PASS' : 'âœ— FAIL'}</div>
+                  <div className={`text-xl font-bold ${outputs.meetsRule70 ? 'text-sgf-green-700' : 'text-red-700'}`}>{outputs.meetsRule70 ? '? PASS' : '? FAIL'}</div>
                   <div className="text-xs text-gray-500 mt-1">Max: {formatCurrency(outputs.maxPurchasePrice70)}</div>
                 </div>
                 
@@ -870,7 +870,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">ROI</div>
-                    <Tooltip content="Return on Investment. Profit Ã· Cash Invested. Shows return on your actual cash in the deal." />
+                    <Tooltip content="Return on Investment. Profit ÷ Cash Invested. Shows return on your actual cash in the deal." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${getMetricStatus(outputs.roi, 15, 25)}`}>{outputs.roi.toFixed(1)}%</div>
                 </div>
@@ -901,7 +901,7 @@ export default function REIInvestorProAnalyzerPage() {
                     <Tooltip content="Cash remaining after refinance. If $0 or negative, you've pulled all your cash out = infinite return!" />
                   </div>
                   <div className={`text-xl font-bold ${outputs.infiniteReturn ? 'text-sgf-green-700' : 'text-blue-700'}`}>
-                    {outputs.infiniteReturn ? 'âˆž INFINITE!' : formatCurrency(outputs.cashLeftInDeal)}
+                    {outputs.infiniteReturn ? '8 INFINITE!' : formatCurrency(outputs.cashLeftInDeal)}
                   </div>
                 </div>
                 
@@ -916,10 +916,10 @@ export default function REIInvestorProAnalyzerPage() {
                 <div className="bg-white rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center gap-1 mb-1">
                     <div className="text-xs font-medium text-gray-600">Cash-on-Cash (Post-Refi)</div>
-                    <Tooltip content="Annual cash flow Ã· cash left in deal after refi. Can be very high or infinite if you pulled all cash out." />
+                    <Tooltip content="Annual cash flow ÷ cash left in deal after refi. Can be very high or infinite if you pulled all cash out." />
                   </div>
                   <div className={`text-2xl font-bold font-mono ${outputs.infiniteReturn ? 'text-sgf-green-600' : getMetricStatus(outputs.cashOnCashAfterRefi, 10, 20)}`}>
-                    {outputs.infiniteReturn ? 'âˆž' : `${outputs.cashOnCashAfterRefi.toFixed(1)}%`}
+                    {outputs.infiniteReturn ? '8' : `${outputs.cashOnCashAfterRefi.toFixed(1)}%`}
                   </div>
                 </div>
                 
@@ -1108,7 +1108,7 @@ export default function REIInvestorProAnalyzerPage() {
                   <div className="grid md:grid-cols-3 gap-6">
                     <div className="bg-sgf-green-50 rounded-xl p-6 border border-sgf-green-200">
                       <h3 className="font-semibold text-sgf-green-800 mb-2">IRR (Annual Return)</h3>
-                      <div className="text-4xl font-bold font-mono text-sgf-green-700 mb-2">{outputs.irr?.toFixed(1) || (strategy === 'brrrr' && outputs.infiniteReturn ? 'âˆž' : '--')}%</div>
+                      <div className="text-4xl font-bold font-mono text-sgf-green-700 mb-2">{outputs.irr?.toFixed(1) || (strategy === 'brrrr' && outputs.infiniteReturn ? '8' : '--')}%</div>
                       <p className="text-sm text-sgf-green-600">Annualized return over hold period</p>
                     </div>
                     <div className="bg-sgf-gold-50 rounded-xl p-6 border border-sgf-gold-200">
@@ -1153,7 +1153,7 @@ export default function REIInvestorProAnalyzerPage() {
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />Real Estate Financing
               </div>
               <h2 className="text-2xl font-bold mb-3">Finance Your Investment Property</h2>
-              <p className="text-sgf-green-100 max-w-lg">Starting Gate Financial offers investment property loans, DSCR loans, bridge financing, and commercial real estate solutions for all investor strategies.</p>
+              <p className="text-sgf-green-100 max-w-lg">Acqyrly connects you with investment property loans, DSCR loans, bridge financing, and commercial real estate solutions for all investor strategies.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600"><FileText className="w-5 h-5" />Apply for Financing</a>

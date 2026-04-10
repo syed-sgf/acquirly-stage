@@ -569,7 +569,7 @@ export default function ValuationCalculatorPage() {
                   {formatPercent(outputs.totalAdjustment)} adjustment
                 </span>
               )}
-              <span className="text-gray-400">{showAdjustments ? '▼' : '▶'}</span>
+              <span className="text-gray-400">{showAdjustments ? '?' : '?'}</span>
             </div>
           </div>
           
@@ -770,7 +770,7 @@ export default function ValuationCalculatorPage() {
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
                     Based on {formatCurrency(outputs.annualSDE)} SDE<br/>
                     <span className={getAdjustmentColor(outputs.totalAdjustment)}>
-                      Base {outputs.sde.baseMultiple.mid}x → Adjusted {outputs.sde.multiple.mid.toFixed(2)}x
+                      Base {outputs.sde.baseMultiple.mid}x ? Adjusted {outputs.sde.multiple.mid.toFixed(2)}x
                     </span>
                   </div>
                 </div>
@@ -802,7 +802,7 @@ export default function ValuationCalculatorPage() {
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
                     Based on {formatCurrency(outputs.annualEBITDA)} EBITDA<br/>
                     <span className={getAdjustmentColor(outputs.totalAdjustment)}>
-                      Base {outputs.ebitda.baseMultiple.mid}x → Adjusted {outputs.ebitda.multiple.mid.toFixed(2)}x
+                      Base {outputs.ebitda.baseMultiple.mid}x ? Adjusted {outputs.ebitda.multiple.mid.toFixed(2)}x
                     </span>
                   </div>
                 </div>
@@ -871,7 +871,7 @@ export default function ValuationCalculatorPage() {
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />Ready to Buy?
               </div>
               <h2 className="text-2xl font-bold mb-3">Finance Your Acquisition</h2>
-              <p className="text-sgf-green-100 max-w-lg">Starting Gate Financial can help structure financing for your business acquisition with competitive SBA 7(a) loans and conventional financing options.</p>
+              <p className="text-sgf-green-100 max-w-lg">Acqyrly can help structure financing for your business acquisition with competitive SBA 7(a) loans and conventional financing options.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-sgf-gold-600"><FileText className="w-5 h-5" />Apply for Financing</a>

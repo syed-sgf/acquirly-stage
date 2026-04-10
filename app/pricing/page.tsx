@@ -105,7 +105,7 @@ export default function PricingPage() {
               </div>
               <div>
                 <span className="text-white font-bold text-xl">Acqyrly</span>
-                <span className="text-sgf-gold-400 text-sm block">by Starting Gate Financial</span>
+                <span className="text-sgf-gold-400 text-sm block"></span>
               </div>
             </Link>
             <div className="flex items-center gap-4">
@@ -321,8 +321,7 @@ export default function PricingPage() {
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-3">Get Your Deal Funded Today</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Connect with Starting Gate Financial for competitive business acquisition loans,
-                SBA 7(a) financing, and commercial real estate solutions.
+                  Connect with our financing partners for competitive business acquisition loans, SBA 7(a) financing, and commercial real estate solutions.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -345,3 +344,4 @@ export default function PricingPage() {
     </div>
   );
 }
+

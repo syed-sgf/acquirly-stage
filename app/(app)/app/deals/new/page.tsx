@@ -242,7 +242,7 @@ export default async function NewDealPage() {
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3 className="text-xl font-bold mb-2">Need Financing for Your Acquisition?</h3>
-              <p className="text-sgf-green-100">Starting Gate Financial offers SBA 7(a) loans, seller financing structures, and more.</p>
+              <p className="text-sgf-green-100">Acqyrly offers SBA 7(a) loans, seller financing structures, and more.</p>
             </div>
             <a
               href="https://startinggatefinancial.com/apply"

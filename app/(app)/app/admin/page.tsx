@@ -53,7 +53,7 @@ export default function AdminPilotPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: `âœ… Pilot access granted to ${email}` });
+        setMessage({ type: 'success', text: `? Pilot access granted to ${email}` });
         setEmail('');
         setNotes('');
         loadUsers();
@@ -178,7 +178,7 @@ export default function AdminPilotPage() {
                     {users.map(u => (
                       <tr key={u.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
-                          <div className="font-semibold text-gray-900">{u.name || 'â€”'}</div>
+                          <div className="font-semibold text-gray-900">{u.name || '—'}</div>
                           <div className="text-xs text-gray-500">{u.email}</div>
                         </td>
                         <td className="px-4 py-3">
@@ -192,7 +192,7 @@ export default function AdminPilotPage() {
                           )}
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-500">
-                          {u.pilotGrantedAt ? new Date(u.pilotGrantedAt).toLocaleDateString() : 'â€”'}
+                          {u.pilotGrantedAt ? new Date(u.pilotGrantedAt).toLocaleDateString() : '—'}
                         </td>
                         <td className="px-4 py-3 text-xs text-gray-500">
                           {u.pilotExpiresAt ? (
@@ -203,7 +203,7 @@ export default function AdminPilotPage() {
                             <span className="flex items-center gap-1 text-sgf-green-600"><Clock className="w-3 h-3" />No expiry</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-xs text-gray-500 max-w-32 truncate">{u.pilotNotes || 'â€”'}</td>
+                        <td className="px-4 py-3 text-xs text-gray-500 max-w-32 truncate">{u.pilotNotes || '—'}</td>
                         <td className="px-4 py-3">
                           <button onClick={() => revokePilot(u.id, u.email)}
                             className="inline-flex items-center gap-1 text-red-600 hover:text-red-700 text-xs font-semibold hover:bg-red-50 px-2 py-1 rounded transition-colors">

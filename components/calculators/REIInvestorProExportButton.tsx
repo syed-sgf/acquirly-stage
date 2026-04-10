@@ -161,7 +161,7 @@ function generatePDFHTML(data: REIInvestorProPDFData): string {
   <div style="background:linear-gradient(135deg,#2E7D32,#1B5E20);color:white;padding:24px;border-radius:12px;margin-bottom:24px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
       <div>
-        <div style="font-size:11px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Starting Gate Financial</div>
+        <div style="font-size:11px;opacity:0.8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Acqyrly</div>
         <div style="font-size:22px;font-weight:bold">Real Estate Investor Pro Analysis</div>
         <div style="font-size:14px;opacity:0.9;margin-top:4px">${strategyLabel(data.strategy)} Strategy</div>
         ${data.propertyName ? `<div style="font-size:13px;opacity:0.8;margin-top:2px">${data.propertyName}</div>` : ''}
@@ -249,7 +249,7 @@ function generatePDFHTML(data: REIInvestorProPDFData): string {
   <!-- Footer -->
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center">
     <div>
-      <div style="font-weight:bold;color:#2E7D32;font-size:13px">Starting Gate Financial</div>
+      <div style="font-weight:bold;color:#2E7D32;font-size:13px">Acqyrly</div>
       <div style="color:#666;font-size:11px">startinggatefinancial.com | Richardson, TX</div>
     </div>
     <div style="font-size:10px;color:#9ca3af;max-width:400px;text-align:right">

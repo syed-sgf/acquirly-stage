@@ -149,7 +149,7 @@ export default function ResourcesPage() {
               <p className="text-xs text-sgf-green-700 font-semibold">Need financing for your deal?</p>
               <a href="https://startinggatefinancial.com" target="_blank" rel="noopener noreferrer"
                 className="text-xs text-sgf-green-600 hover:underline">
-                Contact Starting Gate Financial
+                Contact Acqyrly
               </a>
             </div>
           </div>

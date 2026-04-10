@@ -198,7 +198,7 @@ export default function CalculatorsIndexPage() {
             <div>
               <h2 className="text-xl font-bold mb-2">Ready to Finance Your Deal?</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Starting Gate Financial offers competitive SBA 7(a) loans, conventional financing, 
+                Acqyrly offers competitive SBA 7(a) loans, conventional financing, 
                 and commercial real estate solutions for business acquisitions.
               </p>
             </div>

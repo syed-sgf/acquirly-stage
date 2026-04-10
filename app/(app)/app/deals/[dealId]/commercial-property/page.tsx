@@ -597,7 +597,7 @@ export default function CommercialPropertyAnalyzerPage() {
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse" />Ready to Finance?
               </div>
               <h2 className="text-2xl font-bold mb-2">Commercial Real Estate Financing</h2>
-              <p className="text-sgf-green-100 max-w-lg text-sm">Starting Gate Financial specializes in commercial real estate loans — office, retail, industrial, NNN, and mixed-use properties.</p>
+              <p className="text-sgf-green-100 max-w-lg text-sm">Acqyrly connects you with commercial real estate loans — office, retail, industrial, NNN, and mixed-use properties.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <a href="https://startinggatefinancial.com/apply" className="inline-flex items-center gap-2 bg-sgf-gold-500 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-sgf-gold-600 transition-colors shadow-lg">

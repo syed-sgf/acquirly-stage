@@ -49,7 +49,7 @@ const analyzeMarket = async () => {
     const now = Date.now();
     if (now < cooldownUntil) {
       const secondsLeft = Math.ceil((cooldownUntil - now) / 1000);
-      setError(`⏱️ Please wait ${secondsLeft} seconds before trying again.`);
+      setError(`?? Please wait ${secondsLeft} seconds before trying again.`);
       return;
     }
 
@@ -92,17 +92,17 @@ const analyzeMarket = async () => {
       const data = await response.json();
 
       if (response.status === 429) {
-        setError("⏱️ Rate limit reached. Try adding your own API key in settings.");
+        setError("?? Rate limit reached. Try adding your own API key in settings.");
         setCooldownUntil(Date.now() + 180000);
         return;
       }
 
       if (!data.success) {
         if (data.error.includes("quota") || data.error.includes("Rate limit")) {
-          setError("💳 " + data.error + " Add your own API key to continue.");
+          setError("?? " + data.error + " Add your own API key to continue.");
           setShowSettings(true); // Auto-open settings
         } else {
-          setError(data.error || "❌ Analysis failed.");
+          setError(data.error || "? Analysis failed.");
         }
         return;
       }
@@ -115,7 +115,7 @@ const analyzeMarket = async () => {
         // Silent abort (user triggered a new request or navigated away)
       } else {
         console.error("AI Analysis Error:", err);
-        setError("❌ Network error. Please try again.");
+        setError("? Network error. Please try again.");
       }
     } finally {
       setIsAnalyzing(false);
@@ -141,7 +141,7 @@ const analyzeMarket = async () => {
         <ul className="list-none space-y-2 ml-0">
           {data.map((item, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="text-green-600 mt-1 flex-shrink-0">•</span>
+              <span className="text-green-600 mt-1 flex-shrink-0">�</span>
               <div className="text-sm text-gray-700 flex-1">
                 {typeof item === 'string' ? item : renderInsight(item)}
               </div>
@@ -205,7 +205,7 @@ const analyzeMarket = async () => {
             >
               <div className="font-bold text-gray-800">OpenAI</div>
               <div className="text-xs text-gray-600">GPT-4o</div>
-              <div className="text-xs text-green-600 mt-1">✓ Default</div>
+              <div className="text-xs text-green-600 mt-1">? Default</div>
             </button>
             <button
               onClick={() => setProvider("anthropic")}
@@ -242,7 +242,7 @@ const analyzeMarket = async () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <div className="text-xs text-gray-500">
-                💡 Your API key is stored locally. If enabled, it is sent to our server only to proxy this analysis request and is not stored.
+                ?? Your API key is stored locally. If enabled, it is sent to our server only to proxy this analysis request and is not stored.
               </div>
               <a
                 href={provider === "openai" 
@@ -253,7 +253,7 @@ const analyzeMarket = async () => {
                 rel="noopener noreferrer"
                 className="text-xs text-blue-600 hover:underline block"
               >
-                Get your {provider === "openai" ? "OpenAI" : "Anthropic"} API key →
+                Get your {provider === "openai" ? "OpenAI" : "Anthropic"} API key ?
               </a>
             </div>
           )}
@@ -262,7 +262,7 @@ const analyzeMarket = async () => {
         {/* Info Box */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
           <div className="text-xs text-blue-800">
-            <strong>💡 Why use your own API key?</strong>
+            <strong>?? Why use your own API key?</strong>
             <ul className="mt-2 space-y-1 ml-4 list-disc">
               <li>No rate limits</li>
               <li>Pay only for what you use (~$0.006 per analysis)</li>
@@ -328,7 +328,7 @@ const analyzeMarket = async () => {
                 <h4 className="font-bold text-gray-800 flex items-center gap-2">
                   AI Market Intelligence
                   <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full animate-pulse">
-                    ✨ Free with {provider === "openai" ? "OpenAI" : "Anthropic"}
+                    ? Free with {provider === "openai" ? "OpenAI" : "Anthropic"}
                   </span>
                 </h4>
                 <button
@@ -387,7 +387,7 @@ const analyzeMarket = async () => {
                       onClick={() => setShowSettings(true)}
                       className="text-xs text-blue-600 hover:underline mt-1 block"
                     >
-                      💡 Add your own API key to remove limits
+                      ?? Add your own API key to remove limits
                     </button>
                   )}
                 </div>
@@ -459,43 +459,43 @@ const analyzeMarket = async () => {
           <>
             {aiInsights.industryMultiples && (
               <div className="bg-white rounded-xl p-5 border-2 border-blue-200 shadow-sm">
-                <h5 className="font-bold text-lg text-blue-700 mb-3">📊 Industry Valuation Benchmarks</h5>
+                <h5 className="font-bold text-lg text-blue-700 mb-3">?? Industry Valuation Benchmarks</h5>
                 {renderInsight(aiInsights.industryMultiples)}
               </div>
             )}
             {aiInsights.marketTrends && (
               <div className="bg-white rounded-xl p-5 border-2 border-green-200 shadow-sm">
-                <h5 className="font-bold text-lg text-green-700 mb-3">📈 Current Market Trends</h5>
+                <h5 className="font-bold text-lg text-green-700 mb-3">?? Current Market Trends</h5>
                 {renderInsight(aiInsights.marketTrends)}
               </div>
             )}
             {aiInsights.competitive && (
               <div className="bg-white rounded-xl p-5 border-2 border-yellow-200 shadow-sm">
-                <h5 className="font-bold text-lg text-yellow-700 mb-3">🎯 Competitive Analysis</h5>
+                <h5 className="font-bold text-lg text-yellow-700 mb-3">?? Competitive Analysis</h5>
                 {renderInsight(aiInsights.competitive)}
               </div>
             )}
             {aiInsights.growthOpportunities && (
               <div className="bg-white rounded-xl p-5 border-2 border-emerald-200 shadow-sm">
-                <h5 className="font-bold text-lg text-emerald-700 mb-3">🚀 Growth Opportunities</h5>
+                <h5 className="font-bold text-lg text-emerald-700 mb-3">?? Growth Opportunities</h5>
                 {renderInsight(aiInsights.growthOpportunities)}
               </div>
             )}
             {aiInsights.riskAssessment && (
               <div className="bg-white rounded-xl p-5 border-2 border-orange-200 shadow-sm">
-                <h5 className="font-bold text-lg text-orange-700 mb-3">⚠️ Risk Assessment</h5>
+                <h5 className="font-bold text-lg text-orange-700 mb-3">?? Risk Assessment</h5>
                 {renderInsight(aiInsights.riskAssessment)}
               </div>
             )}
             {aiInsights.dueDiligence && (
               <div className="bg-white rounded-xl p-5 border-2 border-indigo-200 shadow-sm">
-                <h5 className="font-bold text-lg text-indigo-700 mb-3">🔍 Due Diligence Priorities</h5>
+                <h5 className="font-bold text-lg text-indigo-700 mb-3">?? Due Diligence Priorities</h5>
                 {renderInsight(aiInsights.dueDiligence)}
               </div>
             )}
             {aiInsights.recommendation && (
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-5 border-2 border-purple-300 shadow-sm">
-                <h5 className="font-bold text-lg text-purple-700 mb-3">✅ AI Recommendation</h5>
+                <h5 className="font-bold text-lg text-purple-700 mb-3">? AI Recommendation</h5>
                 {renderInsight(aiInsights.recommendation)}
               </div>
             )}
@@ -551,7 +551,7 @@ export default function ProPage() {
 
   // Broker branding settings (would come from user profile in full version)
   const [brokerBranding, setBrokerBranding] = useState({
-    companyName: "Starting Gate Financial",
+    companyName: "Acqyrly",
     brokerName: "Syed Raza",
     phone: "(214) 923-1694",
     email: "info@startinggatefinancial.com",
@@ -770,7 +770,7 @@ export default function ProPage() {
               Business Acquisition Analyzer
             </h1>
             <p className="text-brand-green-50 text-sm">
-              AI-Powered deal analysis by <span className="font-bold text-brand-gold-300">Starting Gate Financial</span>
+              AI-Powered deal analysis by <span className="font-bold text-brand-gold-300">Acqyrly</span>
             </p>
           </div>
           <div className="flex gap-3">
@@ -900,26 +900,26 @@ export default function ProPage() {
                   onChange={(e) => updateDeal('industry', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green-500 focus:border-transparent bg-white"
                 >
-                  <option value="Restaurant">🍽️ Restaurant / Food Service</option>
-                  <option value="Retail">🛍️ Retail / E-commerce</option>
-                  <option value="Manufacturing">🏭 Manufacturing</option>
-                  <option value="Professional Services">💼 Professional Services (Consulting, Legal, etc.)</option>
-                  <option value="Healthcare">🏥 Healthcare / Medical Services</option>
-                  <option value="Technology">💻 Technology / SaaS</option>
-                  <option value="Construction">🔨 Construction / Trades</option>
-                  <option value="Real Estate">🏠 Real Estate Services</option>
-                  <option value="Hospitality">🏨 Hospitality / Hotel / Tourism</option>
-                  <option value="Automotive">🚗 Automotive Services</option>
-                  <option value="Beauty & Wellness">💆 Beauty & Wellness / Spa</option>
-                  <option value="Education">📚 Education / Training</option>
-                  <option value="Financial Services">💰 Financial Services</option>
-                  <option value="Transportation">🚚 Transportation / Logistics</option>
-                  <option value="Fitness">💪 Fitness / Gym / Sports</option>
-                  <option value="Entertainment">🎭 Entertainment / Events</option>
-                  <option value="Home Services">🏡 Home Services / Repair</option>
-                  <option value="Franchise">🏪 Franchise (Specify in notes)</option>
-                  <option value="Distribution">📦 Distribution / Wholesale</option>
-                  <option value="Other">📋 Other / General Business</option>
+                  <option value="Restaurant">??? Restaurant / Food Service</option>
+                  <option value="Retail">??? Retail / E-commerce</option>
+                  <option value="Manufacturing">?? Manufacturing</option>
+                  <option value="Professional Services">?? Professional Services (Consulting, Legal, etc.)</option>
+                  <option value="Healthcare">?? Healthcare / Medical Services</option>
+                  <option value="Technology">?? Technology / SaaS</option>
+                  <option value="Construction">?? Construction / Trades</option>
+                  <option value="Real Estate">?? Real Estate Services</option>
+                  <option value="Hospitality">?? Hospitality / Hotel / Tourism</option>
+                  <option value="Automotive">?? Automotive Services</option>
+                  <option value="Beauty & Wellness">?? Beauty & Wellness / Spa</option>
+                  <option value="Education">?? Education / Training</option>
+                  <option value="Financial Services">?? Financial Services</option>
+                  <option value="Transportation">?? Transportation / Logistics</option>
+                  <option value="Fitness">?? Fitness / Gym / Sports</option>
+                  <option value="Entertainment">?? Entertainment / Events</option>
+                  <option value="Home Services">?? Home Services / Repair</option>
+                  <option value="Franchise">?? Franchise (Specify in notes)</option>
+                  <option value="Distribution">?? Distribution / Wholesale</option>
+                  <option value="Other">?? Other / General Business</option>
                 </select>
               </div>
 
@@ -1605,7 +1605,7 @@ export default function ProPage() {
               )}
             </div>
             <div className="text-3xl font-bold text-purple-600">
-              {out.leverageRatio?.toFixed(2) ?? "—"}x
+              {out.leverageRatio?.toFixed(2) ?? "�"}x
             </div>
             <div className="text-xs text-gray-500 mt-1">Total debt / equity</div>
           </div>
@@ -1689,7 +1689,7 @@ export default function ProPage() {
         />
 
         <p className="mt-4 text-xs text-gray-500 text-center">
-          SBA typically requires DSCR ≥ 1.25x. Higher DSCR indicates stronger debt coverage.
+          SBA typically requires DSCR = 1.25x. Higher DSCR indicates stronger debt coverage.
         </p>
       </section>
 
@@ -1711,7 +1711,7 @@ export default function ProPage() {
 
         <div className="grid md:grid-cols-3 gap-6 mb-6 text-sm">
           <div>
-            <h3 className="font-bold text-brand-green-700 mb-2">About Starting Gate Financial</h3>
+            <h3 className="font-bold text-brand-green-700 mb-2">About Acqyrly</h3>
             <p className="text-gray-600">
               Commercial lending and business financing specialists serving entrepreneurs across North Texas and beyond.
             </p>
@@ -1740,22 +1740,22 @@ export default function ProPage() {
           <div>
             <h3 className="font-bold text-brand-green-700 mb-2">Our Services</h3>
             <ul className="text-gray-600 space-y-1">
-              <li>• SBA 7(a) Loans</li>
-              <li>• Business Acquisition Financing</li>
-              <li>• Commercial Real Estate Loans</li>
-              <li>• Equipment Financing</li>
-              <li>• Lines of Credit</li>
+              <li>� SBA 7(a) Loans</li>
+              <li>� Business Acquisition Financing</li>
+              <li>� Commercial Real Estate Loans</li>
+              <li>� Equipment Financing</li>
+              <li>� Lines of Credit</li>
             </ul>
           </div>
         </div>
 
         <div className="text-center text-xs text-gray-500 border-t pt-4">
           <p className="mb-2">
-            © {new Date().getFullYear()} Starting Gate Financial. All rights reserved.
+            � {new Date().getFullYear()} Acqyrly. All rights reserved.
           </p>
           <p className="text-gray-400">
             This calculator provides estimates for informational purposes only. Actual loan terms and approval are subject to underwriting review.
-            Consult with a Starting Gate Financial advisor for personalized guidance.
+            Consult with an Acqyrly advisor for personalized guidance.
           </p>
         </div>
       </footer>

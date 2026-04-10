@@ -14,3 +14,4 @@ updated/
 .env
 *.backup*.tsx
 main
+.env*.local

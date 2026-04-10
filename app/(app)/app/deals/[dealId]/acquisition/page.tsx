@@ -270,13 +270,13 @@ export default function AcquisitionAnalyzerPage() {
           )}
         </div>
 
-        {/* Starting Gate Financial CTA */}
+        {/* Acqyrly CTA */}
         <div className="mt-8 bg-gradient-to-r from-sgf-green-500 to-sgf-green-600 rounded-2xl p-8 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sgf-gold-500/20 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 max-w-3xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4">Ready to Finance This Deal?</h2>
             <p className="text-lg mb-6 text-sgf-green-100">
-              Starting Gate Financial offers competitive financing solutions for business acquisitions.
+              Acqyrly connects you with competitive financing solutions for business acquisitions.
               Let our team help you structure the best deal possible.
             </p>
             <a 

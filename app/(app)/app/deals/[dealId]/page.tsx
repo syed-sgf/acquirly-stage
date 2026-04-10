@@ -247,7 +247,7 @@ export default async function DealPage({
             <div>
               <h2 className="text-xl font-bold mb-2">Ready to Finance This Deal?</h2>
               <p className="text-sgf-green-100 max-w-lg">
-                Starting Gate Financial offers competitive business acquisition loans and SBA financing solutions.
+                Acqyrly connects you with competitive business acquisition loans and SBA financing solutions.
               </p>
             </div>
             <a

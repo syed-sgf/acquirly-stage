@@ -53,7 +53,7 @@ function SignInContent() {
           <p className="text-xs text-gray-500">
             Powered by{" "}
             <a href="https://startinggatefinancial.com" target="_blank" rel="noopener noreferrer" className="text-sgf-green-600 font-semibold hover:underline">
-              Starting Gate Financial
+              Acqyrly
             </a>
           </p>
         </div>
