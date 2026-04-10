@@ -1,5 +1,4 @@
 // app/api/stripe/checkout/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -15,13 +14,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { plan } = body as { plan: Exclude<PlanType, 'free'> };
+    const { plan, priceId: requestedPriceId } = body as { 
+      plan: Exclude<PlanType, 'free'>;
+      priceId?: string;
+    };
 
     if (!plan || !['core', 'pro', 'enterprise'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    const priceId = STRIPE_CONFIG.prices[plan]?.monthly;
+    // Use passed priceId (annual) or fall back to monthly default
+    const priceId = requestedPriceId || STRIPE_CONFIG.prices[plan]?.monthly;
     if (!priceId) {
       return NextResponse.json({ error: 'Invalid pricing' }, { status: 400 });
     }
@@ -36,7 +39,6 @@ export async function POST(request: NextRequest) {
     }
 
     let customerId = user.stripeCustomerId;
-
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email!,
@@ -44,7 +46,6 @@ export async function POST(request: NextRequest) {
         metadata: { userId: user.id },
       });
       customerId = customer.id;
-
       await prisma.user.update({
         where: { id: user.id },
         data: { stripeCustomerId: customerId },
