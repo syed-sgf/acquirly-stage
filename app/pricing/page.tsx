@@ -263,7 +263,6 @@ export default function PricingPage() {
                   ) : status === 'authenticated' ? (
                     <UpgradeButton
                       plan={plan.plan}
-                      priceId={currentPriceId ?? undefined}
                       className={`w-full ${
                         plan.popular
                           ? 'bg-sgf-gold-500 hover:bg-sgf-gold-600 text-white'
